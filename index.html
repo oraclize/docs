@@ -4,10 +4,8 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>API Reference</title>
+    <title>API Documentation</title>
 
-    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
-    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
     <style>
       .highlight table td { padding: 5px; }
 .highlight table pre { margin: 0; }
@@ -88,10 +86,12 @@
   color: #90a959;
 }
     </style>
-      <script src="javascripts/all.js"></script>
+    <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
+    <link href="stylesheets/print.css" rel="stylesheet" media="print" />
+      <script src="javascripts/all_nosearch.js"></script>
   </head>
 
-  <body class="index" data-languages="[&quot;shell&quot;,&quot;ruby&quot;,&quot;python&quot;]">
+  <body class="index" data-languages="[]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -101,246 +101,267 @@
     <div class="tocify-wrapper">
       <img src="images/logo.png" />
         <div class="lang-selector">
-              <a href="#" data-language-name="shell">shell</a>
-              <a href="#" data-language-name="ruby">ruby</a>
-              <a href="#" data-language-name="python">python</a>
         </div>
-        <div class="search">
-          <input type="text" class="search" id="input-search" placeholder="Search">
-        </div>
-        <ul class="search-results"></ul>
       <div id="toc">
       </div>
-        <ul class="toc-footer">
-            <li><a href='#'>Sign Up for a Developer Key</a></li>
-            <li><a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a></li>
-        </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
         <h1 id="introduction">Introduction</h1>
 
-<p>Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.</p>
+<h2 id="welcome-to-oraclize-39-s-documentation">Welcome to Oraclize&rsquo;s documentation!</h2>
 
-<p>We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.</p>
+<p>Oraclize is a <a title="(the amount of trust involved is close to zero)" href="#">provably-honest oracle</a> service enabling smart contracts to access the Internet.</p>
 
-<p>This example API documentation page was created with <a href="https://github.com/tripit/slate">Slate</a>. Feel free to edit it and use it as a base for your own API&rsquo;s documentation.</p>
+<p>We are platform-agnostic by providing an abstraction interface to all the major smart-contracts capable platforms out there (Bitcoin and Ethereum for now).
+We think that it&rsquo;s just by throwing tons of meaningful data into the blockchain jar that the smart contracts industry can flourish and many useful applications can finally come to life.</p>
 
-<h1 id="authentication">Authentication</h1>
+<p>While any platform is providing access to on-chain data only, Oraclize provides to them an interface to any data-feed on the Internet.</p>
+
+<p>This documentation covers our API integration with the <strong>Ethereum</strong> platform.</p>
+
+<p><img src="images/flowchart.png" /></p>
+
+<h1 id="overview">Overview</h1>
+
+<p>Even though the oracle concept, in the blockchain sense, has been around for a while haven&rsquo;t seen any advanced implementations. All implementations were nothing more than proof of concepts or of very limited use in themselves.</p>
+
+<p>One of the reasons for this failure to provide a proper oracle service is that trying to build a distributed oracle network where nodes attempt to find consensus to a specific query is very hard and needs a proper inter-oracle communication protocol (which Orisi was a first attempt to build) rather than merely a convincing incentive for the oracles not to lie.</p>
+
+<p>Oraclize wants to fill in this industry gap by providing an oracle service which is as generic as possible. We are not trying to build the Internet here but to provide a good compromise instead.</p>
+
+<p>Although we are a centralized service we share the vision behind decentralized networks and we understand how reputation is key and this is why we are providing a provably-honest service too.</p>
+
+<h2 id="how-does-an-oracle-work">How does an oracle work</h2>
+
+<p>An oracle, in the blockchain sense, is a third party which sends to your on-chain smart contract some specific data your smart contract code cannot fetch by itself. As the oracle is a centralized party, you shouldn&rsquo;t take its response for granted.</p>
+
+<p>For example, if you ask an oracle to give you the last trading price of ETH/USD the oracle needs to fetch this data from some exchanges on the Internet and than send this data back to you. While doing this the oracle might compromise the exchange data and send back to you a compromised value. This is the reason why the oracle cannot be trusted by itself. It is important to trust the data-feed provider (in our example this is the exchange trading the ETH/USD pair) but this can easily be mitigated by using different data-sources and and using them to determine consensus.</p>
+
+<p>But how can we trust the oracle not to alter this data in the first place? This is achievable using the same mitigation technique we just explained above for data-sources or by using a cryptographic proof such as the TLSNotary one.</p>
+
+<h2 id="tlsnotary-proof">TLSNotary proof</h2>
+
+<p>Since we understand you may not trust our service to provide you correct data, we optionally send you a cryptographic proof showing that we didn&rsquo;t alter the data coming from your chosen data-source.</p>
+
+<p>TLSNotary is built on the top of TLS/SSL, it&rsquo;s a tool by which you can prove a certain server has really sent some data to you at a certain time. By attaching the TLSNotary proof to the results we are providing to you, you can be 100% sure we are not lying and our response is really coming from a certain server at a specific time.</p>
+
+<h2 id="available-data-sources">Available data-sources</h2>
+
+<p>We list here the data-sources you can choose from when using our oracle service.</p>
+
+<h3 id="parsing-helpers">Parsing helpers</h3>
+
+<p>The most generic data-source we provide is the <code class="prettyprint">URL</code> one, which can be used to access any public API/page on the Internet.
+The first step is providing the actual URL you want Oraclize to fetch the HTTP GET/POST output from (and optionally the query-string parameters). Oraclize will do that for you while optionally attaching the <code class="prettyprint">TLSNotary</code> proof to the response forwarded to you.</p>
+
+<p>In order to make things more simple to handle on the smart-contract side, you can provide the URL inside one of the following parsing helpers:</p>
+
+<ul>
+<li><p><code class="prettyprint">xml(..)</code> or <code class="prettyprint">json(..)</code> helper: by providing the URL inside of one of them, you expect Oraclize to send you only a part of the json/xml-parsed response. Example: you can use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> to get the whole response back; but if you want to get the last-price field back only, you can just use the URL argument <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code>.</p></li>
+<li><p><code class="prettyprint">html(..).xpath(..)</code> helper: this is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. Example: to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</p></li>
+</ul>
 
 <blockquote>
-<p>To authorize, use this code:</p>
+<p><strong>Note:</strong>
+In the case of the server not responding or if it is unreachable, we will send to you just an empty response</p>
 </blockquote>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<h4 id="wolfram-alpha">Wolfram Alpha</h4>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight shell"><code><span class="c"># With shell, you can just pass the correct header with each request</span>
-curl <span class="s2">"api_endpoint_here"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
-</code></pre>
+<p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as argument a query to submit to the Wolfram Alpha knowledge engine. Oraclize will send back to you the primary response as string if any.</p>
 
 <blockquote>
-<p>Make sure to replace <code class="prettyprint">meowmeowmeow</code> with your API key.</p>
+<p><strong>Note:</strong>
+There may not always be a primary response for your query, please test your query in advance on our Web IDE widget to make sure your syntax makes sense to Wolfram&rsquo;s engine.</p>
 </blockquote>
-
-<p>Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our <a href="http://example.com/developers">developer portal</a>.</p>
-
-<p>Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:</p>
-
-<p><code class="prettyprint">Authorization: meowmeowmeow</code></p>
 
 <aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
+Note:
+With this data-source the `TLSNotary` proof is unavailable since we would be giving back to you the whole API response by going against the Wolfram Alpha Terms of Service.
 </aside>
 
-<h1 id="kittens">Kittens</h1>
+<h3 id="blockchain">Blockchain</h3>
 
-<h2 id="get-all-kittens">Get All Kittens</h2>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
+<p>The <code class="prettyprint">Blockchain</code> data-source provides you easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorers APIs, but with a builtin easy-to-use syntax.
+Possible query arguments can be: <code class="prettyprint">bitcoin blockchain height</code>, <code class="prettyprint">litecoin hashrate</code>, <code class="prettyprint">bitcoin difficulty</code>, <code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> and so on.</p>
 
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span>
-</code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
+<h1 id="how-to-send-a-query">How to send a query</h1>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<p>The following is meant to be a short but complete manual to explain how the interfacing of an Ethereum contract with Oraclize actually works.</p>
+
+<p>All the reference code we will be using next is written in Solidity, but since the interface would be the same feel free to use any language you like.</p>
+
+<p>Sending a query to Oraclize means sending a transaction to the last Oraclize contract. In order to do that we have to take care of paying Oraclize the amount expected, which can vary depending on the query we are about to send, and to send to it the query in the right format.
+Oraclize will then get your result and send back to your address (which most of times will be your contract address!) a transaction calling a special _<em>callback method. Note that the transaction sent back by Oraclize can trigger any status change in your contract, even the sending of another query to Oraclize. The limit of what can be done in the _</em>callback method is given just by your immagination and, well, by the gasLimit.</p>
+
+<h2 id="getting-everything-on-track">Getting everything on track</h2>
+
+<p>The first thing we need to do is to import into our code the <code class="prettyprint">usingOraclize</code> contracts other than the interfaces of the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contracts. The <code class="prettyprint">usingOraclize</code> contract is needed to ensure the interfacing with the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI is painless to you, but if you feel confident in calling them directly feel free to do so (you would spend a lower amount of gas for contract deployment) as long as you do it correctly (if anything goes wrong a</code>throw` is raised).</p>
+
+<p>In order to make the API use flow simpler we highly recommend you to simply extend the <code class="prettyprint">usingOraclize</code> contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.</p>
+
+<p>To include all the stuff needed just import the code available here <code class="prettyprint">&lt;http://dev.oraclize.it/api.sol&gt;</code>_ and make your contract extend the <code class="prettyprint">usingOraclize</code> one as follows:</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
+
+<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span> <span class="p">..</span> <span class="p">}</span>
 </code></pre>
-<pre class="highlight shell"><code>curl <span class="s2">"http://example.com/api/kittens"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+
+<h2 id="network-selection">Network selection</h2>
+
+<p>Oraclize is available both on the Ethereum mainnet and on the Morden testnet, the default behaviour (whie using the API helpers we are explaining here) is to refer to the mainnet, however if you want to point it to a different network you can do it explicity by calling the <code class="prettyprint">oraclize_setNetwork</code> function once (for example in your contract constructor).</p>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
+
+<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+        <span class="nx">oraclize_setNetwork</span><span class="p">(</span><span class="nx">networkID_testnet</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">..</span>
+<span class="p">}</span>
 </code></pre>
+
+<h2 id="simple-query">Simple query</h2>
 
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p><strong>Note:</strong>
+All the code written here takes for granted that you already included all the needed stuff as explained in the paragraph above, other than this your contract has to extend the <code class="prettyprint">usingOraclize</code> contract</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">[</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Fluffums"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"calico"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">7</span><span class="w">
-  </span><span class="p">},</span><span class="w">
-  </span><span class="p">{</span><span class="w">
-    </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-    </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-  </span><span class="p">}</span><span class="w">
-</span><span class="p">]</span><span class="w">
-</span></code></pre>
 
-<p>This endpoint retrieves all kittens.</p>
+<p>When sending a query to Oraclize you have to specify at least two arguments:
+* the data-source you want to fetch the data from (supported values: <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>)
+* the argument for the given data-source (the full <code class="prettyprint">URL</code> - which might use our json/xml helper format -, the <code class="prettyprint">WolframAlpha</code> formula or the <code class="prettyprint">Blockchain</code>-provided syntax), more informations about these can be found in the <a href="overview.html">Overview</a></p>
 
-<h3 id="http-request">HTTP Request</h3>
+<p>An example code looks like this:</p>
+<pre class="highlight javascript"><code>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">);</span>
 
-<p><code class="prettyprint">GET http://example.com/api/kittens</code></p>
-
-<h3 id="query-parameters">Query Parameters</h3>
-
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Default</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>include_cats</td>
-<td>false</td>
-<td>If set to true, the result will also include cats.</td>
-</tr>
-<tr>
-<td>available</td>
-<td>true</td>
-<td>If set to false, the result will include kittens that have already been adopted.</td>
-</tr>
-</tbody></table>
-
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
-
-<h2 id="get-a-specific-kitten">Get a Specific Kitten</h2>
-<pre class="highlight ruby"><code><span class="nb">require</span> <span class="s1">'kittn'</span>
-
-<span class="n">api</span> <span class="o">=</span> <span class="no">Kittn</span><span class="o">::</span><span class="no">APIClient</span><span class="p">.</span><span class="nf">authorize!</span><span class="p">(</span><span class="s1">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="p">.</span><span class="nf">kittens</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
 </code></pre>
-<pre class="highlight python"><code><span class="kn">import</span> <span class="nn">kittn</span>
 
-<span class="n">api</span> <span class="o">=</span> <span class="n">kittn</span><span class="o">.</span><span class="n">authorize</span><span class="p">(</span><span class="s">'meowmeowmeow'</span><span class="p">)</span>
-<span class="n">api</span><span class="o">.</span><span class="n">kittens</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<p>The given code will ask Oraclize to send immediately back to us a transaction with the primary result (as a string) of the given formula (&ldquo;random number between 0 and 100&rdquo;) fetched from the data-source &ldquo;WolframAlpha&rdquo;.</p>
+
+<p>In the same way you can use any other data-source, here we list some examples:</p>
+<pre class="highlight javascript"><code>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">);</span>
+
 </code></pre>
-<pre class="highlight shell"><code>curl <span class="s2">"http://example.com/api/kittens/2"</span>
-  -H <span class="s2">"Authorization: meowmeowmeow"</span>
+<pre class="highlight javascript"><code>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">);</span>
+
 </code></pre>
+<pre class="highlight javascript"><code>
+<span class="c1">// the only data-source accepting 2 string arguments is 'URL' when we want it to send an HTTP POST request</span>
+<span class="c1">// with the 2nd argument being the query-string we want to send to the given server.</span>
+<span class="c1">// note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span> <span class="s1">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">);</span>
+
+</code></pre>
+
+<h2 id="schedule-a-query-in-the-future">Schedule a query in the future</h2>
+
+<p>If you want Oraclize to execute your query at a scheduled future time, just specify the delay from the current time (in seconds) or the timestamp in the future as first argument.</p>
+
+<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.</p>
+
+<p>Here some example:</p>
+<pre class="highlight javascript"><code>
+<span class="c1">// get the result from the given URL in 60 seconds from now</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+
+</code></pre>
+<pre class="highlight javascript"><code>
+<span class="c1">// get the result from the given URL at the specified timestamp in the future</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
+
+</code></pre>
+
+<h2 id="the-query-id">The query ID</h2>
+
+<p>Even if storing it is not always needed, <code class="prettyprint">oraclize_query</code> is returning a unique ID representing your query.</p>
+<pre class="highlight javascript"><code>
+<span class="c1">// get the result from the given URL in 60 seconds from now</span>
+<span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+
+</code></pre>
+
+<h2 id="callback-function">Callback function</h2>
+
+<p>Once your result is ready Oraclize will send a transaction back to your contract address, calling the method with the signature <code class="prettyprint">__callback(bytes32 myid, string result)</code>. The callback transaction could be handled in the unnamed function <code class="prettyprint">function()</code> or, more easily, by implementing the __callback function as follows:</p>
+<pre class="highlight javascript"><code>
+<span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span> <span class="c1">// just to be sure the calling address is the Oraclize authorized one</span>
+    <span class="nx">ETHXBT</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span> <span class="c1">// doing something with the result..</span>
+    <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span> <span class="c1">// new query for Oraclize!</span>
+<span class="p">}</span>
+
+</code></pre>
+
+<p>In the code above we put the <code class="prettyprint">oraclize_query</code> call in the _<em>callback function, by making the contract automatically execute __callback every minute forever (well, until we run out of funds!).
+Note that <code class="prettyprint">myid</code> can be used to implement different behaviours into the _</em>callback function when we are waiting for more than one different pending callback call from Oraclize.</p>
+
+<h2 id="custom-gas">Custom gas</h2>
+
+<p>Since you have to cover for the amount of gas the Oraclize transaction will spend to call your __callback function code, you are always paying for the full <code class="prettyprint">gasLimit</code> set in the Oraclize callback transaction.
+The minimum default value is 200000 gas, if this is not enough for you you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
+<pre class="highlight javascript"><code>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
+
+</code></pre>
+<pre class="highlight javascript"><code>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// you can set both custom timestamp/delay and custom gasLimit</span>
+
+</code></pre>
+
+<h2 id="tlsnotary-proof">TLSNotary proof</h2>
+
+<p>In order to get the TLSNotary proof back from Oraclize you need to specify the proofType and proofStorage, with <code class="prettyprint">oraclize_setProof(proofType_NONE)</code> (default) or <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code>.
+You can execute this method just once in the constructor or wherever you want if you need the proof just for certain queries. <code class="prettyprint">prootType_NONE</code> is the default one, proofType_IPFS is the only method supported at the moment to deliver the TLSNotary proof.</p>
+
+<p><code class="prettyprint">proofStorage_IPFS</code> means Oraclize will use IPFS to store your complete TLSNotary proof and will get back to your contract calling the <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code> function instead of the default <code class="prettyprint">__callback(bytes32 myid, string result)</code> one.</p>
+
+<p>The <code class="prettyprint">proof</code> string is precisely the IPFS multihash that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/<code class="prettyprint">proof</code></p>
 
 <blockquote>
-<p>The above command returns JSON structured like this:</p>
+<p><strong>Note:</strong>
+There might not always be a TLSNotary proof for your query, depending on the data source you have chosen</p>
 </blockquote>
-<pre class="highlight json"><code><span class="p">{</span><span class="w">
-  </span><span class="nt">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Max"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"breed"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unknown"</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"fluffiness"</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w">
-  </span><span class="nt">"cuteness"</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="w">
-</span><span class="p">}</span><span class="w">
-</span></code></pre>
 
-<p>This endpoint retrieves a specific kitten.</p>
+<p>Example code:</p>
+<pre class="highlight javascript"><code>
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
 
-<aside class="warning">Inside HTML code blocks like this one, you can&rsquo;t use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
+<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-<h3 id="http-request">HTTP Request</h3>
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+        <span class="nx">oraclize_setNetwork</span><span class="p">(</span><span class="nx">networkID_testnet</span><span class="p">);</span>
+        <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
+    <span class="p">}</span>
 
-<p><code class="prettyprint">GET http://example.com/kittens/&lt;ID&gt;</code></p>
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="p">..</span>
+    <span class="p">}</span>
 
-<h3 id="url-parameters">URL Parameters</h3>
+<span class="p">}</span>
 
-<table><thead>
-<tr>
-<th>Parameter</th>
-<th>Description</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>ID</td>
-<td>The ID of the kitten to retrieve</td>
-</tr>
-</tbody></table>
+</code></pre>
 
-          <h1 id="errors">Errors</h1>
+<h2 id="more-examples">More examples</h2>
 
-<aside class="notice">This error section is stored in a separate file in `includes/_errors.md`. Slate allows you to optionally separate out your docs into many files&hellip;just save them to the `includes` folder and add them to the top of your `index.md`&rsquo;s frontmatter. Files are included in the order listed.</aside>
+<p>You can have a look at more complete and complex examples by looking at our dedicated github repository here: https://github.com/oraclize/ethereum-examples</p>
 
-<p>The Kittn API uses the following error codes:</p>
+<h2 id="random-utilities">Random utilities</h2>
 
-<table><thead>
-<tr>
-<th>Error Code</th>
-<th>Meaning</th>
-</tr>
-</thead><tbody>
-<tr>
-<td>400</td>
-<td>Bad Request &ndash; Your request sucks</td>
-</tr>
-<tr>
-<td>401</td>
-<td>Unauthorized &ndash; Your API key is wrong</td>
-</tr>
-<tr>
-<td>403</td>
-<td>Forbidden &ndash; The kitten requested is hidden for administrators only</td>
-</tr>
-<tr>
-<td>404</td>
-<td>Not Found &ndash; The specified kitten could not be found</td>
-</tr>
-<tr>
-<td>405</td>
-<td>Method Not Allowed &ndash; You tried to access a kitten with an invalid method</td>
-</tr>
-<tr>
-<td>406</td>
-<td>Not Acceptable &ndash; You requested a format that isn&rsquo;t json</td>
-</tr>
-<tr>
-<td>410</td>
-<td>Gone &ndash; The kitten requested has been removed from our servers</td>
-</tr>
-<tr>
-<td>418</td>
-<td>I&rsquo;m a teapot</td>
-</tr>
-<tr>
-<td>429</td>
-<td>Too Many Requests &ndash; You&rsquo;re requesting too many kittens! Slow down!</td>
-</tr>
-<tr>
-<td>500</td>
-<td>Internal Server Error &ndash; We had a problem with our server. Try again later.</td>
-</tr>
-<tr>
-<td>503</td>
-<td>Service Unavailable &ndash; We&rsquo;re temporarially offline for maintanance. Please try again later.</td>
-</tr>
-</tbody></table>
+<p>Since the callback transaction is always providing the results as a string, the Solidity API helpers are also including some convenient functions which might be useful to you (since Solidity does not provide any official &ldquo;standard Library&rdquo; yet).</p>
+
+<p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108">here</a></p>
 
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="shell">shell</a>
-                <a href="#" data-language-name="ruby">ruby</a>
-                <a href="#" data-language-name="python">python</a>
           </div>
       </div>
     </div>
