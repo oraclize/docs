@@ -359,6 +359,53 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108">here</a></p>
 
+<h1 id="pricing">Pricing</h1>
+
+<p>The use of Oraclize APIs requires the payment of a small fee, other than the reimbursement of the full gasLimit we are setting in the transaction sent back to your contract.</p>
+
+<h2 id="free-calls">Free calls</h2>
+
+<p>In order to make the testing of our service a little bit easier (and cheaper) to you, <strong>the first Oraclize query call coming from any Ethereum address is completely free of charge</strong>. This means we are even covering the callback transaction gas costs for you (up to the default gasLimit of 200k gas).</p>
+
+<p>This might be helpful, for example, to send the first call to Oraclize directly from your contract constructor without having to create your contract with an attached amount of Wei. This means, again, that you can have a free triggering transaction for any date in the future (up to 60 days).</p>
+
+<blockquote>
+<p>Note: all the Oraclize calls are free while using Oraclize on testnets! This is for a moderate use in test environments only.</p>
+</blockquote>
+
+<h2 id="call-fees">Call fees</h2>
+
+<p>Our pricing model is simple, you are automatically paying (when calling oraclize_query):</p>
+
+<ul>
+<li>a price in $ (automatically converted in Ether at the current rate while calling oraclize_query) depending on the datasource used and the proof chosen (see table below)</li>
+<li>a refund of the full gasLimit we are setting in the callback transaction (the minimum and default value is 200k gas)</li>
+</ul>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Datasource</th>
+<th style="text-align: right">Price/call (w/o proof)</th>
+<th style="text-align: center">Price/call (w/ proof)</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">URL</td>
+<td style="text-align: right">1¢</td>
+<td style="text-align: center">5¢</td>
+</tr>
+<tr>
+<td style="text-align: left">Blockchain</td>
+<td style="text-align: right">1¢</td>
+<td style="text-align: center">5¢</td>
+</tr>
+<tr>
+<td style="text-align: left">Wolfram Alpha</td>
+<td style="text-align: right">3¢</td>
+<td style="text-align: center">_</td>
+</tr>
+</tbody></table>
+
       </div>
       <div class="dark-box">
           <div class="lang-selector">
