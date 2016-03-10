@@ -2,7 +2,7 @@
 
 ## Welcome to Oraclize's documentation!
 
-Oraclize is a [provably-honest oracle](# "(the amount of trust involved is close to zero)") service enabling smart contracts to access the Internet.
+Oraclize is a <u title="(the amount of trust involved is close to zero)">provably-honest oracle</u> service enabling smart contracts to access the Internet.
 
 We are platform-agnostic by providing an abstraction interface to all the major smart-contracts capable platforms out there (Bitcoin and Ethereum for now).
 We think that it's just by throwing tons of meaningful data into the blockchain jar that the smart contracts industry can flourish and many useful applications can finally come to life.
@@ -55,12 +55,12 @@ In order to make things more simple to handle on the smart-contract side, you ca
 
 * `xml(..)` or `json(..)` helper: by providing the URL inside of one of them, you expect Oraclize to send you only a part of the json/xml-parsed response. Example: you can use the `URL` data-source with the URL argument `api.kraken.com/0/public/Ticker?pair=ETHUSD` to get the whole response back; but if you want to get the last-price field back only, you can just use the URL argument `json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`.
 
-* `html(..).xpath(..)` helper: this is useful for html scraping. Just specify the [XPATH](https://en.wikipedia.org/wiki/XPath) you want as `xpath(..)` argument. Example: to fetch the text of a specific tweet: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
+* `html(..).xpath(..)` helper: this is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as `xpath(..)` argument. Example: to fetch the text of a specific tweet: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
 
 > **Note:**
 > In the case of the server not responding or if it is unreachable, we will send to you just an empty response
 
-#### Wolfram Alpha
+### Wolfram Alpha
 
 The `WolframAlpha` data-source lets you specify as argument a query to submit to the Wolfram Alpha knowledge engine. Oraclize will send back to you the primary response as string if any.
 
@@ -86,19 +86,23 @@ The following is meant to be a short but complete manual to explain how the inte
 All the reference code we will be using next is written in Solidity, but since the interface would be the same feel free to use any language you like.
 
 Sending a query to Oraclize means sending a transaction to the last Oraclize contract. In order to do that we have to take care of paying Oraclize the amount expected, which can vary depending on the query we are about to send, and to send to it the query in the right format.
-Oraclize will then get your result and send back to your address (which most of times will be your contract address!) a transaction calling a special __callback method. Note that the transaction sent back by Oraclize can trigger any status change in your contract, even the sending of another query to Oraclize. The limit of what can be done in the __callback method is given just by your immagination and, well, by the gasLimit.
+Oraclize will then get your result and send back to your address (which most of times will be your contract address!) a transaction calling a special `__callback` method. Note that the transaction sent back by Oraclize can trigger any status change in your contract, even the sending of another query to Oraclize. The limit of what can be done in the `__callback` method is given just by your immagination and, well, by the gasLimit.
 
 
 ## Getting everything on track
 
-The first thing we need to do is to import into our code the `usingOraclize` contracts other than the interfaces of the `OraclizeI` and `OraclizeAddrResolverI` contracts. The `usingOraclize` contract is needed to ensure the interfacing with the `OraclizeI` and `OraclizeAddrResolverI is painless to you, but if you feel confident in calling them directly feel free to do so (you would spend a lower amount of gas for contract deployment) as long as you do it correctly (if anything goes wrong a `throw` is raised).
+The first thing we need to do is to import into our code the `usingOraclize` contracts other than the interfaces of the `OraclizeI` and `OraclizeAddrResolverI` contracts. The `usingOraclize` contract is needed to ensure the interfacing with the `OraclizeI` and `OraclizeAddrResolverI` is painless to you, but if you feel confident in calling them directly feel free to do so (you would spend a lower amount of gas for contract deployment) as long as you do it correctly (if anything goes wrong a `throw` is raised).
 
 In order to make the API use flow simpler we highly recommend you to simply extend the `usingOraclize` contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.
 
-To include all the stuff needed just import the code available here `<http://dev.oraclize.it/api.sol>`_ and make your contract extend the `usingOraclize` one as follows:
+To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the `usingOraclize` one as follows:
 
 ```javascript
-import "dev.oraclize.it/api.sol"; // this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise 
+/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/ 
+import "dev.oraclize.it/api.sol"; 
 
 contract YourContractName is usingOraclize { .. }
 ```
@@ -109,7 +113,11 @@ contract YourContractName is usingOraclize { .. }
 Oraclize is available both on the Ethereum mainnet and on the Morden testnet, the default behaviour (whie using the API helpers we are explaining here) is to refer to the mainnet, however if you want to point it to a different network you can do it explicity by calling the `oraclize_setNetwork` function once (for example in your contract constructor).
 
 ```javascript
-import "dev.oraclize.it/api.sol"; // this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise 
+/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/
+import "dev.oraclize.it/api.sol";
     
 contract YourContractName is usingOraclize {
         
@@ -125,11 +133,11 @@ contract YourContractName is usingOraclize {
 ## Simple query
 
 > **Note:**
->All the code written here takes for granted that you already included all the needed stuff as explained in the paragraph above, other than this your contract has to extend the ``usingOraclize`` contract
+>All the code written here takes for granted that you already included all the needed stuff as explained in the paragraph above, other than this your contract has to extend the `usingOraclize` contract
 
 When sending a query to Oraclize you have to specify at least two arguments:
 * the data-source you want to fetch the data from (supported values: `URL`, `WolframAlpha`, `Blockchain`)
-* the argument for the given data-source (the full `URL` - which might use our json/xml helper format -, the `WolframAlpha` formula or the `Blockchain`-provided syntax), more informations about these can be found in the [Overview](overview.html)
+* the argument for the given data-source (the full `URL` - which might use our json/xml helper format -, the `WolframAlpha` formula or the `Blockchain`-provided syntax), more informations about these can be found in the [Overview](#overview)
 
 An example code looks like this:
 
@@ -261,8 +269,11 @@ The `proof` string is precisely the IPFS multihash that identifies your TLSNotar
 Example code:
 
 ```javascript
-
-import "dev.oraclize.it/api.sol"; // this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise 
+/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/
+import "dev.oraclize.it/api.sol";
     
 contract YourContractName is usingOraclize {
     
@@ -295,3 +306,33 @@ You can have a look at more complete and complex examples by looking at our dedi
 Since the callback transaction is always providing the results as a string, the Solidity API helpers are also including some convenient functions which might be useful to you (since Solidity does not provide any official "standard Library" yet).
 
 You can check them out [here](https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108)
+
+
+# Pricing
+
+The use of Oraclize APIs requires the payment of a small fee, other than the reimbursement of the full gasLimit we are setting in the transaction sent back to your contract.
+
+
+
+## Free calls
+
+In order to make the testing of our service a little bit easier (and cheaper) to you, **the first Oraclize query call coming from any Ethereum address is completely free of charge**. This means we are even covering the callback transaction gas costs for you (up to the default gasLimit of 200k gas).
+
+This might be helpful, for example, to send the first call to Oraclize directly from your contract constructor without having to create your contract with an attached amount of Wei. This means, again, that you can have a free triggering transaction for any date in the future (up to 60 days).
+
+>Note: all the Oraclize calls are free while using Oraclize on testnets! This is for a moderate use in test environments only.
+
+
+## Call fees
+
+Our pricing model is simple, you are automatically paying (when calling oraclize_query):
+
+* a price in $ (automatically converted in Ether at the current rate while calling oraclize_query) depending on the datasource used and the proof chosen (see table below)
+* a refund of the full gasLimit we are setting in the callback transaction (the minimum and default value is 200k gas)
+
+
+| Datasource| Price/call (w/o proof)| Price/call (w/ proof) |
+| :------- | ----: | :---: |
+| URL| 1¢  |  5¢     |
+| Blockchain| 1¢    |  5¢    |
+| Wolfram Alpha| 3¢     | _|
