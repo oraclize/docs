@@ -112,7 +112,7 @@
 
 <h2 id="welcome-to-oraclize-39-s-documentation">Welcome to Oraclize&rsquo;s documentation!</h2>
 
-<p>Oraclize is a <a title="(the amount of trust involved is close to zero)" href="#">provably-honest oracle</a> service enabling smart contracts to access the Internet.</p>
+<p>Oraclize is a <u title="(the amount of trust involved is close to zero)">provably-honest oracle</u> service enabling smart contracts to access the Internet.</p>
 
 <p>We are platform-agnostic by providing an abstraction interface to all the major smart-contracts capable platforms out there (Bitcoin and Ethereum for now).
 We think that it&rsquo;s just by throwing tons of meaningful data into the blockchain jar that the smart contracts industry can flourish and many useful applications can finally come to life.</p>
@@ -160,7 +160,7 @@ The first step is providing the actual URL you want Oraclize to fetch the HTTP G
 
 <ul>
 <li><p><code class="prettyprint">xml(..)</code> or <code class="prettyprint">json(..)</code> helper: by providing the URL inside of one of them, you expect Oraclize to send you only a part of the json/xml-parsed response. Example: you can use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> to get the whole response back; but if you want to get the last-price field back only, you can just use the URL argument <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code>.</p></li>
-<li><p><code class="prettyprint">html(..).xpath(..)</code> helper: this is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. Example: to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</p></li>
+<li><p><code class="prettyprint">html(..).xpath(..)</code> helper: this is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. Example: to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</p></li>
 </ul>
 
 <blockquote>
@@ -168,7 +168,7 @@ The first step is providing the actual URL you want Oraclize to fetch the HTTP G
 In the case of the server not responding or if it is unreachable, we will send to you just an empty response</p>
 </blockquote>
 
-<h4 id="wolfram-alpha">Wolfram Alpha</h4>
+<h3 id="wolfram-alpha">Wolfram Alpha</h3>
 
 <p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as argument a query to submit to the Wolfram Alpha knowledge engine. Oraclize will send back to you the primary response as string if any.</p>
 
@@ -194,16 +194,20 @@ Possible query arguments can be: <code class="prettyprint">bitcoin blockchain he
 <p>All the reference code we will be using next is written in Solidity, but since the interface would be the same feel free to use any language you like.</p>
 
 <p>Sending a query to Oraclize means sending a transaction to the last Oraclize contract. In order to do that we have to take care of paying Oraclize the amount expected, which can vary depending on the query we are about to send, and to send to it the query in the right format.
-Oraclize will then get your result and send back to your address (which most of times will be your contract address!) a transaction calling a special _<em>callback method. Note that the transaction sent back by Oraclize can trigger any status change in your contract, even the sending of another query to Oraclize. The limit of what can be done in the _</em>callback method is given just by your immagination and, well, by the gasLimit.</p>
+Oraclize will then get your result and send back to your address (which most of times will be your contract address!) a transaction calling a special <code class="prettyprint">__callback</code> method. Note that the transaction sent back by Oraclize can trigger any status change in your contract, even the sending of another query to Oraclize. The limit of what can be done in the <code class="prettyprint">__callback</code> method is given just by your immagination and, well, by the gasLimit.</p>
 
 <h2 id="getting-everything-on-track">Getting everything on track</h2>
 
-<p>The first thing we need to do is to import into our code the <code class="prettyprint">usingOraclize</code> contracts other than the interfaces of the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contracts. The <code class="prettyprint">usingOraclize</code> contract is needed to ensure the interfacing with the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI is painless to you, but if you feel confident in calling them directly feel free to do so (you would spend a lower amount of gas for contract deployment) as long as you do it correctly (if anything goes wrong a</code>throw` is raised).</p>
+<p>The first thing we need to do is to import into our code the <code class="prettyprint">usingOraclize</code> contracts other than the interfaces of the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contracts. The <code class="prettyprint">usingOraclize</code> contract is needed to ensure the interfacing with the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> is painless to you, but if you feel confident in calling them directly feel free to do so (you would spend a lower amount of gas for contract deployment) as long as you do it correctly (if anything goes wrong a <code class="prettyprint">throw</code> is raised).</p>
 
 <p>In order to make the API use flow simpler we highly recommend you to simply extend the <code class="prettyprint">usingOraclize</code> contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.</p>
 
-<p>To include all the stuff needed just import the code available here <code class="prettyprint">&lt;http://dev.oraclize.it/api.sol&gt;</code>_ and make your contract extend the <code class="prettyprint">usingOraclize</code> one as follows:</p>
-<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
+<p>To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the <code class="prettyprint">usingOraclize</code> one as follows:</p>
+<pre class="highlight javascript"><code><span class="cm">/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/</span> 
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> 
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span> <span class="p">..</span> <span class="p">}</span>
 </code></pre>
@@ -211,7 +215,11 @@ Oraclize will then get your result and send back to your address (which most of 
 <h2 id="network-selection">Network selection</h2>
 
 <p>Oraclize is available both on the Ethereum mainnet and on the Morden testnet, the default behaviour (whie using the API helpers we are explaining here) is to refer to the mainnet, however if you want to point it to a different network you can do it explicity by calling the <code class="prettyprint">oraclize_setNetwork</code> function once (for example in your contract constructor).</p>
-<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
+<pre class="highlight javascript"><code><span class="cm">/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/</span>
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
@@ -232,7 +240,7 @@ All the code written here takes for granted that you already included all the ne
 
 <p>When sending a query to Oraclize you have to specify at least two arguments:
 * the data-source you want to fetch the data from (supported values: <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>)
-* the argument for the given data-source (the full <code class="prettyprint">URL</code> - which might use our json/xml helper format -, the <code class="prettyprint">WolframAlpha</code> formula or the <code class="prettyprint">Blockchain</code>-provided syntax), more informations about these can be found in the <a href="overview.html">Overview</a></p>
+* the argument for the given data-source (the full <code class="prettyprint">URL</code> - which might use our json/xml helper format -, the <code class="prettyprint">WolframAlpha</code> formula or the <code class="prettyprint">Blockchain</code>-provided syntax), more informations about these can be found in the <a href="#overview">Overview</a></p>
 
 <p>An example code looks like this:</p>
 <pre class="highlight javascript"><code>
@@ -329,8 +337,11 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 </blockquote>
 
 <p>Example code:</p>
-<pre class="highlight javascript"><code>
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> <span class="c1">// this just works while using dev.oraclize.it web IDE, needs to be imported manually otherwise </span>
+<pre class="highlight javascript"><code><span class="cm">/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/</span>
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
