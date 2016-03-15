@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>API Documentation</title>
+    <title>API Reference</title>
 
     <style>
       .highlight table td { padding: 5px; }
@@ -88,10 +88,10 @@
     </style>
     <link href="stylesheets/screen.css" rel="stylesheet" media="screen" />
     <link href="stylesheets/print.css" rel="stylesheet" media="print" />
-      <script src="javascripts/all_nosearch.js"></script>
+      <script src="javascripts/all.js"></script>
   </head>
 
-  <body class="index" data-languages="[]">
+  <body class="index" data-languages="[&quot;javascript&quot;,&quot;python&quot;]">
     <a href="#" id="nav-button">
       <span>
         NAV
@@ -101,14 +101,21 @@
     <div class="tocify-wrapper">
       <img src="images/logo.png" />
         <div class="lang-selector">
+              <a href="#" data-language-name="javascript">Solidity</a>
+              <a href="#" data-language-name="python">Serpent</a>
         </div>
+        <div class="search">
+          <input type="text" class="search" id="input-search" placeholder="Search">
+        </div>
+        <ul class="search-results"></ul>
       <div id="toc">
       </div>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
       <div class="content">
-        <h1 id="introduction">Introduction</h1>
+        
+          <h1 id="introduction">Introduction</h1>
 
 <h2 id="welcome-to-oraclize-39-s-documentation">Welcome to Oraclize&rsquo;s documentation!</h2>
 
@@ -123,7 +130,7 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
 
 <p><img src="images/flowchart.png" /></p>
 
-<h1 id="overview">Overview</h1>
+          <h1 id="overview">Overview</h1>
 
 <p>Even though the oracle concept, in the blockchain sense, has been around for a while haven&rsquo;t seen any advanced implementations. All implementations were nothing more than proof of concepts or of very limited use in themselves.</p>
 
@@ -187,7 +194,7 @@ With this data-source the `TLSNotary` proof is unavailable since we would be giv
 <p>The <code class="prettyprint">Blockchain</code> data-source provides you easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorers APIs, but with a builtin easy-to-use syntax.
 Possible query arguments can be: <code class="prettyprint">bitcoin blockchain height</code>, <code class="prettyprint">litecoin hashrate</code>, <code class="prettyprint">bitcoin difficulty</code>, <code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> and so on.</p>
 
-<h1 id="how-to-send-a-query">How to send a query</h1>
+          <h1 id="how-to-send-a-query">How to send a query</h1>
 
 <p>The following is meant to be a short but complete manual to explain how the interfacing of an Ethereum contract with Oraclize actually works.</p>
 
@@ -370,7 +377,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108">here</a></p>
 
-<h1 id="pricing">Pricing</h1>
+          <h1 id="pricing">Pricing</h1>
 
 <p>The use of Oraclize APIs requires the payment of a small fee, other than the reimbursement of the full gasLimit we are setting in the transaction sent back to your contract.</p>
 
@@ -420,6 +427,8 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
       </div>
       <div class="dark-box">
           <div class="lang-selector">
+                <a href="#" data-language-name="javascript">Solidity</a>
+                <a href="#" data-language-name="python">Serpent</a>
           </div>
       </div>
     </div>
