@@ -14,7 +14,7 @@ The first thing we need to do is to import into our code the `usingOraclize` con
 
 In order to make the API use flow simpler we highly recommend you to simply extend the `usingOraclize` contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.
 
-To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the `usingOraclize` one as follows:
+To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the `usingOraclize` one as follows
 
 ```javascript
 /*
@@ -24,6 +24,15 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 import "dev.oraclize.it/api.sol"; 
 
 contract YourContractName is usingOraclize { .. }
+```
+
+```python
+
+# In serpent you just need to import (inset)
+# the oraclize API inside your contract
+
+inset("oraclizeAPI.se")
+
 ```
 
 
@@ -48,6 +57,19 @@ contract YourContractName is usingOraclize {
 }
 ```
 
+```python
+
+# In serpent you just need to import (inset)
+# the oraclize API inside your contract
+
+inset("oraclizeAPI.se")
+
+def init():
+    oraclize_setNetwork(networkID_testnet)
+
+```
+
+
 
 ## Simple query
 
@@ -65,6 +87,11 @@ An example code looks like this:
 oraclize_query("WolframAlpha", "random number between 0 and 100");
 
 ```
+```python
+
+oraclize_query(text("WolframAlpha"), text("random number between 0 and 100"))
+
+```
 
 The given code will ask Oraclize to send immediately back to us a transaction with the primary result (as a string) of the given formula ("random number between 0 and 100") fetched from the data-source "WolframAlpha".
 
@@ -75,22 +102,48 @@ In the same way you can use any other data-source, here we list some examples:
 oraclize_query("URL", "api.kraken.com/0/public/Ticker?pair=ETHXBT");
 
 ```
+```python
+
+oraclize_query(text("URL"), text("api.kraken.com/0/public/Ticker?pair=ETHXBT"))
+
+```
 
 ```javascript
 
 oraclize_query("URL", "json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last");
 
 ```
+```python
 
-```javascript
-
-// the only data-source accepting 2 string arguments is 'URL' when we want it to send an HTTP POST request
-// with the 2nd argument being the query-string we want to send to the given server.
-// note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
-oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit", '{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}');
+oraclize_query(text("URL"), text("json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"))
 
 ```
 
+```javascript
+
+/* 
+  the only data-source accepting 2 string arguments is
+  'URL' when we want it to send an HTTP POST request
+  with the 2nd argument being the query-string we want
+  to send to the given server.
+
+  note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
+*/
+oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit", '{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}');
+
+```
+```python
+/* 
+  the only data-source accepting 2 string arguments is
+  'URL' when we want it to send an HTTP POST request
+  with the 2nd argument being the query-string we want
+  to send to the given server.
+  
+  note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
+*/
+oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success.deposit"), text('{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'))
+
+```
 
 
 
@@ -108,6 +161,12 @@ Here some example:
 
 // get the result from the given URL in 60 seconds from now
 oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
+
+```
+```python
+
+# get the result from the given URL in 60 seconds from now
+oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"))
 
 ```
 
@@ -130,6 +189,12 @@ Even if storing it is not always needed, `oraclize_query` is returning a unique 
 bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
 
 ```
+```python
+
+# get the result from the given URL in 60 seconds from now
+data myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"));
+
+```
 
 
 ## Callback function
@@ -143,6 +208,15 @@ function __callback(bytes32 myid, string result) {
     ETHXBT = result; // doing something with the result..
     bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"); // new query for Oraclize!
 }
+
+```
+```python
+
+def __callback(myid:bytes32, result:string):
+    if (msg.sender != oraclize_cbAddress()):
+        return # just to be sure the calling address is the Oraclize authorized one
+    self.ETHXBT = result # doing something with the result..
+    data myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")) # new query for Oraclize!
 
 ```
 
@@ -162,10 +236,20 @@ The minimum default value is 200000 gas, if this is not enough for you you can i
 oraclize_query("WolframAlpha", "random number between 0 and 100", 500000); // Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
 
 ```
+```python
+
+oraclize_query(text("WolframAlpha"), text("random number between 0 and 100"), 500000) # Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
+
+```
 
 ```javascript
 
 oraclize_query(60, "WolframAlpha", "random number between 0 and 100", 500000); // you can set both custom timestamp/delay and custom gasLimit
+
+```
+```python
+
+oraclize_query(60, text("WolframAlpha"), text("random number between 0 and 100"), 500000) # you can set both custom timestamp/delay and custom gasLimit
 
 ```
 
@@ -185,7 +269,6 @@ The `proof` string is precisely the IPFS multihash that identifies your TLSNotar
 >There might not always be a TLSNotary proof for your query, depending on the data source you have chosen
 
 
-Example code:
 
 ```javascript
 /*
@@ -210,7 +293,24 @@ contract YourContractName is usingOraclize {
 }
 
 ```
+```python
 
+# In serpent you just need to import (inset)
+# the oraclize API inside your contract
+
+inset("oraclizeAPI.se")
+
+def init():
+    oraclize_setNetwork(networkID_testnet)
+    oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)
+    oraclize_query(text("URL"), text("xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"))
+
+def __callback(myid:bytes32, result:string, proof:bytes):
+    if (msg.sender != oraclize_cbAddress()):
+        return
+    ..
+
+```
 
 
 
