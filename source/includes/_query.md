@@ -133,14 +133,14 @@ oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit", 
 
 ```
 ```python
-/* 
-  the only data-source accepting 2 string arguments is
-  'URL' when we want it to send an HTTP POST request
-  with the 2nd argument being the query-string we want
-  to send to the given server.
+
+# the only data-source accepting 2 string arguments is
+# 'URL' when we want it to send an HTTP POST request
+# with the 2nd argument being the query-string we want
+# to send to the given server.
   
-  note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
-*/
+# note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
+
 oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success.deposit"), text('{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'))
 
 ```
