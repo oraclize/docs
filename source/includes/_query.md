@@ -14,7 +14,7 @@ The first thing we need to do is to import into our code the `usingOraclize` con
 
 In order to make the API use flow simpler we highly recommend you to simply extend the `usingOraclize` contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.
 
-To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the `usingOraclize` one as follows
+To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a> and make your contract extend the `usingOraclize` one as follows
 
 ```javascript
 /*
@@ -77,8 +77,10 @@ def init():
 >All the code written here takes for granted that you already included all the needed stuff as explained in the paragraph above, other than this your contract has to extend the `usingOraclize` contract
 
 When sending a query to Oraclize you have to specify at least two arguments:
-* the data-source you want to fetch the data from (supported values: `URL`, `WolframAlpha`, `Blockchain`)
-* the argument for the given data-source (the full `URL` - which might use our json/xml helper format -, the `WolframAlpha` formula or the `Blockchain`-provided syntax), more informations about these can be found in the [Overview](#overview)
+
+* The data-source you want to fetch the data from (supported values: `URL`, `WolframAlpha`, `Blockchain`)
+
+* The argument for the given data-source (the full `URL` - which might use our json/xml helper format -, the `WolframAlpha` formula or the `Blockchain`-provided syntax), more informations about these can be found in the [Overview](#overview)
 
 An example code looks like this:
 
@@ -221,7 +223,7 @@ def __callback(myid:bytes32, result:string):
 ```
 
 
-In the code above we put the `oraclize_query` call in the __callback function, by making the contract automatically execute __callback every minute forever (well, until we run out of funds!).
+In the code above we put the `oraclize_query` call in the __callback function, by making the contract automatically execute `__callback` every minute forever (well, until we run out of funds!).
 Note that `myid` can be used to implement different behaviours into the __callback function when we are waiting for more than one different pending callback call from Oraclize.
 
 
@@ -316,7 +318,7 @@ def __callback(myid:bytes32, result:string, proof:bytes):
 
 ## More examples
 
-You can have a look at more complete and complex examples by looking at our dedicated github repository here: https://github.com/oraclize/ethereum-examples
+You can have a look at more complete and complex examples by looking at our dedicated github repository here: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
 
 
 
@@ -324,6 +326,6 @@ You can have a look at more complete and complex examples by looking at our dedi
 
 Since the callback transaction is always providing the results as a string, the Solidity API helpers are also including some convenient functions which might be useful to you (since Solidity does not provide any official "standard Library" yet).
 
-You can check them out [here](https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108)
+You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108" target="_blank">here</a>
 
 
