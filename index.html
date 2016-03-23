@@ -209,7 +209,7 @@ Oraclize will then get your result and send back to your address (which most of 
 
 <p>In order to make the API use flow simpler we highly recommend you to simply extend the <code class="prettyprint">usingOraclize</code> contract and to use its inherited methods we will talk about in a while: all these methods are already taking care of handling the payments and the API calls correctly.</p>
 
-<p>To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol">http://dev.oraclize.it/api.sol</a> and make your contract extend the <code class="prettyprint">usingOraclize</code> one as follows</p>
+<p>To include all the stuff needed just import the code available here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a> and make your contract extend the <code class="prettyprint">usingOraclize</code> one as follows</p>
 <pre class="highlight javascript"><code><span class="cm">/*
 import "dev.oraclize.it/api.sol" just works while using 
 dev.oraclize.it web IDE, needs to be imported manually otherwise 
@@ -262,9 +262,12 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 All the code written here takes for granted that you already included all the needed stuff as explained in the paragraph above, other than this your contract has to extend the <code class="prettyprint">usingOraclize</code> contract</p>
 </blockquote>
 
-<p>When sending a query to Oraclize you have to specify at least two arguments:
-* the data-source you want to fetch the data from (supported values: <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>)
-* the argument for the given data-source (the full <code class="prettyprint">URL</code> - which might use our json/xml helper format -, the <code class="prettyprint">WolframAlpha</code> formula or the <code class="prettyprint">Blockchain</code>-provided syntax), more informations about these can be found in the <a href="#overview">Overview</a></p>
+<p>When sending a query to Oraclize you have to specify at least two arguments:</p>
+
+<ul>
+<li><p>The data-source you want to fetch the data from (supported values: <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>)</p></li>
+<li><p>The argument for the given data-source (the full <code class="prettyprint">URL</code> - which might use our json/xml helper format -, the <code class="prettyprint">WolframAlpha</code> formula or the <code class="prettyprint">Blockchain</code>-provided syntax), more informations about these can be found in the <a href="#overview">Overview</a></p></li>
+</ul>
 
 <p>An example code looks like this:</p>
 <pre class="highlight javascript"><code>
@@ -307,14 +310,14 @@ All the code written here takes for granted that you already included all the ne
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span> <span class="s1">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">);</span>
 
 </code></pre>
-<pre class="highlight python"><code><span class="o">/*</span> 
-  <span class="n">the</span> <span class="n">only</span> <span class="n">data</span><span class="o">-</span><span class="n">source</span> <span class="n">accepting</span> <span class="mi">2</span> <span class="n">string</span> <span class="n">arguments</span> <span class="ow">is</span>
-  <span class="s">'URL'</span> <span class="n">when</span> <span class="n">we</span> <span class="n">want</span> <span class="n">it</span> <span class="n">to</span> <span class="n">send</span> <span class="n">an</span> <span class="n">HTTP</span> <span class="n">POST</span> <span class="n">request</span>
-  <span class="k">with</span> <span class="n">the</span> <span class="mi">2</span><span class="n">nd</span> <span class="n">argument</span> <span class="n">being</span> <span class="n">the</span> <span class="n">query</span><span class="o">-</span><span class="n">string</span> <span class="n">we</span> <span class="n">want</span>
-  <span class="n">to</span> <span class="n">send</span> <span class="n">to</span> <span class="n">the</span> <span class="n">given</span> <span class="n">server</span><span class="o">.</span>
+<pre class="highlight python"><code>
+<span class="c"># the only data-source accepting 2 string arguments is</span>
+<span class="c"># 'URL' when we want it to send an HTTP POST request</span>
+<span class="c"># with the 2nd argument being the query-string we want</span>
+<span class="c"># to send to the given server.</span>
 
-  <span class="n">note</span> <span class="n">that</span> <span class="n">when</span> <span class="n">the</span> <span class="mi">2</span><span class="n">nd</span> <span class="n">argument</span> <span class="ow">is</span> <span class="n">a</span> <span class="n">valid</span> <span class="n">JSON</span> <span class="n">string</span> <span class="n">it</span> <span class="n">will</span> <span class="n">be</span> <span class="n">automatically</span> <span class="n">sent</span> <span class="k">as</span> <span class="n">JSON</span>
-<span class="o">*/</span>
+<span class="c"># note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON</span>
+
 <span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">))</span>
 
 </code></pre>
@@ -376,8 +379,8 @@ All the code written here takes for granted that you already included all the ne
 
 </code></pre>
 
-<p>In the code above we put the <code class="prettyprint">oraclize_query</code> call in the _<em>callback function, by making the contract automatically execute __callback every minute forever (well, until we run out of funds!).
-Note that <code class="prettyprint">myid</code> can be used to implement different behaviours into the _</em>callback function when we are waiting for more than one different pending callback call from Oraclize.</p>
+<p>In the code above we put the <code class="prettyprint">oraclize_query</code> call in the <strong>callback function, by making the contract automatically execute `</strong>callback<code class="prettyprint">every minute forever (well, until we run out of funds!).
+Note that</code>myid` can be used to implement different behaviours into the __callback function when we are waiting for more than one different pending callback call from Oraclize.</p>
 
 <h2 id="custom-gas">Custom gas</h2>
 
@@ -455,13 +458,13 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <h2 id="more-examples">More examples</h2>
 
-<p>You can have a look at more complete and complex examples by looking at our dedicated github repository here: https://github.com/oraclize/ethereum-examples</p>
+<p>You can have a look at more complete and complex examples by looking at our dedicated github repository here: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
 
 <h2 id="random-utilities">Random utilities</h2>
 
 <p>Since the callback transaction is always providing the results as a string, the Solidity API helpers are also including some convenient functions which might be useful to you (since Solidity does not provide any official &ldquo;standard Library&rdquo; yet).</p>
 
-<p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108">here</a></p>
+<p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L108" target="_blank">here</a></p>
 
           <h1 id="pricing">Pricing</h1>
 
