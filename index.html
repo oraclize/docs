@@ -326,17 +326,15 @@ All the code written here takes for granted that you already included all the ne
 
 <p>If you want Oraclize to execute your query at a scheduled future time, just specify the delay from the current time (in seconds) or the timestamp in the future as first argument.</p>
 
-<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.</p>
+<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.
+&ldquo;`javascript</p>
 
-<p>Here some example:</p>
-<pre class="highlight javascript"><code>
-<span class="c1">// get the result from the given URL in 60 seconds from now</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+<p>// get the result from the given URL in 60 seconds from now
+oraclize_query(60, &quot;URL&rdquo;, &ldquo;json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0&rdquo;);</p>
+<pre class="highlight plaintext"><code>```python
 
-</code></pre>
-<pre class="highlight python"><code>
-<span class="c"># get the result from the given URL in 60 seconds from now</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span>
+# get the result from the given URL in 60 seconds from now
+oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"))
 
 </code></pre>
 <pre class="highlight javascript"><code>
@@ -379,8 +377,8 @@ All the code written here takes for granted that you already included all the ne
 
 </code></pre>
 
-<p>In the code above we put the <code class="prettyprint">oraclize_query</code> call in the <strong>callback function, by making the contract automatically execute `</strong>callback<code class="prettyprint">every minute forever (well, until we run out of funds!).
-Note that</code>myid` can be used to implement different behaviours into the __callback function when we are waiting for more than one different pending callback call from Oraclize.</p>
+<p>In the code above we put the <code class="prettyprint">oraclize_query</code> call in the <code class="prettyprint">__callback</code> function, by making the contract automatically execute <code class="prettyprint">__callback</code> every minute forever (well, until we run out of funds!).
+Note that <code class="prettyprint">myid</code> can be used to implement different behaviours into the __callback function when we are waiting for more than one different pending callback call from Oraclize.</p>
 
 <h2 id="custom-gas">Custom gas</h2>
 
