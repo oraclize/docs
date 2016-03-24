@@ -154,6 +154,7 @@ oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success
 If you want Oraclize to execute your query at a scheduled future time, just specify the delay from the current time (in seconds) or the timestamp in the future as first argument.
 
 Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.
+
 ```javascript
 
 // get the result from the given URL in 60 seconds from now
