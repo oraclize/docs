@@ -353,7 +353,9 @@ All the code written here takes for granted that you already included all the ne
 </code></pre>
 <pre class="highlight python"><code>
 <span class="c"># get the result from the given URL in 60 seconds from now</span>
-<span class="n">data</span> <span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">));</span>
+<span class="n">data</span> <span class="n">myid</span>
+
+<span class="bp">self</span><span class="o">.</span><span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">));</span>
 
 </code></pre>
 
@@ -368,12 +370,13 @@ All the code written here takes for granted that you already included all the ne
 <span class="p">}</span>
 
 </code></pre>
-<pre class="highlight python"><code>
+<pre class="highlight python"><code><span class="n">data</span> <span class="n">myid</span>
+
 <span class="k">def</span> <span class="nf">__callback</span><span class="p">(</span><span class="n">myid</span><span class="p">:</span><span class="n">bytes32</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span><span class="n">string</span><span class="p">):</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="o">!=</span> <span class="n">oraclize_cbAddress</span><span class="p">()):</span>
         <span class="k">return</span> <span class="c"># just to be sure the calling address is the Oraclize authorized one</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">ETHXBT</span> <span class="o">=</span> <span class="n">result</span> <span class="c"># doing something with the result..</span>
-    <span class="n">data</span> <span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span> <span class="c"># new query for Oraclize!</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span> <span class="c"># new query for Oraclize!</span>
 
 </code></pre>
 
