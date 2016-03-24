@@ -154,11 +154,6 @@ oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success
 If you want Oraclize to execute your query at a scheduled future time, just specify the delay from the current time (in seconds) or the timestamp in the future as first argument.
 
 Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.
-
-
-Here some example:
-
-
 ```javascript
 
 // get the result from the given URL in 60 seconds from now
@@ -223,7 +218,7 @@ def __callback(myid:bytes32, result:string):
 ```
 
 
-In the code above we put the `oraclize_query` call in the __callback function, by making the contract automatically execute `__callback` every minute forever (well, until we run out of funds!).
+In the code above we put the `oraclize_query` call in the `__callback` function, by making the contract automatically execute `__callback` every minute forever (well, until we run out of funds!).
 Note that `myid` can be used to implement different behaviours into the __callback function when we are waiting for more than one different pending callback call from Oraclize.
 
 
