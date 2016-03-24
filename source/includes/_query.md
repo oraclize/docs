@@ -190,7 +190,9 @@ bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/T
 ```python
 
 # get the result from the given URL in 60 seconds from now
-data myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"));
+data myid
+
+self.myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"));
 
 ```
 
@@ -209,12 +211,13 @@ function __callback(bytes32 myid, string result) {
 
 ```
 ```python
+data myid
 
 def __callback(myid:bytes32, result:string):
     if (msg.sender != oraclize_cbAddress()):
         return # just to be sure the calling address is the Oraclize authorized one
     self.ETHXBT = result # doing something with the result..
-    data myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")) # new query for Oraclize!
+    self.myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")) # new query for Oraclize!
 
 ```
 
