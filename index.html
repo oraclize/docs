@@ -316,9 +316,10 @@ All the code written here takes for granted that you already included all the ne
 <span class="c"># with the 2nd argument being the query-string we want</span>
 <span class="c"># to send to the given server.</span>
 
-<span class="c"># note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON</span>
+<span class="c"># note that when the 2nd argument is a valid escaped JSON string it will be automatically sent as JSON</span>
+<span class="c">#      in serpent you must escape the JSON object</span>
 
-<span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">))</span>
+<span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"{</span><span class="se">\"</span><span class="s">pair</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">eth_btc</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">amount</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">1</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">withdrawal</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5</span><span class="se">\"</span><span class="s">}"</span><span class="p">))</span>
 
 </code></pre>
 
