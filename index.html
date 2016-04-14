@@ -238,7 +238,8 @@ and so on.</li>
 
 <h2 id="getting-everything-on-track">Getting everything on track</h2>
 
-<p>First, you need to import our <code class="prettyprint">usingOraclize</code> contract into your code. You do not need to import the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contract interfaces as this is taken care of.</p>
+<p><strong>If you are using Solidity:</strong>
+First, you need to import our <code class="prettyprint">usingOraclize</code> contract into your code. You do not need to import the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contract interfaces as this is taken care of.</p>
 
 <p>The purpose of the <code class="prettyprint">usingOraclize</code> contract is to make calls to <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> as painless as possible for you. However, if you know what you are doing, you are free to call our <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a <code class="prettyprint">throw</code> is raised.</p>
 
@@ -253,6 +254,9 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span> <span class="p">..</span> <span class="p">}</span>
 </code></pre>
+
+<p><strong>If you are using Serpent:</strong>
+You just need to import the oraclize API via <code class="prettyprint">inset()</code> command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a></p>
 <pre class="highlight python"><code><span class="c"># In serpent you just need to import (inset)</span>
 <span class="c"># the oraclize API inside your contract</span>
 
@@ -290,7 +294,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <blockquote>
 <p><strong>Note:</strong>
-All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our <code class="prettyprint">usingOraclize</code> contract.</p>
+All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our <code class="prettyprint">usingOraclize</code> contract (if you are using Solidity).</p>
 </blockquote>
 
 <p>When sending a query to Oraclize you have to specify at least two arguments:</p>
