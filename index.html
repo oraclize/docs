@@ -261,7 +261,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <h2 id="network-selection">Network selection</h2>
 
-<p>Oraclize is available both on the Ethereum mainnet and on the Morden testnet. The default behaviour, as when using the API helpers described below, is to refer to the mainnet. However if you want to point Oraclize to a different network you can do it explicity by calling the <code class="prettyprint">oraclize_setNetwork</code> function once, for example in your contract constructor.</p>
+<p>Oraclize is available both on the Ethereum mainnet and on the Morden testnet.</p>
 <pre class="highlight javascript"><code><span class="cm">/*
 import "dev.oraclize.it/api.sol" just works while using 
 dev.oraclize.it web IDE, needs to be imported manually otherwise 
@@ -271,7 +271,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
     <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
-        <span class="nx">oraclize_setNetwork</span><span class="p">(</span><span class="nx">networkID_testnet</span><span class="p">);</span>
+
     <span class="p">}</span> 
     <span class="p">..</span>
 <span class="p">}</span>
@@ -282,7 +282,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-    <span class="n">oraclize_setNetwork</span><span class="p">(</span><span class="n">networkID_testnet</span><span class="p">)</span>
+
 
 </code></pre>
 
@@ -461,7 +461,6 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
     <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
-        <span class="nx">oraclize_setNetwork</span><span class="p">(</span><span class="nx">networkID_testnet</span><span class="p">);</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
     <span class="p">}</span>
@@ -478,7 +477,6 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-    <span class="n">oraclize_setNetwork</span><span class="p">(</span><span class="n">networkID_testnet</span><span class="p">)</span>
     <span class="n">oraclize_setProof</span><span class="p">(</span><span class="n">proofType_TLSNotary</span> <span class="o">|</span> <span class="n">proofStorage_IPFS</span><span class="p">)</span>
     <span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">))</span>
 
