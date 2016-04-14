@@ -31,43 +31,23 @@ All the code you need is found here <a href="http://dev.oraclize.it/api.sol" tar
 /*
 import "dev.oraclize.it/api.sol" just works while using 
 dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/ 
-import "dev.oraclize.it/api.sol"; 
-
-contract YourContractName is usingOraclize { .. }
-```
-
-**If you are using Serpent:**
-You just need to import the oraclize API via `inset()` command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a>
-
-
-```python
-# In serpent you just need to import (inset)
-# the oraclize API inside your contract
-
-inset("oraclizeAPI.se")
-```
-
-
-## Network selection
-
-Oraclize is available both on the Ethereum mainnet and on the Morden testnet.
-
-```javascript
-/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
 */
 import "dev.oraclize.it/api.sol";
     
 contract YourContractName is usingOraclize {
 
     function YourContractName(){
-
+        ..
     } 
-    ..
+    
 }
 ```
+
+
+**If you are using Serpent:**
+You just need to import the oraclize API via `inset()` command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a>
+
+
 
 ```python
 # In serpent you just need to import (inset)
@@ -76,9 +56,19 @@ contract YourContractName is usingOraclize {
 inset("oraclizeAPI.se")
 
 def init():
-
+    ..
 
 ```
+
+
+## Network selection
+
+Oraclize is available both on the public Ethereum mainnet and on the Morden testnet.
+
+There is no need anymore to manually specify the network your contract will be deployed to: the helper functions will figure it out automagically.
+
+If you are looking for an Oraclize integration with your private blockchain please <a href="mailto:info@oraclize.it" target="_blank">get in touch with us</a> to know more about the options we provide.
+
 
 
 ## Simple query
