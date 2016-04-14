@@ -47,7 +47,7 @@ inset("oraclizeAPI.se")
 
 ## Network selection
 
-Oraclize is available both on the Ethereum mainnet and on the Morden testnet. The default behaviour, as when using the API helpers described below, is to refer to the mainnet. However if you want to point Oraclize to a different network you can do it explicity by calling the `oraclize_setNetwork` function once, for example in your contract constructor.
+Oraclize is available both on the Ethereum mainnet and on the Morden testnet.
 
 ```javascript
 /*
@@ -57,9 +57,9 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 import "dev.oraclize.it/api.sol";
     
 contract YourContractName is usingOraclize {
-        
+
     function YourContractName(){
-        oraclize_setNetwork(networkID_testnet);
+
     } 
     ..
 }
@@ -72,7 +72,7 @@ contract YourContractName is usingOraclize {
 inset("oraclizeAPI.se")
 
 def init():
-    oraclize_setNetwork(networkID_testnet)
+
 
 ```
 
@@ -280,7 +280,6 @@ import "dev.oraclize.it/api.sol";
 contract YourContractName is usingOraclize {
     
     function YourContractName(){
-        oraclize_setNetwork(networkID_testnet);
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
         oraclize_query("URL", "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
     }
@@ -299,7 +298,6 @@ contract YourContractName is usingOraclize {
 inset("oraclizeAPI.se")
 
 def init():
-    oraclize_setNetwork(networkID_testnet)
     oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)
     oraclize_query(text("URL"), text("xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"))
 
