@@ -18,7 +18,7 @@ Note that the transaction sent back by Oraclize can trigger any status change in
 
 
 ## Getting everything on track
-
+**If you are using Solidity:**
 First, you need to import our `usingOraclize` contract into your code. You do not need to import the `OraclizeI` and `OraclizeAddrResolverI` contract interfaces as this is taken care of.
 
 The purpose of the `usingOraclize` contract is to make calls to `OraclizeI` and `OraclizeAddrResolverI` as painless as possible for you. However, if you know what you are doing, you are free to call our `OraclizeI` and `OraclizeAddrResolverI` interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a `throw` is raised.
@@ -36,6 +36,10 @@ import "dev.oraclize.it/api.sol";
 
 contract YourContractName is usingOraclize { .. }
 ```
+
+**If you are using Serpent:**
+You just need to import the oraclize API via `inset()` command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a>
+
 
 ```python
 # In serpent you just need to import (inset)
@@ -80,7 +84,7 @@ def init():
 ## Simple query
 
 > **Note:**
-> All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our `usingOraclize` contract.
+> All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our `usingOraclize` contract (if you are using Solidity).
 
 When sending a query to Oraclize you have to specify at least two arguments:
 
