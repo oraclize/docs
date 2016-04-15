@@ -249,10 +249,16 @@ First, you need to import our <code class="prettyprint">usingOraclize</code> con
 <pre class="highlight javascript"><code><span class="cm">/*
 import "dev.oraclize.it/api.sol" just works while using 
 dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/</span> 
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span> 
+*/</span>
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
 
-<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span> <span class="p">..</span> <span class="p">}</span>
+<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+        <span class="p">..</span>
+    <span class="p">}</span> 
+
+<span class="p">}</span>
 </code></pre>
 
 <p><strong>If you are using Serpent:</strong>
@@ -261,34 +267,19 @@ You just need to import the oraclize API via <code class="prettyprint">inset()</
 <span class="c"># the oraclize API inside your contract</span>
 
 <span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
+    <span class="o">..</span>
+
 </code></pre>
 
 <h2 id="network-selection">Network selection</h2>
 
-<p>Oraclize is available both on the Ethereum mainnet and on the Morden testnet.</p>
-<pre class="highlight javascript"><code><span class="cm">/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/</span>
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
+<p>Oraclize is available both on the public Ethereum mainnet and on the Morden testnet.</p>
 
-<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+<p>There is no need anymore to manually specify the network your contract will be deployed to: the helper functions will figure it out automagically.</p>
 
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
-
-    <span class="p">}</span> 
-    <span class="p">..</span>
-<span class="p">}</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># In serpent you just need to import (inset)</span>
-<span class="c"># the oraclize API inside your contract</span>
-
-<span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-
-
-</code></pre>
+<p>If you are looking for an Oraclize integration with your private blockchain please <a href="mailto:info@oraclize.it" target="_blank">get in touch with us</a> to know more about the options we provide.</p>
 
 <h2 id="simple-query">Simple query</h2>
 
