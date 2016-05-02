@@ -158,8 +158,13 @@ oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticke
 ```
 
 ```javascript
-// get the result from the given URL at the specified timestamp in the future
+// get the result from the given datasource at the specified timestamp in the future
 oraclize_query(scheduled_arrivaltime+3*3600, "WolframAlpha", strConcat("flight ", flight_number, " landed"));
+```
+
+```python
+# get the result from the given datasource at the specified timestamp in the future
+oraclize_query(scheduled_arrivaltime+3*3600, text("WolframAlpha"), strConcat(text("flight "), text(flight_number), text(" landed")))
 ```
 
 
