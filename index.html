@@ -352,8 +352,11 @@ All the code written here assumes that you have already included all the necessa
 <pre class="highlight python"><code><span class="c"># get the result from the given URL 60 seconds from now</span>
 <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="c1">// get the result from the given URL at the specified timestamp in the future</span>
+<pre class="highlight javascript"><code><span class="c1">// get the result from the given datasource at the specified timestamp in the future</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
+</code></pre>
+<pre class="highlight python"><code><span class="c"># get the result from the given datasource at the specified timestamp in the future</span>
+<span class="n">oraclize_query</span><span class="p">(</span><span class="n">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"WolframAlpha"</span><span class="p">),</span> <span class="n">strConcat</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"flight "</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="n">flight_number</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">" landed"</span><span class="p">)))</span>
 </code></pre>
 
 <h2 id="the-query-id">The query ID</h2>
