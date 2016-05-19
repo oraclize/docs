@@ -42,9 +42,17 @@ In order to make things simpler to handle on the smart-contract side, you can pr
 For example:
  * in order to get the whole response back, you use the `URL` data-source with the URL argument `api.kraken.com/0/public/Ticker?pair=ETHUSD` 
  * but if all you want is the last-price field, you need to use the `json` parsing call as `json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`
- 
+
 * `html(..).xpath(..)` helper is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as `xpath(..)` argument. For Example:
  * to fetch the text of a specific tweet: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
+
+<aside class="notice">
+	Note:
+	Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards
+</aside>
+
+* `binary(..)` helper is useful to get binary files such as certificate files
+ * to fetch only a portion of the binary file you can use `slice(offset,length)` the first parameter is the offset while the second one is the length of the slice you want back (both in **bytes**).<br> example: fetch only the first 300 bytes from a binary CRL: `binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)`
 
 > **Note:**
 > If and when the server is not responding or unreachable, we will send you an empty response
