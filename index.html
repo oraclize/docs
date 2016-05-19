@@ -182,6 +182,19 @@ For example:</p>
 </ul></li>
 </ul>
 
+<aside class="notice">
+    Note:
+    Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards
+</aside>
+
+<ul>
+<li><code class="prettyprint">binary(..)</code> helper is useful to get binary files such as certificate files
+
+<ul>
+<li>to fetch only a portion of the binary file you can use <code class="prettyprint">slice(offset,length)</code> the first parameter is the offset while the second one is the length of the slice you want back (both in <strong>bytes</strong>).<br> example: fetch only the first 300 bytes from a binary CRL: <code class="prettyprint">binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code></li>
+</ul></li>
+</ul>
+
 <blockquote>
 <p><strong>Note:</strong>
 If and when the server is not responding or unreachable, we will send you an empty response</p>
