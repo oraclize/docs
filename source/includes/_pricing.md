@@ -19,9 +19,45 @@ Payment is part and parcel of the `oraclize_query` function call, and our pricin
 * a price in $ depending on the datasource used and the proof chosen (see table below). This $ price is automatically converted to Ether at the current rate when you call `oraclize_query`
 * a refund of the full `gasLimit` we are setting in the callback transaction (the minimum and default value is 200k gas)
 
+<style type="text/css">
+	tr, td, th {
+		text-align: center !important;
+		vertical-align: middle !important;
+	}
+</style>
 
-| Datasource| Price/call (w/o proof)| Price/call (w/ proof) |
-| :------- | :----: | :---: |
-| URL| 1¢  |  5¢     |
-| Blockchain| 1¢    |  5¢    |
-| Wolfram Alpha| 3¢     | _|
+<table>
+  <tr>
+    <th rowspan="2" style="vertical-align: bottom !important;">Datasource</th>
+    <th rowspan="2" style="vertical-align: bottom !important;">Base price</th>
+    <th colspan="2">Proof type</th>
+  </tr>
+  <tr>
+    <td>None</td>
+    <td>TLSNotary</td>
+  </tr>
+  <tr>
+    <td>URL</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
+    <td>+0.0$</td>
+    <td>+0.04$</td>
+  </tr>
+  <tr>
+    <td>Blockchain</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
+    <td>+0.0$</td>
+    <td>+0.04$</td>
+  </tr>
+  <tr>
+    <td>Wolfram Alpha</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.03$</td>
+    <td>+0.0$</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>IPFS</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
+    <td>+0.0$</td>
+    <td>N/A</td>
+  </tr>
+</table>

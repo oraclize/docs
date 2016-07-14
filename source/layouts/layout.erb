@@ -23,6 +23,27 @@ under the License.
     <title><%= current_page.data.title || "API Documentation" %></title>
 
     <style>
+      #logoc {
+        text-align: center;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+      #logoMAIN {
+        padding: 10px;
+        text-align: center;
+        left: 0;
+        right: 0;
+        margin: auto;
+      }
+      #logoText {
+        text-align: center;
+        left: 0;
+        right: 0;
+        margin: auto;
+        color: #FFF;
+        font-size: 1.75em;
+      }
       <%= Rouge::Themes::Base16::Monokai.render(:scope => '.highlight') %>
     </style>
     <%= stylesheet_link_tag :screen, media: :screen %>
@@ -42,7 +63,9 @@ under the License.
       </span>
     </a>
     <div class="tocify-wrapper">
-      <%= image_tag "logo.png" %>
+      <div id="logoc">
+      <img src="images/logo.png" alt="Oraclize log" id="logoMAIN" width="50px"><br> <span id="logoText">Oraclize</span>
+      </div>
       <% if language_tabs %>
         <div class="lang-selector">
           <% language_tabs.each do |lang| %>

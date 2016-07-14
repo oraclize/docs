@@ -78,11 +78,12 @@ If you are looking for an Oraclize integration with your private blockchain plea
 
 When sending a query to Oraclize you have to specify at least two arguments:
 
-* The data-source you want to fetch the data from. Supported values are `URL`, `WolframAlpha`, `Blockchain`
+* The data-source you want to fetch the data from. Supported values are `URL`, `WolframAlpha`, `Blockchain`, `IPFS`
 * The argument for the given data-source:
  * the full `URL`, which might use our JSON / XML parsing helpers
  * or the `WolframAlpha` formula
  * or the `Blockchain`-provided syntax
+ * or the `IPFS` multihash
 
 More information about these can be found in the [Overview](#overview) document.
 
@@ -114,6 +115,14 @@ oraclize_query("URL", "json(https://www.therocktrading.com/api/ticker/BTCEUR).re
 
 ```python
 oraclize_query(text("URL"), text("json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"))
+```
+
+```javascript
+oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU");
+```
+
+```python
+oraclize_query(text("IPFS"), text("QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"))
 ```
 
 ```javascript
@@ -262,7 +271,7 @@ oraclize_query("BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+ue
 oraclize_query("BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS","BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=","BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI")
 ```
 
-Another use case may be a request from a datasource, as WolframAlpha or the Bitcoin blockchain. Our encryption system also permits users to encrypt any of the supported datasource option.
+Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.
 
 ### Chosen Encryption scheme
 To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:

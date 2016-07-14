@@ -25,11 +25,63 @@ Since we understand you may not trust our service to provide you with the correc
 TLSNotary is a tool, built on top of TLS/SSL, by which you can prove that a certain server has really sent some data to you at a certain time. By attaching the TLSNotary proof to the results we are providing you, you can be 100% sure that we are not lying and that our response is indeed coming from a certain server at a specific time.
 
 
-## Available data-sources
+# Datasources
 
 We list here the data-sources you can choose from when using our oracle service.
 
-### URL 
+<table>
+  <tr>
+    <th rowspan="3" style="vertical-align: bottom !important;">Datasource</th>
+    <th colspan="3">Distributions</th>
+    <th colspan="2" rowspan="2" style="vertical-align: bottom !important;">Proof type</th>
+  </tr>
+  <tr>
+    <td rowspan="2">Ethreum Mainnet<br></td>
+    <td rowspan="2">Ethereum Morden</td>
+    <td rowspan="2">HTTP API</td>
+  </tr>
+  <tr>
+    <td>None</td>
+    <td>TLSNotary</td>
+  </tr>
+  <tr>
+    <td><a href="#url">URL</a></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+  </tr>
+  <tr>
+    <td><a href="#blockchain">Blockchain</a></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+  </tr>
+  <tr>
+    <td><a href="#wolfram-alpha">Wolfram Alpha</a></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td><a href="#ipfs">IPFS</a></td>
+    <td>N/A*</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>N/A</td>
+  </tr>
+</table>
+
+*Still experimental, will be available on mainnet once it's stable
+
+
+## URL 
 
 The most generic data-source we provide is the `URL` one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP `GET` / `POST` output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the ``TLSNotary`` proof.
@@ -52,12 +104,12 @@ For example:
 </aside>
 
 * `binary(..)` helper is useful to get binary files such as certificate files
- * to fetch only a portion of the binary file you can use `slice(offset,length)` the first parameter is the offset while the second one is the length of the slice you want back (both in **bytes**).<br> example: fetch only the first 300 bytes from a binary CRL: `binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)`
+ * to fetch only a portion of the binary file you can use `slice(offset,length)` the first parameter is the offset while the second one is the length of the slice you want back (both in **bytes**).<br> example: fetch only the first 300 bytes from a binary CRL: `binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)` **binary helper must be used with the slice option and only binary files (not encoded) are accepted**
 
 > **Note:**
 > If and when the server is not responding or unreachable, we will send you an empty response
 
-### Wolfram Alpha
+## Wolfram Alpha
 
 The `WolframAlpha` data-source lets you specify as argument a query to submit to the Wolfram Alpha knowledge engine. Oraclize will send you back the primary response as a string if any.
 
@@ -70,7 +122,7 @@ With this data-source we will not give you back the `TLSNotary` proof as returni
 </aside>
 
 
-### Blockchain
+## Blockchain
 
 The `Blockchain` data-source provides you with easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorer APIs, but with a built-in easy-to-use syntax.
 Possible query arguments are:
@@ -82,3 +134,6 @@ Possible query arguments are:
 and so on.
 
 
+## IPFS
+
+The `IPFS` data-source can be used to retrieve the content of a file on the IPFS protocol, just specify the IPFS multihash in the query i.e. `QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU` will return `"ciao\n"` (note the new line on the original IPFS file)
