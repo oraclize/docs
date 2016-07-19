@@ -1,9 +1,15 @@
 # Pricing
 
-The use of Oraclize APIs requires the payment of a small fee. This fee comes on top of the reimbursement for the full `gasLimit` we are setting in the transaction when we call back your contract.
+The use of Oraclize APIs requires the payment of a small fee, you can check out the pricing for each integration below:
+
+ * <a href="#ethereum">Ethereum</a>
 
 
-## Free calls
+## Ethereum
+
+The fee for Ethereum comes on top of the reimbursement for the full `gasLimit` we are setting in the transaction when we call back your contract.
+
+### Free calls
 
 In order to make the testing of our service a little bit easier (and cheaper) to you, **the first Oraclize query call coming from any Ethereum address is completely free of charge**. This means we are even covering the callback transaction gas costs for you (up to the default `gasLimit` of 200k gas).
 
@@ -12,7 +18,7 @@ This might be helpful, for example, to send the first call to Oraclize directly 
 >Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.
 
 
-## Call fees
+### Call fees
 
 Payment is part and parcel of the `oraclize_query` function call, and our pricing model is simple. It's composed of two parts:
 

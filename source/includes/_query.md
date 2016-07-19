@@ -1,4 +1,4 @@
-# How to send a query
+# Ethereum integration
 
 The following is meant to be a short but complete manual to explain how the interfacing of an Ethereum contract with Oraclize actually works.
 
