@@ -188,7 +188,7 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
     <th colspan="2" rowspan="2" style="vertical-align: bottom !important;">Proof type</th>
   </tr>
   <tr>
-    <td rowspan="2">Ethreum Mainnet<br></td>
+    <td rowspan="2">Ethereum Mainnet<br></td>
     <td rowspan="2">Ethereum Morden</td>
     <td rowspan="2">HTTP API</td>
   </tr>
@@ -668,6 +668,38 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <p>Since the callback transaction always provides results as strings, the Solidity API helpers also include some convenience functions, which might prove useful to you. Especially since Solidity does not provide any official &ldquo;standard Library&rdquo; yet.</p>
 
 <p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.</p>
+
+<h2 id="best-practices">Best practices</h2>
+<pre class="highlight javascript"><code><span class="cm">/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/</span>
+<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
+
+<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+    <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">myidList</span><span class="p">;</span>
+
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(http://exampleUrl.url).result"</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span><span class="o">==</span><span class="kc">true</span><span class="p">)</span> <span class="k">throw</span><span class="p">;</span> <span class="c1">// check if this myid was already processed before</span>
+        <span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// mark this myid (default bool value is false)</span>
+        <span class="p">...</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre>
+
+<p>What follows are some practical tips we recommend you to use when writing Oraclize-based smart contracts:</p>
+
+<ul>
+<li><p>when integrating the Oraclize service into your smart contract it&rsquo;s better to use our <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol" target="_blank">API helpers</a> instead of interfacing with the connector directly as the connector address may be updated.</p></li>
+<li><p>the <code class="prettyprint">myid</code> returned by Oraclize in the <code class="prettyprint">__callback</code> function should always be checked by your smart contract. Specifically, the smart contract should verify that the <code class="prettyprint">myid</code> is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuses of your contract logic.</p></li>
+</ul>
 
           <h1 id="pricing">Pricing</h1>
 
