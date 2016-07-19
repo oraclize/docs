@@ -412,3 +412,36 @@ You can have a look at more complete and complex examples by heading to our dedi
 Since the callback transaction always provides results as strings, the Solidity API helpers also include some convenience functions, which might prove useful to you. Especially since Solidity does not provide any official "standard Library" yet.
 
 You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.
+
+## Best practices
+
+```javascript
+/*
+import "dev.oraclize.it/api.sol" just works while using 
+dev.oraclize.it web IDE, needs to be imported manually otherwise 
+*/
+import "dev.oraclize.it/api.sol";
+    
+contract YourContractName is usingOraclize {
+
+    mapping(bytes32=>bool) myidList;
+
+    function YourContractName(){
+         oraclize_query("URL","json(http://exampleUrl.url).result");
+    }
+
+    function __callback(bytes32 myid, string result) {
+        if(msg.sender != oraclize_cbAddress()) throw;
+        if(myidList[myid]==true) throw; // check if this myid was already processed before
+        myidList[myid] = true; // mark this myid (default bool value is false)
+        ...
+    }
+    
+}
+```
+ 
+What follows are some practical tips we recommend you to use when writing Oraclize-based smart contracts:
+
+ * When integrating the Oraclize service to your smart contract is better to use our <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol" target="_blank">API helpers</a> instead of implementing the connector directly as the connector address may be updated or changed.
+     
+ * The `myid` returned by Oraclize in the `__callback` function should always be checked by your smart contract. Specifically, the smart contract should verify that the `myid` is unique and consequently mark it. In this way your smart contract can make sure to receive one `__callback` transaction for each query (any other response with the same `myid` would be rejected) and that the consequent actions are triggered only once.The reason for this is protecting your smart contract from multiple responses that Oraclize may send back. Also note that implementing this logic into your code prevents a malicious attack that Oraclize may trigger by sending back the response having the same `myid` more than once.

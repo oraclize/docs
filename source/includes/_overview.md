@@ -36,7 +36,7 @@ We list here the data-sources you can choose from when using our oracle service.
     <th colspan="2" rowspan="2" style="vertical-align: bottom !important;">Proof type</th>
   </tr>
   <tr>
-    <td rowspan="2">Ethreum Mainnet<br></td>
+    <td rowspan="2">Ethereum Mainnet<br></td>
     <td rowspan="2">Ethereum Morden</td>
     <td rowspan="2">HTTP API</td>
   </tr>
