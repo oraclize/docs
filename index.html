@@ -305,7 +305,7 @@ and so on.</li>
 
 <p>The <code class="prettyprint">IPFS</code> data-source can be used to retrieve the content of a file on the IPFS protocol, just specify the IPFS multihash in the query i.e. <code class="prettyprint">QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU</code> will return <code class="prettyprint">&quot;ciao\n&quot;</code> (note the new line on the original IPFS file)</p>
 
-          <h1 id="how-to-send-a-query">How to send a query</h1>
+          <h1 id="ethereum-integration">Ethereum integration</h1>
 
 <p>The following is meant to be a short but complete manual to explain how the interfacing of an Ethereum contract with Oraclize actually works.</p>
 
@@ -703,9 +703,17 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
           <h1 id="pricing">Pricing</h1>
 
-<p>The use of Oraclize APIs requires the payment of a small fee. This fee comes on top of the reimbursement for the full <code class="prettyprint">gasLimit</code> we are setting in the transaction when we call back your contract.</p>
+<p>The use of Oraclize APIs requires the payment of a small fee, you can check out the pricing for each integration below:</p>
 
-<h2 id="free-calls">Free calls</h2>
+<ul>
+<li><a href="#ethereum">Ethereum</a></li>
+</ul>
+
+<h2 id="ethereum">Ethereum</h2>
+
+<p>The fee for Ethereum comes on top of the reimbursement for the full <code class="prettyprint">gasLimit</code> we are setting in the transaction when we call back your contract.</p>
+
+<h3 id="free-calls">Free calls</h3>
 
 <p>In order to make the testing of our service a little bit easier (and cheaper) to you, <strong>the first Oraclize query call coming from any Ethereum address is completely free of charge</strong>. This means we are even covering the callback transaction gas costs for you (up to the default <code class="prettyprint">gasLimit</code> of 200k gas).</p>
 
@@ -715,7 +723,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <p>Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.</p>
 </blockquote>
 
-<h2 id="call-fees">Call fees</h2>
+<h3 id="call-fees">Call fees</h3>
 
 <p>Payment is part and parcel of the <code class="prettyprint">oraclize_query</code> function call, and our pricing model is simple. It&rsquo;s composed of two parts:</p>
 
