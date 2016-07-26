@@ -23,7 +23,12 @@
       scrollTo: -1,
       scrollHistory: true,
       hashGenerator: function (text, element) {
-        return element.prop('id');
+        var sectionName = element.prevUntil('h1').andSelf().prev('h1').andSelf().first();
+        if(!element.is('h1')){
+          return (sectionName.text()).toLowerCase().replace(' ','-')+'-'+element.prop('id');
+        } else {
+          return element.prop('id'); 
+        }
       }
     }).data('toc-tocify');
 
