@@ -373,7 +373,7 @@
             if(arr.length) {
 
                 // Adds the current TOC item text and index (for slight randomization) to the internal array
-                this.items.push(self.text() + index);
+                this.items.push(self.text());
 
             }
 
@@ -385,7 +385,7 @@
 
             }
 
-            hashValue = this._generateHashValue(arr, self, index);
+            hashValue = this._generateHashValue([], self, index);
 
             // ADDED BY ROBERT
             // actually add the hash value to the element's id
