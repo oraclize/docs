@@ -167,6 +167,7 @@ incremental_deploy() {
 
 commit+push() {
   set_user_id
+  echo $(date +'%d/%m/%Y') > source/lastupdate.txt
   git --work-tree "$deploy_directory" commit -m "$commit_message"
 
   disable_expanded_output
