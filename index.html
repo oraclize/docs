@@ -28,6 +28,11 @@
         color: #FFF;
         font-size: 1.75em;
       }
+      #lastupdate {
+	position:absolute;
+	bottom:0;
+	font-size:1.13em;
+      }
       .highlight table td { padding: 5px; }
 .highlight table pre { margin: 0; }
 .highlight, .highlight .w {
@@ -133,6 +138,9 @@
         <ul class="search-results"></ul>
       <div id="toc">
       </div>
+        <ul class="toc-footer">
+            <li><span id='lastupdate'></span></li>
+        </ul>
     </div>
     <div class="page-wrapper">
       <div class="dark-box"></div>
@@ -789,5 +797,10 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
           </div>
       </div>
     </div>
+    <script>
+    $.get('lastupdate.txt', function(date){
+	$('#lastupdate').html('Last update: '+date.trim());
+    }, 'text');
+    </script>
   </body>
 </html>
