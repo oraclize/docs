@@ -32,7 +32,6 @@
 	position:absolute;
 	bottom:0;
 	font-size:1.13em;
-	font-style:italic;
       }
       .highlight table td { padding: 5px; }
 .highlight table pre { margin: 0; }
@@ -147,9 +146,7 @@
       <div class="dark-box"></div>
       <div class="content">
         
-          <h1 id="introduction">Introduction</h1>
-
-<h2 id="welcome-to-oraclize-39-s-documentation">Welcome to Oraclize&rsquo;s documentation!</h2>
+          <h1 id="overview">Overview</h1>
 
 <p>Oraclize is a <u title="(the amount of trust involved is close to zero)">provably-honest oracle</u> service enabling smart contracts to access the Internet.</p>
 
@@ -160,17 +157,13 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
 
 <p>This documentation covers our API integration with the <strong>Ethereum</strong> platform.</p>
 
-<p><img src="images/flowchart.png" /></p>
+<p>The documentation covering our <strong>HTTP API</strong> and the <strong>Bitcoin integration</strong> are coming soon.</p>
 
-          <h1 id="overview">Overview</h1>
+<h2 id="problem">Problem</h2>
 
 <p>Even though the oracle concept, in the blockchain sense, has been around for a while, we haven&rsquo;t seen any advanced implementations. All implementations were nothing more than proof of concepts or of very limited use in themselves.</p>
 
 <p>One of the reasons for this failure to provide a proper oracle service is that trying to build a distributed oracle network where nodes attempt to find consensus to a specific query is very hard and needs a proper inter-oracle communication protocol (which Orisi was a first attempt to build) rather than merely a convincing incentive for the oracles not to lie.</p>
-
-<p>Oraclize wants to fill in this industry gap by providing an oracle service which is as generic as possible. We are not trying to build the Internet here but to provide a good compromise instead.</p>
-
-<p>Although we are a centralized service we share the vision behind decentralized networks and we understand how reputation is key which is why we are providing a provably-honest service too.</p>
 
 <h2 id="how-does-an-oracle-work">How does an oracle work</h2>
 
@@ -180,13 +173,15 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
 
 <p>However, how can we trust the oracle not to alter this data in the first place? This is achievable using the same mitigation technique we just explained above for data-sources or by using a cryptographic proof such as the TLSNotary one.</p>
 
-<h2 id="tlsnotary-proof">TLSNotary proof</h2>
+<h2 id="our-solution">Our solution</h2>
 
-<p>Since we understand you may not trust our service to provide you with the correct data, we optionally send you a cryptographic proof showing that we didn&rsquo;t alter the data coming from your chosen data-source.</p>
+<p>Oraclize wants to fill in this industry gap by providing an oracle service which is as generic as possible. We are not trying to build the Internet here but to provide a good compromise instead.</p>
 
-<p>TLSNotary is a tool, built on top of TLS/SSL, by which you can prove that a certain server has really sent some data to you at a certain time. By attaching the TLSNotary proof to the results we are providing you, you can be 100% sure that we are not lying and that our response is indeed coming from a certain server at a specific time.</p>
+<p>Although we are a centralized service we share the vision behind decentralized networks and we understand how reputation is key which is why we are providing a provably-honest service too.</p>
 
-<h1 id="datasources">Datasources</h1>
+<p><img src="images/flowchart.png" /></p>
+
+          <h1 id="datasources">Datasources</h1>
 
 <p>We list here the data-sources you can choose from when using our oracle service.</p>
 
@@ -313,6 +308,24 @@ and so on.</li>
 <h2 id="ipfs">IPFS</h2>
 
 <p>The <code class="prettyprint">IPFS</code> data-source can be used to retrieve the content of a file on the IPFS protocol, just specify the IPFS multihash in the query i.e. <code class="prettyprint">QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU</code> will return <code class="prettyprint">&quot;ciao\n&quot;</code> (note the new line on the original IPFS file)</p>
+
+          <h1 id="security">Security</h1>
+
+<p>Since Oraclize acts as a data carrier, the service could potentially tamper the result and provide some wrong data (different from the one provided by the chosen datasource). In order to avoid this dishonest behaviour, we optionally provide cryptographic proofs showing that this didn&rsquo;t happen.</p>
+
+<p>These <strong>honesty proofs</strong>, as we call them, are generated via different methodologies (based on different forms of SW/HW attestation) which provide you strong authenticity guarantees.</p>
+
+<p>Some of those proofs are based on external projects we leverage, while others were designed by us in-house in order to make our service more and more secure.</p>
+
+<p>We are listing here the honesty proofs that Oraclize provides. Other than the original TLSNotary-based one, we have others in the workings which will be released in the coming weeks.</p>
+
+<h2 id="tlsnotary-proof">TLSNotary proof</h2>
+
+<p>TLSNotary is a project implementing a modification of TLS. By using it you can prove that a certain server has really sent some data to you at a given point in time.</p>
+
+<p>Pagesigner is a TLSNotary-based system which is designed to generate a distributable proof that anybody can use to indipendently verify the authenticity of a TLS response.</p>
+
+<p>Oraclize provides the above proof, along with the result, so that you can be 100% sure that we are behaving honestly and that our response is really coming from a certain server at a specific time.</p>
 
           <h1 id="ethereum-integration">Ethereum integration</h1>
 
