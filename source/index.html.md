@@ -11,8 +11,9 @@ toc_footers:
 search: true
 
 includes:
-  - introduction
   - overview
-  - query
+  - datasources
+  - security
+  - ethereum
   - pricing
 ---
