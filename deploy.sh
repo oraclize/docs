@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit #abort if any command fails
 me=$(basename "$0")
-
+echo $(date +'%d/%m/%Y') > source/lastupdate.txt
 help_message="\
 Usage: $me [-c FILE] [<options>]
 Deploy generated files to a git branch.
@@ -167,7 +167,6 @@ incremental_deploy() {
 
 commit+push() {
   set_user_id
-  echo $(date +'%d/%m/%Y') > source/lastupdate.txt
   git --work-tree "$deploy_directory" commit -m "$commit_message"
 
   disable_expanded_output
