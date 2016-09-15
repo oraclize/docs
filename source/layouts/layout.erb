@@ -125,6 +125,20 @@ under the License.
     $.get('lastupdate.txt', function(date){
 	$('#lastupdate').html('Last update: '+date.trim());
     }, 'text');
+
+    $('a[href^="#"]').on('click',function(e){
+      e.preventDefault();
+      var href = $(this).attr('href');
+      if(typeof(href)=='undefined') return;
+      if(href.indexOf('-')!==-1) scrollToSection(href);
+      else location.hash = href;
+    });
+
+    function scrollToSection(href){
+      $('html,body').animate({
+        scrollTop: $('div[data-unique='+href.substr(1)+']').offset().top+60,
+      },0);
+    }
     </script>
   </body>
 </html>

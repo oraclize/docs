@@ -121,7 +121,7 @@ Please note that if we fail to fetch the IPFS content within <i>20</i> seconds, 
 
 ## decrypt
 
-Even though the `decrypt` datasource can be used as any other, it was specifically designed to be used within the <a href="#additional-features-nested">`nested`</a> datasource to enable partial query encryption.
+Even though the `decrypt` datasource can be used as any other, it was specifically designed to be used within the <a href="#datasources-nested">`nested`</a> datasource to enable partial query encryption.
 
 
 The result is the decrypted query string. **Please note that all the logic, limitations and tools provided by the `Encryption` feature do apply here with no modification.**

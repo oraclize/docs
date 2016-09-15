@@ -266,8 +266,8 @@ You may execute this method just once, for instance in the constructor, or at an
 
 `proofStorage_IPFS` means that Oraclize will:
 
-* use [IPFS](http://ipfs.io/) to store your complete TLSNotary proof
-* and will call back your contract on the `__callback(bytes32 myid, string result, bytes proof)` function instead of the default `__callback(bytes32 myid, string result)`
+* use <a href="http://ipfs.io/" target="_blank">IPFS</a> to store your complete TLSNotary proof
+* and will call back your contract on the `__callback(bytes32 myid, string result, bytes proof)` function **instead of the default** `__callback(bytes32 myid, string result)`
 
 The `proof` string is exactly the IPFS multihash that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/`proof`
 

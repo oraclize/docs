@@ -2,7 +2,7 @@
 
 The use of Oraclize APIs requires the payment of a small fee, you can check out the pricing for each integration below:
 
- * <a href="#ethereum">Ethereum</a>
+ * <a href="#pricing-ethereum">Ethereum</a>
 
 
 ## Ethereum
