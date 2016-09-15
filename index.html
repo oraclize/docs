@@ -306,7 +306,7 @@ and so on.</li>
 
 <h2 id="decrypt">decrypt</h2>
 
-<p>Even though the <code class="prettyprint">decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#additional-features-nested"><code class="prettyprint">nested</code></a> datasource to enable partial query encryption.</p>
+<p>Even though the <code class="prettyprint">decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#datasources-nested"><code class="prettyprint">nested</code></a> datasource to enable partial query encryption.</p>
 
 <p>The result is the decrypted query string. <strong>Please note that all the logic, limitations and tools provided by the <code class="prettyprint">Encryption</code> feature do apply here with no modification.</strong></p>
 
@@ -729,8 +729,8 @@ All the code written here assumes that you have already included all the necessa
 <p><code class="prettyprint">proofStorage_IPFS</code> means that Oraclize will:</p>
 
 <ul>
-<li>use <a href="http://ipfs.io/">IPFS</a> to store your complete TLSNotary proof</li>
-<li>and will call back your contract on the <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code> function instead of the default <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
+<li>use <a href="http://ipfs.io/" target="_blank">IPFS</a> to store your complete TLSNotary proof</li>
+<li>and will call back your contract on the <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code> function <strong>instead of the default</strong> <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
 </ul>
 
 <p>The <code class="prettyprint">proof</code> string is exactly the IPFS multihash that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/<code class="prettyprint">proof</code></p>
@@ -822,7 +822,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <p>The use of Oraclize APIs requires the payment of a small fee, you can check out the pricing for each integration below:</p>
 
 <ul>
-<li><a href="#ethereum">Ethereum</a></li>
+<li><a href="#pricing-ethereum">Ethereum</a></li>
 </ul>
 
 <h2 id="ethereum">Ethereum</h2>
@@ -903,6 +903,20 @@ Note: Oraclize calls are free when used on testnets! This works for moderate usa
     $.get('lastupdate.txt', function(date){
 	$('#lastupdate').html('Last update: '+date.trim());
     }, 'text');
+
+    $('a[href^="#"]').on('click',function(e){
+      e.preventDefault();
+      var href = $(this).attr('href');
+      if(typeof(href)=='undefined') return;
+      if(href.indexOf('-')!==-1) scrollToSection(href);
+      else location.hash = href;
+    });
+
+    function scrollToSection(href){
+      $('html,body').animate({
+        scrollTop: $('div[data-unique='+href.substr(1)+']').offset().top+60,
+      },0);
+    }
     </script>
   </body>
 </html>
