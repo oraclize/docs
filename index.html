@@ -184,7 +184,7 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
 
           <h1 id="datasources">Datasources</h1>
 
-<p>We list here the data-sources you can choose from when using our oracle service.</p>
+<p>We list here the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.</p>
 
 <table>
   <tr>
@@ -202,7 +202,7 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
     <td>TLSNotary</td>
   </tr>
   <tr>
-    <td><a href="#url">URL</a></td>
+    <td><a href="#datasources-url">URL</a></td>
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
@@ -210,15 +210,7 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
     <td>✓</td>
   </tr>
   <tr>
-    <td><a href="#blockchain">Blockchain</a></td>
-    <td>✓</td>
-    <td>✓</td>
-    <td>✓</td>
-    <td>✓</td>
-    <td>✓</td>
-  </tr>
-  <tr>
-    <td><a href="#wolfram-alpha">Wolfram Alpha</a></td>
+    <td><a href="#datasources-wolframalpha">WolframAlpha</a></td>
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
@@ -226,23 +218,149 @@ We think that it&rsquo;s just by throwing tons of meaningful data into the block
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#ipfs">IPFS</a></td>
-    <td>N/A*</td>
+    <td><a href="#datasources-blockchain">Blockchain</a></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-ipfs">IPFS</a><sup> 1</sup></td>
+    <td>✓</td>
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-decrypt">decrypt</a></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-nested">nested</a><sup> 1</sup></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓<sup> 3</sup></td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-computation">computation</a><sup> 1</sup></td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
 </table>
 
-<p>*Still experimental, will be available on mainnet once it&rsquo;s stable</p>
+<p><sup> 1</sup> Still experimental</p>
+
+<p><sup> 2</sup> Still experimental, will be available on mainnet once it&rsquo;s stable</p>
+
+<p><sup> 3</sup> Depending on the datasources you choose in sub-queries, proofs may be provided for each of them, but not for the aggregation itself</p>
 
 <h2 id="url">URL</h2>
 
 <p>The most generic data-source we provide is the <code class="prettyprint">URL</code> one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP <code class="prettyprint">GET</code> / <code class="prettyprint">POST</code> output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the <code class="prettyprint">TLSNotary</code> proof.</p>
 
-<h4 id="parsing-helpers">Parsing helpers</h4>
+<h2 id="wolframalpha">WolframAlpha</h2>
+
+<p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as argument a query to submit to the WolframAlpha knowledge engine. Oraclize will send you back the primary response as a string if any.</p>
+
+<aside class="notice">
+There may not always be a primary response for your query, please test your query in advance on our Web IDE widget to make sure your syntax makes sense to Wolfram&rsquo;s engine.
+</aside>
+
+<aside class="notice">
+Note:
+With this data-source we will not give you back the `TLSNotary` proof as returning the whole API response is against WolframAlpha Terms of Service.
+</aside>
+
+<h2 id="blockchain">Blockchain</h2>
+
+<p>The <code class="prettyprint">Blockchain</code> data-source provides you with easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorer APIs, but with a built-in easy-to-use syntax.
+Possible query arguments are:</p>
+
+<ul>
+<li><code class="prettyprint">bitcoin blockchain height</code>,</li>
+<li><code class="prettyprint">litecoin hashrate</code>,</li>
+<li><code class="prettyprint">bitcoin difficulty</code>, </li>
+<li><code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> 
+and so on.</li>
+</ul>
+
+<h2 id="ipfs">IPFS</h2>
+
+<p>The <code class="prettyprint">IPFS</code> data-source can be used to retrieve the content of a file on the IPFS protocol.</p>
+
+<p>This datasource expects you to specify the IPFS multihash in the query i.e. <code class="prettyprint">QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o</code> will return <code class="prettyprint">&quot;hello world\n&quot;</code> (note that in this case we have a terminating new line because the original IPFS file had it).</p>
+
+<p>Please note that if we fail to fetch the IPFS content within <i>20</i> seconds, such request will fail.</p>
+
+<h2 id="decrypt">decrypt</h2>
+
+<p>Even though the <code class="prettyprint">decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#additional-features-nested"><code class="prettyprint">nested</code></a> datasource to enable partial query encryption.</p>
+
+<p>The result is the decrypted query string. <strong>Please note that all the logic, limitations and tools provided by the <code class="prettyprint">Encryption</code> feature do apply here with no modification.</strong></p>
+
+<h2 id="nested">nested</h2>
+
+<p>The <code class="prettyprint">nested</code> datasource is a meta datasource, it does not provide access to additional services. It was designed to provide a simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and producing as result a single string.</p>
+
+<p>The <code class="prettyprint">query</code> format is built in a way you can specify a sub-datasource and a sub-query as follows: <code class="prettyprint">[datasource_name] query_content</code>.</p>
+
+<p>Please mind the square brakets delimiting the datasource name and the whitespace prefixing the actual sub-query. The sub-query content can optionally be delimited by either single or double quotes.</p>
+
+<p>You can optionally specify more than one sub-query, by using as delimitators the <code class="prettyprint">${</code> special opener and the <code class="prettyprint">}</code> special closer.</p>
+
+<p>Example: <code class="prettyprint">[WolframAlpha] temperature in ${[IPFS] QmP2ZkdsJG7LTw7jBbizTTgY1ZBeen64PqMgCAWz2koJBL}</code></p>
+
+<h2 id="computation">computation</h2>
+
+<p><img src="http://i.imgur.com/BPneTYH.png" /></p>
+
+<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of a given application into a secure blockchain-unrelated (off-chain) context.</p>
+
+<p>Such application has to print the query result on the last line (on standard output) before its quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the <strong>maximum execution timeout is ~5 minutes on an AWS t2.micro instance.</strong></p>
+
+<p>As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be places in the archive root), you should take care of preparing such archive and pushing it to IPFS beforehand.</p>
+
+<p>Example:</p>
+
+<ol>
+<li>Dockerfile content:</li>
+</ol>
+
+<p><textarea disabled style="padding:5px;width:490px;height:104px;background-color: #333;color:#FFF;border:none;">
+FROM ubuntu:14.04
+MAINTAINER Oraclize &ldquo;info@oraclize.it&rdquo;
+RUN apt-get update &amp;&amp; apt-get install -y python-numpy
+CMD python -c &ldquo;import numpy; print int(numpy.linalg.det(numpy.array([[1,2,3],[7,2,3],[7,6,3]])))&rdquo;</textarea></p>
+
+<ol>
+<li><p><code class="prettyprint">zip -r</code><a href="http://ipfs.io/ipfs/QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s" target="_blank"><code class="prettyprint">archive.zip</code></a><code class="prettyprint">.</code></p></li>
+<li><p><code class="prettyprint">ipfs add archive.zip</code></p>
+
+<ul>
+<li>Output: <code class="prettyprint">added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip</code></li>
+</ul></li>
+<li><p>our query argument is <code class="prettyprint">QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s</code> and the query result will be <code class="prettyprint">72</code></p></li>
+</ol>
+
+<aside class="notice">
+Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the email address specified there to contact you in case any issue arises
+</aside>
+
+          <h1 id="additional-features">Additional Features</h1>
+
+<h2 id="parsing-helpers">Parsing helpers</h2>
 
 <p>In order to make things simpler to handle on the smart-contract side, you can provide the URL inside one of the following parsing helpers:</p>
 
@@ -262,8 +380,8 @@ For example:</p>
 </ul>
 
 <aside class="notice">
-    Note:
-    Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards
+Note:
+Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards
 </aside>
 
 <ul>
@@ -274,41 +392,95 @@ For example:</p>
 </ul></li>
 </ul>
 
-<blockquote>
-<p><strong>Note:</strong>
-If and when the server is not responding or unreachable, we will send you an empty response</p>
-</blockquote>
-
-<h2 id="wolfram-alpha">Wolfram Alpha</h2>
-
-<p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as argument a query to submit to the Wolfram Alpha knowledge engine. Oraclize will send you back the primary response as a string if any.</p>
-
-<blockquote>
-<p><strong>Note:</strong>
-There may not always be a primary response for your query, please test your query in advance on our Web IDE widget to make sure your syntax makes sense to Wolfram&rsquo;s engine.</p>
-</blockquote>
-
 <aside class="notice">
 Note:
-With this data-source we will not give you back the `TLSNotary` proof as returning the whole API response is against Wolfram Alpha Terms of Service.
+If and when the server is not responding or unreachable, we will send you an empty response
 </aside>
 
-<h2 id="blockchain">Blockchain</h2>
+<h2 id="encrypted-queries">Encrypted queries</h2>
 
-<p>The <code class="prettyprint">Blockchain</code> data-source provides you with easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorer APIs, but with a built-in easy-to-use syntax.
-Possible query arguments are:</p>
+<p>There are some use cases where you are interested in not disclosing your clear text query to the blockchain: for example, if your query includes some API secret credentials.</p>
+
+<p>One option is to encrypt the entire query using Oraclize public key <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code></p>
+
+<p>This means your request will be stored in the blockchain in an encrypted form and that only Oraclize will be able to decrypt it by using its paired private key.</p>
+
+<p>To encrypt the query, you can use our <code class="prettyprint">encrypted_queries_tools.py</code> python script (you can find it <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>).</p>
+
+<p>The CLI command to encrypt an arbitrary string of text is then:</p>
+
+<p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
+
+<p>It will encrypt the query with the default Oraclize public key. You can then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
+<pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
+</code></pre>
+<pre class="highlight python"><code><span class="c"># here we specify the encrypted formula directly</span>
+<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
+</code></pre>
+
+<p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
+
+<aside class="notice">
+You can also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
+</aside>
+
+<p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
+<pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
+</code></pre>
+<pre class="highlight python"><code><span class="c"># This is the query that we want to encrypt</span>
+<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
+</code></pre>
+
+<p>Encrypt the datasource (URL in this case):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
+
+<p>Result in: <br>
+<code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
+<br>
+<br></p>
+
+<p>Encrypt the argument(in this case we are using JSON parse helper to retrieve the &ldquo;status&rdquo; ):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
+
+<p>Result in:<br>
+<code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
+<br>
+<br></p>
+
+<p>Encrypt the JSON (third argument, the data to POST):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
+
+<p>Result in:<br>
+<code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
+<br>
+<br></p>
+<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
+<span class="c1">// to the oraclize_query (in the right order)</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
+</code></pre>
+<pre class="highlight python"><code><span class="c"># Finally we add all the encrypted text</span>
+<span class="c"># to the oraclize_query (in the right order)</span>
+<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
+</code></pre>
+
+<p>Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.</p>
+
+<aside class="notice">
+In order to prevent the misuse of encrypted queries (i.e.: replay attacks) the first contract querying Oraclize with a specific encrypted query becomes its rightful owner. Any other contract reusing the exact same string will not be allowed to use it and will receive back an empty result.
+
+As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
+</aside>
+
+<h3 id="chosen-encryption-scheme">Chosen Encryption scheme</h3>
+
+<p>To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:</p>
 
 <ul>
-<li><code class="prettyprint">bitcoin blockchain height</code>,</li>
-<li><code class="prettyprint">litecoin hashrate</code>,</li>
-<li><code class="prettyprint">bitcoin difficulty</code>, </li>
-<li><code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> 
-and so on.</li>
+<li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.</li>
+<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separated document.</li>
 </ul>
-
-<h2 id="ipfs">IPFS</h2>
-
-<p>The <code class="prettyprint">IPFS</code> data-source can be used to retrieve the content of a file on the IPFS protocol, just specify the IPFS multihash in the query i.e. <code class="prettyprint">QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU</code> will return <code class="prettyprint">&quot;ciao\n&quot;</code> (note the new line on the original IPFS file)</p>
 
           <h1 id="security">Security</h1>
 
@@ -490,98 +662,13 @@ All the code written here assumes that you have already included all the necessa
 <span class="bp">self</span><span class="o">.</span><span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">));</span>
 </code></pre>
 
-<h2 id="encrypted-queries">Encrypted Queries</h2>
-
-<p>There are some use cases where you are interested in not disclosing your clear text query to the blockchain: for example, if your query includes some API secret credentials.</p>
-
-<p>One option is to encrypt the entire query using Oraclize public key <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code></p>
-
-<p>This means your request will be stored in the blockchain in an encrypted form and that only Oraclize will be able to decrypt it by using its paired private key.</p>
-
-<p>To encrypt the query, you can use our <code class="prettyprint">encrypted_queries_tools.py</code> python script (you can find it <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>).</p>
-
-<p>The CLI command to encrypt an arbitrary string of text is then:</p>
-
-<p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
-
-<p>It will encrypt the query with the default Oraclize public key. You can then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
-<pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># here we specify the encrypted formula directly</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
-</code></pre>
-
-<p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
-
-<aside class="notice">
-You can also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
-</aside>
-
-<p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
-<pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># This is the query that we want to encrypt</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
-</code></pre>
-
-<p>Encrypt the datasource (URL in this case):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
-
-<p>Result in: <br>
-<code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
-<br>
-<br></p>
-
-<p>Encrypt the argument(in this case we are using JSON parse helper to retrieve the &ldquo;status&rdquo; ):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
-
-<p>Result in:<br>
-<code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
-<br>
-<br></p>
-
-<p>Encrypt the JSON (third argument, the data to POST):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
-
-<p>Result in:<br>
-<code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
-<br>
-<br></p>
-<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
-<span class="c1">// to the oraclize_query (in the right order)</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># Finally we add all the encrypted text</span>
-<span class="c"># to the oraclize_query (in the right order)</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
-</code></pre>
-
-<p>Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.</p>
-
-<aside class="notice">
-In order to prevent the misuse of encrypted queries (i.e.: replay attacks) the first contract querying Oraclize with a specific encrypted query becomes its rightful owner. Any other contract reusing the exact same string will not be allowed to use it and will receive back an empty result.
-
-As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
-</aside>
-
-<h3 id="chosen-encryption-scheme">Chosen Encryption scheme</h3>
-
-<p>To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:</p>
-
-<ul>
-<li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.</li>
-<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separated document.</li>
-</ul>
-
 <h2 id="callback-functions">Callback functions</h2>
 
 <p>Once your result is ready, Oraclize will send a transaction back to your contract address, and invoke 1 of these 3 methods:</p>
 
 <ul>
 <li>either <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
-<li>or, if you requested for the TLS Notary proof, <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code></li>
+<li>or, <strong>if you requested for the TLS Notary proof, <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code></strong></li>
 <li>or, as a last resort, if the other methods are absent, the fallback function <code class="prettyprint">function()</code></li>
 </ul>
 
@@ -748,9 +835,9 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 
 <p>This might be helpful, for example, to send the first call to Oraclize directly from your contract constructor function without having to create your contract with an attached amount of Wei. This means, again, that you can have one free triggering transaction for any date in the future (up to 60 days).</p>
 
-<blockquote>
-<p>Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.</p>
-</blockquote>
+<aside class="notice">
+Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.
+</aside>
 
 <h3 id="call-fees">Call fees</h3>
 
@@ -791,7 +878,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
     <td>+0.04$</td>
   </tr>
   <tr>
-    <td>Wolfram Alpha</td>
+    <td>WolframAlpha</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.03$</td>
     <td>+0.0$</td>
     <td>N/A</td>
