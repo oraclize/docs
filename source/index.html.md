@@ -13,6 +13,7 @@ search: true
 includes:
   - overview
   - datasources
+  - additional_features
   - security
   - ethereum
   - pricing

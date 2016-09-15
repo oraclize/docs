@@ -15,8 +15,9 @@ In order to make the testing of our service a little bit easier (and cheaper) to
 
 This might be helpful, for example, to send the first call to Oraclize directly from your contract constructor function without having to create your contract with an attached amount of Wei. This means, again, that you can have one free triggering transaction for any date in the future (up to 60 days).
 
->Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.
-
+<aside class="notice">
+Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.
+</aside>
 
 ### Call fees
 
@@ -55,7 +56,7 @@ Payment is part and parcel of the `oraclize_query` function call, and our pricin
     <td>+0.04$</td>
   </tr>
   <tr>
-    <td>Wolfram Alpha</td>
+    <td>WolframAlpha</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.03$</td>
     <td>+0.0$</td>
     <td>N/A</td>
