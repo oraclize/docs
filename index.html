@@ -492,6 +492,19 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
 <p>We are listing here the honesty proofs that Oraclize provides. Other than the original TLSNotary-based one, we have others in the workings which will be released in the coming weeks.</p>
 
+<h2 id="proofs-storage-amp-delivery">Proofs Storage &amp; delivery</h2>
+
+<h3 id="ipfs"><a href="https://ipfs.io/" target="_blank">IPFS</a></h3>
+
+<p>In some circumstances you might want to avoid including the raw proof data into your response. One reason could be the fact that the delivery method you choose is expensive (i.e.: Ethereum transactions).
+IPFS can be used as storage &amp; delivery method, by making the proof data both permanent and persistent.</p>
+
+<p>IPFS enables the permanence of the proof data by design. This means that your query result can include the multihash of the proof data only, while the actual content can be pinned to IPFS nodes and float around the network whenever you try reaching such a multihash-addressed content.</p>
+
+<p>IPFS doesn&rsquo;t provide by itself any persistency guarantee, however we run as part of our infrastructure a <a href="https://github.com/oraclize/ipfs-persistence-consortium" target="_blank">IPFS persistence consortium</a>.</p>
+
+<p>You can help in keeping an independent copy of our proofs data by pointing your <a href="https://github.com/oraclize/ipfs-persistence-consortium" target="_blank">IPFS persistence consortium</a> node to the following aggregation peer: <code class="prettyprint">QmSsSSfJAJwj3jsNfzbSrxtLAjhpYPjbUEsCQT8mWVgBiL</code></p>
+
 <h2 id="tlsnotary-proof">TLSNotary proof</h2>
 
 <p>TLSNotary is a project implementing a modification of TLS. By using it you can prove that a certain server has really sent some data to you at a given point in time.</p>
