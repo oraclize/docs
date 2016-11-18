@@ -14,7 +14,7 @@ For example:
 
 <aside class="notice">
 Note:
-Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards
+Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation that we use is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
 </aside>
 
 * `binary(..)` helper is useful to get binary files such as certificate files
