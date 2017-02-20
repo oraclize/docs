@@ -166,70 +166,46 @@
 
           <h1 id="ethereum-integration">Ethereum Integration</h1>
 
-<p>The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works.</p>
+<p>The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
+To better profit from the documentation, previous knowledge of Solidity, the most used smart contract language on Ethereum, is required.</p>
 
-<p>All the reference code we will be using next is written in Solidity, but since the interface would be the same for any other language, feel free to use one you like.</p>
+<p>All the reference code used is written in Solidity, but since the interface would be the same for any other language.</p>
 
-<p>Sending a query to Oraclize means sending a transaction to the last Oraclize contract. In order to do that we have to:</p>
+<p>Sending a query to Oraclize means sending a contract call, also called internal transaction, to the on-chain Oraclize contract.</p>
 
 <ul>
-<li>take care of paying Oraclize the expected amount, which can vary depending on the query we are about to send</li>
-<li>and pass the query in the right format.</li>
+<li>Take care of paying Oraclize the expected amount, which can vary depending on the sent query</li>
+<li>Pass the query in the right format.</li>
 </ul>
 
 <p>With that, Oraclize will:</p>
 
 <ul>
-<li>fetch your result</li>
-<li>then send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated <code class="prettyprint">__callback</code> method.</li>
+<li>Fetch your result</li>
+<li>Send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated <code class="prettyprint">__callback</code> method.</li>
 </ul>
 
-<p>Note that the transaction sent back by Oraclize can trigger any status change in your contract, and can include the sending of another query to Oraclize. What can be done in the <code class="prettyprint">__callback</code> method is limited by your immagination and, well, the <code class="prettyprint">gasLimit</code>.</p>
+<p>Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done in the <code class="prettyprint">__callback</code> method is only bounded by the block gas limit.</p>
 
 <h2 id="getting-everything-on-track">Getting Everything on Track</h2>
 
-<p><strong>If you are using Solidity:</strong>
-First, you need to import our <code class="prettyprint">usingOraclize</code> contract into your code. You do not need to import the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contract interfaces as this is taken care of.</p>
+<p>First, place <code class="prettyprint">usingOraclize</code> contract into your code. You do not need to import the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contract interfaces as this is taken care of.</p>
 
 <p>The purpose of the <code class="prettyprint">usingOraclize</code> contract is to make calls to <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> as painless as possible for you. However, if you know what you are doing, you are free to call our <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a <code class="prettyprint">throw</code> is raised.</p>
 
 <p>In order to simplify the use of our API, we highly recommend that you simply extend the <code class="prettyprint">usingOraclize</code> contract and use its inherited methods, about which we discuss below. Indeed, these methods already handle payments and API calls correctly.</p>
 
 <p>All the code you need is found here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a>. After making your contract extend <code class="prettyprint">usingOraclize</code>, it would look like:</p>
-<pre class="highlight javascript"><code><span class="cm">/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/</span>
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">()</span> <span class="p">{</span>
         <span class="p">..</span>
     <span class="p">}</span> 
 
 <span class="p">}</span>
 </code></pre>
-
-<p><strong>If you are using Serpent:</strong>
-You just need to import the oraclize API via <code class="prettyprint">inset()</code> command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a></p>
-<pre class="highlight python"><code><span class="c"># In serpent you just need to import (inset)</span>
-<span class="c"># the oraclize API inside your contract</span>
-
-<span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-    <span class="o">..</span>
-
-</code></pre>
-
-<h2 id="network-selection">Network Selection</h2>
-
-<p>Oraclize is available both on the public Ethereum mainnet and on the Morden testnet.</p>
-
-<p>There is no need anymore to manually specify the network your contract will be deployed to: the helper functions will figure it out automagically.</p>
-
-<p>If you are looking for an Oraclize integration with your private blockchain please <a href="mailto:info@oraclize.it" target="_blank">get in touch with us</a> to know more about the options we provide.</p>
 
 <h2 id="simple-query">Simple Query</h2>
 
@@ -257,23 +233,15 @@ All the code written here assumes that you have already included all the necessa
 <p>An example code might look like this:</p>
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">);</span>
 </code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"WolframAlpha"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"random number between 0 and 100"</span><span class="p">))</span>
-</code></pre>
 
 <p>This code example will ask Oraclize to send you back immediately a transaction with the primary result (as a string) of the given formula (&ldquo;random number between 0 and 100&rdquo;) fetched from the data-source &ldquo;WolframAlpha&rdquo;.</p>
 
 <p>Similarly, you can use any other data-source, here we list some examples:</p>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">);</span>
-</code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">))</span>
+<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">);</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">);</span>
 </code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">))</span>
-</code></pre>
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">);</span>
-</code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"IPFS"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">))</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="cm">/* 
   the only data-source accepting 2 string arguments is
@@ -285,16 +253,6 @@ All the code written here assumes that you have already included all the necessa
 */</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span> <span class="s1">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">);</span>
 </code></pre>
-<pre class="highlight python"><code><span class="c"># the only data-source accepting 2 string arguments is</span>
-<span class="c"># 'URL' when we want it to send an HTTP POST request</span>
-<span class="c"># with the 2nd argument being the query-string we want</span>
-<span class="c"># to send to the given server.</span>
-
-<span class="c"># note that when the 2nd argument is a valid escaped JSON string it will be automatically sent as JSON</span>
-<span class="c">#      in serpent you must escape the JSON object</span>
-
-<span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"{</span><span class="se">\"</span><span class="s">pair</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">eth_btc</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">amount</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">1</span><span class="se">\"</span><span class="s">, </span><span class="se">\"</span><span class="s">withdrawal</span><span class="se">\"</span><span class="s">: </span><span class="se">\"</span><span class="s">1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5</span><span class="se">\"</span><span class="s">}"</span><span class="p">))</span>
-</code></pre>
 
 <h2 id="schedule-a-query-in-the-future">Schedule a Query in the Future</h2>
 
@@ -304,14 +262,8 @@ All the code written here assumes that you have already included all the necessa
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
 </code></pre>
-<pre class="highlight python"><code><span class="c"># get the result from the given URL 60 seconds from now</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span>
-</code></pre>
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given datasource at the specified timestamp in the future</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># get the result from the given datasource at the specified timestamp in the future</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="n">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"WolframAlpha"</span><span class="p">),</span> <span class="n">strConcat</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"flight "</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="n">flight_number</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">" landed"</span><span class="p">)))</span>
 </code></pre>
 
 <h2 id="the-query-id">The query ID</h2>
@@ -319,11 +271,6 @@ All the code written here assumes that you have already included all the necessa
 <p>Every time you call <code class="prettyprint">oraclize_query(...)</code>, it returns you a unique ID that represents your query. Whether you store this ID for future reference is up to you.</p>
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
 <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># get the result from the given URL 60 seconds from now</span>
-<span class="n">data</span> <span class="n">myid</span>
-
-<span class="bp">self</span><span class="o">.</span><span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">));</span>
 </code></pre>
 
 <h2 id="callback-functions">Callback Functions</h2>
@@ -343,14 +290,6 @@ All the code written here assumes that you have already included all the necessa
     <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span> <span class="c1">// new query for Oraclize!</span>
 <span class="p">}</span>
 </code></pre>
-<pre class="highlight python"><code><span class="n">data</span> <span class="n">myid</span>
-
-<span class="k">def</span> <span class="nf">__callback</span><span class="p">(</span><span class="n">myid</span><span class="p">:</span><span class="n">bytes32</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span><span class="n">string</span><span class="p">):</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="o">!=</span> <span class="n">oraclize_cbAddress</span><span class="p">()):</span>
-        <span class="k">return</span> <span class="c"># just to be sure the calling address is the Oraclize authorized one</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">ETHXBT</span> <span class="o">=</span> <span class="n">result</span> <span class="c"># doing something with the result..</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">myid</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">))</span> <span class="c"># new query for Oraclize!</span>
-</code></pre>
 
 <p>In the snippet above we call <code class="prettyprint">oraclize_query</code> again within the <code class="prettyprint">__callback</code> function. In effect, this makes the contract receive automatically <code class="prettyprint">__callback</code> every minute forever. Or at least, until you run out of funds!</p>
 
@@ -365,11 +304,7 @@ All the code written here assumes that you have already included all the necessa
 <p>If the default, and minimum, value of 200,000 gas,  is not enough, you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
 </code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"WolframAlpha"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"random number between 0 and 100"</span><span class="p">),</span> <span class="mi">500000</span><span class="p">)</span> <span class="c"># Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
-</code></pre>
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// you can set both custom timestamp/delay and custom gasLimit</span>
-</code></pre>
-<pre class="highlight python"><code><span class="n">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="n">text</span><span class="p">(</span><span class="s">"WolframAlpha"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"random number between 0 and 100"</span><span class="p">),</span> <span class="mi">500000</span><span class="p">)</span> <span class="c"># you can set both custom timestamp/delay and custom gasLimit</span>
 </code></pre>
 
 <p>Note also that if you offer too low a <code class="prettyprint">gasLimit</code>, and your <code class="prettyprint">__callback</code> method is long, you may never see a callback.</p>
@@ -405,38 +340,20 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 </blockquote>
 
 <p>Here is an example:</p>
-<pre class="highlight javascript"><code><span class="cm">/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/</span>
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
+    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">){</span>
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="p">..</span>
     <span class="p">}</span>
 <span class="p">}</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># In serpent you just need to import (inset)</span>
-<span class="c"># the oraclize API inside your contract</span>
-
-<span class="n">inset</span><span class="p">(</span><span class="s">"oraclizeAPI.se"</span><span class="p">)</span>
-
-<span class="k">def</span> <span class="nf">init</span><span class="p">():</span>
-    <span class="n">oraclize_setProof</span><span class="p">(</span><span class="n">proofType_TLSNotary</span> <span class="o">|</span> <span class="n">proofStorage_IPFS</span><span class="p">)</span>
-    <span class="n">oraclize_query</span><span class="p">(</span><span class="n">text</span><span class="p">(</span><span class="s">"URL"</span><span class="p">),</span> <span class="n">text</span><span class="p">(</span><span class="s">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">))</span>
-
-<span class="k">def</span> <span class="nf">__callback</span><span class="p">(</span><span class="n">myid</span><span class="p">:</span><span class="n">bytes32</span><span class="p">,</span> <span class="n">result</span><span class="p">:</span><span class="n">string</span><span class="p">,</span> <span class="n">proof</span><span class="p">:</span><span class="nb">bytes</span><span class="p">):</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">sender</span> <span class="o">!=</span> <span class="n">oraclize_cbAddress</span><span class="p">()):</span>
-        <span class="k">return</span>
-    <span class="o">..</span>
 </code></pre>
 
 <h2 id="more-examples">More Examples</h2>
@@ -450,11 +367,7 @@ dev.oraclize.it web IDE, needs to be imported manually otherwise
 <p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.</p>
 
 <h2 id="best-practices">Best Practices</h2>
-<pre class="highlight javascript"><code><span class="cm">/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/</span>
-<span class="kr">import</span> <span class="s2">"dev.oraclize.it/api.sol"</span><span class="p">;</span>
+<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
@@ -731,7 +644,7 @@ Note: Oraclize calls are free when used on testnets! This works for moderate usa
   </tr>
 </table>
 
-          <h1 id="security">Security</h1>
+          <h1 id="authenticity-proofs">Authenticity Proofs</h1>
 
 <p>As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source. </p>
 
