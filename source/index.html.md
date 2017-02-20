@@ -12,9 +12,9 @@ search: true
 
 includes:
   - overview
-  - datasources
-  - additional_features
-  - security
   - ethereum
-  - pricing
+  - datasources
+  - pricing 
+  - authenticity_proofs
+  - additional_features
 ---

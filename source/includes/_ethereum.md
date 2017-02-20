@@ -1,6 +1,6 @@
-# Ethereum integration
+# Ethereum Integration
 
-The following is meant to be a short but complete manual to explain how the interfacing of an Ethereum contract with Oraclize actually works.
+The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works.
 
 All the reference code we will be using next is written in Solidity, but since the interface would be the same for any other language, feel free to use one you like.
 
@@ -17,7 +17,7 @@ With that, Oraclize will:
 Note that the transaction sent back by Oraclize can trigger any status change in your contract, and can include the sending of another query to Oraclize. What can be done in the `__callback` method is limited by your immagination and, well, the `gasLimit`.
 
 
-## Getting everything on track
+## Getting Everything on Track
 **If you are using Solidity:**
 First, you need to import our `usingOraclize` contract into your code. You do not need to import the `OraclizeI` and `OraclizeAddrResolverI` contract interfaces as this is taken care of.
 
@@ -61,7 +61,7 @@ def init():
 ```
 
 
-## Network selection
+## Network Selection
 
 Oraclize is available both on the public Ethereum mainnet and on the Morden testnet.
 
@@ -71,7 +71,7 @@ If you are looking for an Oraclize integration with your private blockchain plea
 
 
 
-## Simple query
+## Simple Query
 
 > **Note:**
 > All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our `usingOraclize` contract (if you are using Solidity).
@@ -150,7 +150,7 @@ oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success
 ```
 
 
-## Schedule a query in the future
+## Schedule a Query in the Future
 
 If you want Oraclize to execute your query at a scheduled future time, just specify the delay (in seconds) from the current time or the timestamp in the future as first argument.
 
@@ -193,7 +193,7 @@ data myid
 self.myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"));
 ```
 
-## Callback functions
+## Callback Functions
 
 Once your result is ready, Oraclize will send a transaction back to your contract address, and invoke 1 of these 3 methods:
 
@@ -226,7 +226,7 @@ In the snippet above we call `oraclize_query` again within the `__callback` func
 Note that `myid` can be used to implement different behaviours into the `__callback` function, in particular when there is more than one pending call from Oraclize.
 
 
-## Custom gas
+## Custom Gas
 
 The transaction originating from Oraclize to your `__callback` function costs gas, just like any other transaction. However, as you learned earlier, you need to cover Oraclize for this gas cost, and the `oraclize_query` function helpfully handles that. It defaults at 200,000 gas.
 
@@ -252,7 +252,7 @@ oraclize_query(60, text("WolframAlpha"), text("random number between 0 and 100")
 
 Note also that if you offer too low a `gasLimit`, and your `__callback` method is long, you may never see a callback.
 
-## TLSNotary proof
+## TLSNotary Proof
 
 In order to get, or not, the TLSNotary proof back from Oraclize you need to specify the `proofType` and `proofStorage`. You do this by calling: 
 
@@ -315,18 +315,18 @@ def __callback(myid:bytes32, result:string, proof:bytes):
 ```
 
 
-## More examples
+## More Examples
 
 You can have a look at more complete and complex examples by heading to our dedicated github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
 
 
-## Random utilities
+## Random Utilities
 
 Since the callback transaction always provides results as strings, the Solidity API helpers also include some convenience functions, which might prove useful to you. Especially since Solidity does not provide any official "standard Library" yet.
 
 You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.
 
-## Best practices
+## Best Practices
 
 ```javascript
 /*
