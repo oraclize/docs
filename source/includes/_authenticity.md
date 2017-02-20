@@ -1,4 +1,4 @@
-# Security
+# Authenticity Proofs
 As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source. 
 
 In the context of web technologies, _authentication_ is provided by the HTTPS protocol, an extension of the HTTP protocol which create an encrypted and authenticated channel between the client and the web-server containing the data.

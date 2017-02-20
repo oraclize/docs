@@ -1,25 +1,25 @@
 # Ethereum Integration
 
-The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works.
+The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
+To better profit from the documentation, previous knowledge of Solidity, the most used smart contract language on Ethereum, is required.
 
-All the reference code we will be using next is written in Solidity, but since the interface would be the same for any other language, feel free to use one you like.
+All the reference code used is written in Solidity, but since the interface would be the same for any other language.
 
-Sending a query to Oraclize means sending a transaction to the last Oraclize contract. In order to do that we have to:
+Sending a query to Oraclize means sending a contract call, also called internal transaction, to the on-chain Oraclize contract.
 
-* take care of paying Oraclize the expected amount, which can vary depending on the query we are about to send
-* and pass the query in the right format.
+* Take care of paying Oraclize the expected amount, which can vary depending on the sent query
+* Pass the query in the right format.
 
 With that, Oraclize will:
 
-* fetch your result
-* then send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated `__callback` method.
+* Fetch your result
+* Send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated `__callback` method.
 
-Note that the transaction sent back by Oraclize can trigger any status change in your contract, and can include the sending of another query to Oraclize. What can be done in the `__callback` method is limited by your immagination and, well, the `gasLimit`.
-
+Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done in the `__callback` method is only bounded by the block gas limit.
 
 ## Getting Everything on Track
-**If you are using Solidity:**
-First, you need to import our `usingOraclize` contract into your code. You do not need to import the `OraclizeI` and `OraclizeAddrResolverI` contract interfaces as this is taken care of.
+
+First, place `usingOraclize` contract into your code. You do not need to import the `OraclizeI` and `OraclizeAddrResolverI` contract interfaces as this is taken care of.
 
 The purpose of the `usingOraclize` contract is to make calls to `OraclizeI` and `OraclizeAddrResolverI` as painless as possible for you. However, if you know what you are doing, you are free to call our `OraclizeI` and `OraclizeAddrResolverI` interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a `throw` is raised.
 
@@ -28,48 +28,16 @@ In order to simplify the use of our API, we highly recommend that you simply ext
 All the code you need is found here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a>. After making your contract extend `usingOraclize`, it would look like:
 
 ```javascript
-/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/
-import "dev.oraclize.it/api.sol";
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
     
 contract YourContractName is usingOraclize {
 
-    function YourContractName(){
+    function YourContractName() {
         ..
     } 
     
 }
 ```
-
-
-**If you are using Serpent:**
-You just need to import the oraclize API via `inset()` command, you can find all the code you need to import here <a href="http://dev.oraclize.it/api.se" target="_blank">http://dev.oraclize.it/api.se</a>
-
-
-
-```python
-# In serpent you just need to import (inset)
-# the oraclize API inside your contract
-
-inset("oraclizeAPI.se")
-
-def init():
-    ..
-
-```
-
-
-## Network Selection
-
-Oraclize is available both on the public Ethereum mainnet and on the Morden testnet.
-
-There is no need anymore to manually specify the network your contract will be deployed to: the helper functions will figure it out automagically.
-
-If you are looking for an Oraclize integration with your private blockchain please <a href="mailto:info@oraclize.it" target="_blank">get in touch with us</a> to know more about the options we provide.
-
-
 
 ## Simple Query
 
@@ -93,36 +61,20 @@ An example code might look like this:
 oraclize_query("WolframAlpha", "random number between 0 and 100");
 ```
 
-```python
-oraclize_query(text("WolframAlpha"), text("random number between 0 and 100"))
-```
-
 This code example will ask Oraclize to send you back immediately a transaction with the primary result (as a string) of the given formula ("random number between 0 and 100") fetched from the data-source "WolframAlpha".
 
 Similarly, you can use any other data-source, here we list some examples:
 
 ```javascript
-oraclize_query("URL", "api.kraken.com/0/public/Ticker?pair=ETHXBT");
-```
-
-```python
-oraclize_query(text("URL"), text("api.kraken.com/0/public/Ticker?pair=ETHXBT"))
+oraclize_query("URL", "https://api.kraken.com/0/public/Ticker?pair=ETHXBT");
 ```
 
 ```javascript
 oraclize_query("URL", "json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last");
 ```
 
-```python
-oraclize_query(text("URL"), text("json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"))
-```
-
 ```javascript
 oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU");
-```
-
-```python
-oraclize_query(text("IPFS"), text("QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"))
 ```
 
 ```javascript
@@ -137,19 +89,6 @@ oraclize_query(text("IPFS"), text("QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZb
 oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit", '{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}');
 ```
 
-```python
-# the only data-source accepting 2 string arguments is
-# 'URL' when we want it to send an HTTP POST request
-# with the 2nd argument being the query-string we want
-# to send to the given server.
-  
-# note that when the 2nd argument is a valid escaped JSON string it will be automatically sent as JSON
-#      in serpent you must escape the JSON object
-
-oraclize_query(text("URL"), text("json(https://shapeshift.io/sendamount).success.deposit"), text("{\"pair\": \"eth_btc\", \"amount\": \"1\", \"withdrawal\": \"1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5\"}"))
-```
-
-
 ## Schedule a Query in the Future
 
 If you want Oraclize to execute your query at a scheduled future time, just specify the delay (in seconds) from the current time or the timestamp in the future as first argument.
@@ -161,21 +100,10 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
 ```
 
-```python
-# get the result from the given URL 60 seconds from now
-oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"))
-```
-
 ```javascript
 // get the result from the given datasource at the specified timestamp in the future
 oraclize_query(scheduled_arrivaltime+3*3600, "WolframAlpha", strConcat("flight ", flight_number, " landed"));
 ```
-
-```python
-# get the result from the given datasource at the specified timestamp in the future
-oraclize_query(scheduled_arrivaltime+3*3600, text("WolframAlpha"), strConcat(text("flight "), text(flight_number), text(" landed")))
-```
-
 
 ## The query ID
 
@@ -184,13 +112,6 @@ Every time you call `oraclize_query(...)`, it returns you a unique ID that repre
 ```javascript
 // get the result from the given URL 60 seconds from now
 bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
-```
-
-```python
-# get the result from the given URL 60 seconds from now
-data myid
-
-self.myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"));
 ```
 
 ## Callback Functions
@@ -211,16 +132,6 @@ function __callback(bytes32 myid, string result) {
 }
 ```
 
-```python
-data myid
-
-def __callback(myid:bytes32, result:string):
-    if (msg.sender != oraclize_cbAddress()):
-        return # just to be sure the calling address is the Oraclize authorized one
-    self.ETHXBT = result # doing something with the result..
-    self.myid = oraclize_query(60, text("URL"), text("json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")) # new query for Oraclize!
-```
-
 In the snippet above we call `oraclize_query` again within the `__callback` function. In effect, this makes the contract receive automatically `__callback` every minute forever. Or at least, until you run out of funds!
 
 Note that `myid` can be used to implement different behaviours into the `__callback` function, in particular when there is more than one pending call from Oraclize.
@@ -238,16 +149,8 @@ If the default, and minimum, value of 200,000 gas,  is not enough, you can incre
 oraclize_query("WolframAlpha", "random number between 0 and 100", 500000); // Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
 ```
 
-```python
-oraclize_query(text("WolframAlpha"), text("random number between 0 and 100"), 500000) # Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
-```
-
 ```javascript
 oraclize_query(60, "WolframAlpha", "random number between 0 and 100", 500000); // you can set both custom timestamp/delay and custom gasLimit
-```
-
-```python
-oraclize_query(60, text("WolframAlpha"), text("random number between 0 and 100"), 500000) # you can set both custom timestamp/delay and custom gasLimit
 ```
 
 Note also that if you offer too low a `gasLimit`, and your `__callback` method is long, you may never see a callback.
@@ -278,41 +181,22 @@ The `proof` string is exactly the IPFS multihash that identifies your TLSNotary 
 Here is an example:
 
 ```javascript
-/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/
-import "dev.oraclize.it/api.sol";
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
     
 contract YourContractName is usingOraclize {
     
-    function YourContractName(){
+    function YourContractName() {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
         oraclize_query("URL", "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
     }
     
-    function __callback(bytes32 myid, string result, bytes proof){
+    function __callback(bytes32 myid, string result, bytes proof) {
         if (msg.sender != oraclize_cbAddress()) throw;
         ..
     }
 }
 ```
 
-```python
-# In serpent you just need to import (inset)
-# the oraclize API inside your contract
-
-inset("oraclizeAPI.se")
-
-def init():
-    oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)
-    oraclize_query(text("URL"), text("xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"))
-
-def __callback(myid:bytes32, result:string, proof:bytes):
-    if (msg.sender != oraclize_cbAddress()):
-        return
-    ..
-```
 
 
 ## More Examples
@@ -329,11 +213,7 @@ You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/ma
 ## Best Practices
 
 ```javascript
-/*
-import "dev.oraclize.it/api.sol" just works while using 
-dev.oraclize.it web IDE, needs to be imported manually otherwise 
-*/
-import "dev.oraclize.it/api.sol";
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
     
 contract YourContractName is usingOraclize {
 
