@@ -14,6 +14,6 @@ includes:
   - ethereum
   - datasources
   - pricing 
-  - authenticity_proofs
+  - authenticity
   - additional_features
 ---
