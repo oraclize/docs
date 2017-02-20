@@ -1,6 +1,6 @@
 # Additional Features
 
-## Parsing helpers
+## Parsing Helpers
 
 In order to make things simpler to handle on the smart-contract side, you can provide the URL inside one of the following parsing helpers:
 
@@ -25,7 +25,7 @@ Note:
 If and when the server is not responding or unreachable, we will send you an empty response
 </aside>
 
-## Encrypted queries
+## Encrypted Queries
 There are some use cases where you are interested in not disclosing your clear text query to the blockchain: for example, if your query includes some API secret credentials.
 
 One option is to encrypt the entire query using Oraclize public key `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
@@ -111,7 +111,7 @@ In order to prevent the misuse of encrypted queries (i.e.: replay attacks) the f
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
 
-### Chosen Encryption scheme
+### Chosen Encryption Scheme
 To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:
 
 * An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.
