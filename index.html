@@ -127,10 +127,10 @@
     </a>
     <div class="tocify-wrapper">
       <div id="logoc">
-      <img src="images/logo.png" alt="Oraclize log" id="logoMAIN" width="50px"><br> <span id="logoText">Oraclize</span>
+      <img src="images/logo.png" alt="Oraclize log" id="logoMAIN" width="100px">
       </div>
         <div class="lang-selector">
-              <a href="#" data-language-name="javascript">Solidity</a>
+              <a href="#" data-language-name="javascript"></a>
         </div>
         <div class="search">
           <input type="text" class="search" id="input-search" placeholder="Search">
@@ -237,11 +237,12 @@ All the code written here assumes that you have already included all the necessa
 <p>This code example will ask Oraclize to send you back immediately a transaction with the primary result (as a string) of the given formula (&ldquo;random number between 0 and 100&rdquo;) fetched from the data-source &ldquo;WolframAlpha&rdquo;.</p>
 
 <p>Similarly, you can use any other data-source, here we list some examples:</p>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">)</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span>
+  <span class="s2">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">)</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">);</span>
+<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="cm">/* 
   the only data-source accepting 2 string arguments is
@@ -249,9 +250,11 @@ All the code written here assumes that you have already included all the necessa
   with the 2nd argument being the query-string we want
   to send to the given server.
 
-  note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
+  note that when the 2nd argument is a valid JSON string
+  it will be automatically sent as JSON
 */</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span> <span class="s1">'{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">);</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span>
+  <span class="s1">'{"pair":"eth_btc","amount":"1","withdrawal":"1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">)</span>
 </code></pre>
 
 <h2 id="schedule-a-query-in-the-future">Schedule a Query in the Future</h2>
@@ -260,17 +263,20 @@ All the code written here assumes that you have already included all the necessa
 
 <p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.</p>
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
+  <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given datasource at the specified timestamp in the future</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>
+  <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
 </code></pre>
 
 <h2 id="the-query-id">The query ID</h2>
 
 <p>Every time you call <code class="prettyprint">oraclize_query(...)</code>, it returns you a unique ID that represents your query. Whether you store this ID for future reference is up to you.</p>
 <pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
-<span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+<span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
+  <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
 </code></pre>
 
 <h2 id="callback-functions">Callback Functions</h2>
@@ -285,9 +291,14 @@ All the code written here assumes that you have already included all the necessa
 
 <p>Here are some handling examples:</p>
 <pre class="highlight javascript"><code><span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span> <span class="c1">// just to be sure the calling address is the Oraclize authorized one</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="p">{</span>
+      <span class="c1">// just to be sure the calling address is the Oraclize authorized one</span>
+      <span class="k">throw</span><span class="p">;</span>
+    <span class="p">}</span>
     <span class="nx">ETHXBT</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span> <span class="c1">// doing something with the result..</span>
-    <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span> <span class="c1">// new query for Oraclize!</span>
+    <span class="c1">// new query for Oraclize!</span>
+    <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
+      <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
 <span class="p">}</span>
 </code></pre>
 
@@ -302,9 +313,11 @@ All the code written here assumes that you have already included all the necessa
 <p>This <em>return</em> gas cost is actually in your control since you write the code in the <code class="prettyprint">__callback</code> method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the <code class="prettyprint">gasLimit</code> should be on the <code class="prettyprint">__callback</code> transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.</p>
 
 <p>If the default, and minimum, value of 200,000 gas,  is not enough, you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
+<pre class="highlight javascript"><code><span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span> <span class="c1">// you can set both custom timestamp/delay and custom gasLimit</span>
+<pre class="highlight javascript"><code><span class="c1">// you can set both custom timestamp/delay and custom gasLimit</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
 
 <p>Note also that if you offer too low a <code class="prettyprint">gasLimit</code>, and your <code class="prettyprint">__callback</code> method is long, you may never see a callback.</p>
@@ -346,7 +359,8 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
     <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
-        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span>
+          <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
@@ -379,7 +393,10 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="k">if</span><span class="p">(</span><span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span><span class="o">==</span><span class="kc">true</span><span class="p">)</span> <span class="k">throw</span><span class="p">;</span> <span class="c1">// check if this myid was already processed before</span>
+        <span class="k">if</span><span class="p">(</span><span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span><span class="o">==</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+          <span class="c1">// check if this myid was already processed before</span>
+          <span class="k">throw</span><span class="p">;</span>
+        <span class="p">}</span>
         <span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// mark this myid (default bool value is false)</span>
         <span class="p">...</span>
     <span class="p">}</span>
@@ -664,7 +681,7 @@ The authenticity proofs leverage different attestation technologies: some are so
 <p>The Android Proof is a result of some of Oraclize&rsquo;s internal R&amp;D work. It leverages software remote attestation technology developed by Google, called SafetyNet, to validate that a given Android application is running on a safe, non-rooted physical device, connected to Oraclize&rsquo;s infrastructure. It also remotely validates the application code hash, enabling authentication of the application running on the device. The application code is open-source, thereby enabling auditability and verification of the code hash. The Android Proof goes further, by using the newly introduced Android Hardware Attestion to prove that the physical device is updated to the latest available Android version, further ensuring integrity by having any potential exploits within the system patched. Furthermore, it verifies that the device&rsquo;s Root-of-Binding-Trust is valid. Both these technologies together effectively turn the physical Android device into a provably-secure environment in which an untampered HTTPS connection to a remote datasource can be initiated. For Oraclize or an external attacker with unauthorized gained access to the infrastructure to compromise the device and generate a false but valid proof, a zero-day exploit unbeknownst to Google must be discovered by said party, which either breaks the Android sandboxing model or is a kernel-level exploit, of the latest version of Android OS and its available security patches.
 You can access more information about the Android Proof by reading the white paper on it and experiment with it on the Ethereum and Bitcoin testnets. The enabling of the Android Proof on mainnet is pending based on an update by Google, effectively enabling Android Nougat Hardware Attestation.</p>
 
-<h2 id="storage-and-delivery-of-the-authenticity-proofs">Storage and Delivery of the Authenticity Proofs</h2>
+<h2 id="storage-and-delivery">Storage and Delivery</h2>
 
 <p>The authenticity proofs may be relatively large files, of up to a few kilobytes. Delivering such proofs directly within the result of the data payload in an Ethereum transaction can get quite expensive, in terms of EVM execution costs, and may even be impossible for larger data. </p>
 
@@ -727,10 +744,9 @@ If and when the server is not responding or unreachable, we will send you an emp
 
 <p>It will encrypt the query with the default Oraclize public key. You can then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
 <pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># here we specify the encrypted formula directly</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
+  bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
+  31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
 </code></pre>
 
 <p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
@@ -741,10 +757,8 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
 
 <p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
 <pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># This is the query that we want to encrypt</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span><span class="s">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span><span class="s">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span>
+  <span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
 </code></pre>
 
 <p>Encrypt the datasource (URL in this case):<br>
@@ -772,11 +786,12 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
 <br></p>
 <pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
 <span class="c1">// to the oraclize_query (in the right order)</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight python"><code><span class="c"># Finally we add all the encrypted text</span>
-<span class="c"># to the oraclize_query (in the right order)</span>
-<span class="n">oraclize_query</span><span class="p">(</span><span class="s">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s">"BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span><span class="s">"BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">)</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
+  uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8
+  v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/
+  y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span> <span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxG
+  NtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvp
+  J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">);</span>
 </code></pre>
 
 <p>Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.</p>
@@ -799,7 +814,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
       </div>
       <div class="dark-box">
           <div class="lang-selector">
-                <a href="#" data-language-name="javascript">Solidity</a>
+                <a href="#" data-language-name="javascript"></a>
           </div>
       </div>
     </div>
