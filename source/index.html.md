@@ -2,7 +2,7 @@
 title: API Reference
 
 language_tabs:
-  - javascript: Solidity
+  - javascript: 
 
 toc_footers:
   - <span id='lastupdate'></span>

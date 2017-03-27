@@ -66,15 +66,16 @@ This code example will ask Oraclize to send you back immediately a transaction w
 Similarly, you can use any other data-source, here we list some examples:
 
 ```javascript
-oraclize_query("URL", "https://api.kraken.com/0/public/Ticker?pair=ETHXBT");
+oraclize_query("URL", "https://api.kraken.com/0/public/Ticker?pair=ETHXBT")
 ```
 
 ```javascript
-oraclize_query("URL", "json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last");
+oraclize_query("URL",
+  "json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last")
 ```
 
 ```javascript
-oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU");
+oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU")
 ```
 
 ```javascript
@@ -84,9 +85,11 @@ oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU");
   with the 2nd argument being the query-string we want
   to send to the given server.
 
-  note that when the 2nd argument is a valid JSON string it will be automatically sent as JSON
+  note that when the 2nd argument is a valid JSON string
+  it will be automatically sent as JSON
 */
-oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit", '{"pair": "eth_btc", "amount": "1", "withdrawal": "1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}');
+oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit",
+  '{"pair":"eth_btc","amount":"1","withdrawal":"1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}')
 ```
 
 ## Schedule a Query in the Future
@@ -97,12 +100,14 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 
 ```javascript
 // get the result from the given URL 60 seconds from now
-oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
+oraclize_query(60, "URL",
+  "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")
 ```
 
 ```javascript
 // get the result from the given datasource at the specified timestamp in the future
-oraclize_query(scheduled_arrivaltime+3*3600, "WolframAlpha", strConcat("flight ", flight_number, " landed"));
+oraclize_query(scheduled_arrivaltime+3*3600,
+  "WolframAlpha", strConcat("flight ", flight_number, " landed"));
 ```
 
 ## The query ID
@@ -111,7 +116,8 @@ Every time you call `oraclize_query(...)`, it returns you a unique ID that repre
 
 ```javascript
 // get the result from the given URL 60 seconds from now
-bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
+bytes32 myid = oraclize_query(60, "URL",
+  "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
 ```
 
 ## Callback Functions
@@ -126,9 +132,14 @@ Here are some handling examples:
 
 ```javascript
 function __callback(bytes32 myid, string result) {
-    if (msg.sender != oraclize_cbAddress()) throw; // just to be sure the calling address is the Oraclize authorized one
+    if (msg.sender != oraclize_cbAddress()) {
+      // just to be sure the calling address is the Oraclize authorized one
+      throw;
+    }
     ETHXBT = result; // doing something with the result..
-    bytes32 myid = oraclize_query(60, "URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"); // new query for Oraclize!
+    // new query for Oraclize!
+    bytes32 myid = oraclize_query(60, "URL",
+      "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
 }
 ```
 
@@ -146,11 +157,13 @@ This *return* gas cost is actually in your control since you write the code in t
 If the default, and minimum, value of 200,000 gas,  is not enough, you can increase it by specifying a different `gasLimit` in this way:
 
 ```javascript
-oraclize_query("WolframAlpha", "random number between 0 and 100", 500000); // Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
+// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
+oraclize_query("WolframAlpha", "random number between 0 and 100", 500000);
 ```
 
 ```javascript
-oraclize_query(60, "WolframAlpha", "random number between 0 and 100", 500000); // you can set both custom timestamp/delay and custom gasLimit
+// you can set both custom timestamp/delay and custom gasLimit
+oraclize_query(60, "WolframAlpha", "random number between 0 and 100", 500000);
 ```
 
 Note also that if you offer too low a `gasLimit`, and your `__callback` method is long, you may never see a callback.
@@ -187,7 +200,8 @@ contract YourContractName is usingOraclize {
     
     function YourContractName() {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        oraclize_query("URL", "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
+        oraclize_query("URL",
+          "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
     }
     
     function __callback(bytes32 myid, string result, bytes proof) {
@@ -225,7 +239,10 @@ contract YourContractName is usingOraclize {
 
     function __callback(bytes32 myid, string result) {
         if(msg.sender != oraclize_cbAddress()) throw;
-        if(myidList[myid]==true) throw; // check if this myid was already processed before
+        if(myidList[myid]==true) {
+          // check if this myid was already processed before
+          throw;
+        }
         myidList[myid] = true; // mark this myid (default bool value is false)
         ...
     }
