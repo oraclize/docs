@@ -29,10 +29,18 @@
         font-size: 1.75em;
       }
       #lastupdate {
-	position:absolute;
-	bottom:0;
-	font-size:1.13em;
-	font-style:italic;
+	position: fixed;
+	bottom: 10px;
+	font-size: 1.13em;
+        background-color: #393939;
+	/*font-style: italic;*/
+      }
+      #chat {
+        display: none;
+        position: fixed;
+        bottom: 10px;
+        right: 20px;
+        z-index: 10;
       }
       .highlight table td { padding: 5px; }
 .highlight table pre { margin: 0; }
@@ -139,6 +147,8 @@
       <div id="toc">
       </div>
         <ul class="toc-footer">
+            <li><a href='https://github.com/oraclize/docs/wiki' target='_blank'>Suggest an edit</a></li>
+            <li><a href='https://gitter.im/oraclize/' target='_blank'>Join the Oraclize Dev Community</a></li>
             <li><span id='lastupdate'></span></li>
         </ul>
     </div>
@@ -818,7 +828,16 @@ As a consequence, remember to always generate a new encrypted string when re-dep
           </div>
       </div>
     </div>
+    <span id='chat'><a href='https://gitter.im/oraclize/' target='_blank'><img src='images/gitter.png' width=120></a></span>
     <script>
+    $(document).ready(function(){
+      setTimeout(function(){
+        $("#chat").slideDown();
+      }, 1500);
+    });
+    $("#chat img").mouseover(function(){ $(this).animate({width: "140px"}, "fast"); });
+    $("#chat img").mouseout(function(){ $(this).animate({width: "120px"}, "fast"); });
+    
     $.get('lastupdate.txt', function(date){
 	$('#lastupdate').html('Last update: '+date.trim());
     }, 'text');
