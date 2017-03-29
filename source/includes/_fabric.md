@@ -1,4 +1,4 @@
-# &#9910; &nbsp; Ethereum
+# &#9741; &nbsp; Hyperledger Fabric
 
 The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
 To better profit from the documentation, previous knowledge of Solidity, the most used smart contract language on Ethereum, is required.
@@ -111,10 +111,6 @@ oraclize_query(scheduled_arrivaltime+3*3600,
 ```
 
 ## Recursive queries
-
-Thanks to the service offered by Oraclize, you can have a smart contract being effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuos manner.
-
-This can be useful to implement periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.
 
 ## The query ID
 
