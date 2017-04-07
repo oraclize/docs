@@ -163,27 +163,35 @@
         
           <h1 id="overview">Overview</h1>
 
-<p>Oraclize aims to be the privileged data gateway between blockchain protocols and the world wide web. </p>
+<blockquote>
+<p><img src="images/flowchart.png" /></p>
+</blockquote>
 
-<p>Oraclize main goal as a company is to provide a way for smart contracts to break free of their constrains and provide them the ability to access all the data they need from the web, without compromising their trustless nature. </p>
+<p>Oraclize aims to be the privileged carrier for data between blockchain protocols and the wider Internet. </p>
 
-<p>In particular, the aim is not to force smart contract developers in having to trust Oraclize with the data they need. Without any backing of authenticity, Oraclize could easily tamper with the data.</p>
+<p>Our main goal as a company is to provide a way for smart contracts to break free of their constrains and provide them the ability to access all the data they need from the web, without compromising their trustless nature.</p>
 
-<p>In order to complete this complex task, Oraclize returns the data requested along with a proof of the authenticity: i.e that the data comes from the data provider which has been explicity demanded by the smart contract.</p>
+<p>In particular, the aim is not to force smart contract developers in having to trust Oraclize with the data they need. Without any backing of authenticity, Oraclize could easily tamper with the data. This is why, in order to complete this complex task, Oraclize returns the data requested along with a proof of the authenticity: i.e that the data comes from the data provider which has been explicity demanded by the smart contract.</p>
 
-<p>More can be read about the authenticity proofs provided by Oraclize, within the dedicated Authencity Proofs section of this documentation.</p>
+<p>More can be read about the authenticity proofs provided by Oraclize, within the dedicated section of this documentation.</p>
 
 <h2 id="what-is-an-oracle">What is an oracle</h2>
 
-<p>There are many different definitions of oracle, according to the one we stick with an oracle is the blockchain-aware party in charge of providing on the blockchain some data that blockchain applications cannot access by themselves due to technical limitations.</p>
+<p>The very definition of oracle defines what such entity does, but not who it is. Different actors are calling themselves oracle and this has lead users over time to a confused idea around the actual meaning of the term. For the sake of an easy but genuine understanding of what follows, we can define it as the party who provides to the blockchain some data that blockchain applications cannot access by themselves.</p>
+
+<p>In general, the reason why the blockchain cannot reach out to external data is that it is inefficient and often impossible to find a decentralized consensus on a centralized data.</p>
 
 <h2 id="what-is-oraclize">What is Oraclize</h2>
 
-<p>Oraclize is an elegant solution to the &ldquo;oracle problem&rdquo;. We are the &ldquo;state-of-the-art&rdquo; oracle service and we enable any datasource (Web APIs, ..) to be used straight away from different blockchain applications, without needing the datasources to adapt or understand the blockchain.</p>
+<p>Oraclize is an elegant solution to the &ldquo;oracle problem&rdquo;. We are the &ldquo;state-of-the-art&rdquo; oracle service and we enable any datasource (Web APIs, ..) to be used straight away from different blockchain applications.</p>
+
+<p>This means that the datasources don&rsquo;t need to adapt or understand the blockchain and they can keep providing their data via the channels they already have (tipically their own Web APIs).</p>
+
+<p>Ironically, Oraclize can be seen as a new intermediary in a new world built without intermediaries. While this could be seen as a weakness, it really doesn&rsquo;t. To understand more on how we ended up designing the system in this way and why this approach is so powerful, please read the next paragraph. </p>
 
 <h2 id="rationale">Rationale</h2>
 
-<p>We do not find reasonable the idea that datasources should adapt to the blockchain and send their data there by themselves. Thanks to our approach, any datasource can be used out of the box in any context, while removing all the potential risks of putting an extra intermediary into the game. The authenticity proofs we provide can give strong guarantees around the authenticity of data. This means that while the data is sent to the blockchain by us, you can be 100% sure that it is coming, without modifications, from the datasource you have chosen.</p>
+<p>While our initial thoughts were reiterating over the concepts of a decentralized oracle system like Orisi, we soon figured out that the limits of that approach were not really acceptable. In order to stay agnostic to the data itself, it is important to keep the datasource and oracle parts separated. Sticking with that means that the blockchain integration is not something the datasource has to figure out on his side. Thanks to our approach, any datasource can be used out of the box in any context, while removing all the potential risks of putting an extra intermediary into the game. The authenticity proofs we provide can give strong guarantees around the authenticity of data. This means that while the data is sent to the blockchain by us, you can be 100% sure that it is coming, without modifications, from the datasource you have chosen.</p>
 
 <h2 id="integrations">Integrations</h2>
 
@@ -214,7 +222,42 @@
 
 <h2 id="parsing-helpers">Parsing helpers</h2>
 
-<p>In order to facilitate the post-processing of data, some simple to use (and simple to audit!) parsing helpers are available. This means you can filter down the results coming from the datasource in a way that only the data you need is sent back to you. Note that the authenticity proof will still reference the full content.</p>
+<p>In order to facilitate the post-processing of data, some simple to use (and simple to audit) parsing helpers are available. This means you can filter down the results coming from the datasource in a way that only the data you need is sent back to you. Note that the authenticity proof will still reference the full content.</p>
+
+<p>The following parsing helpers are available:</p>
+
+<ul>
+<li><p><code class="prettyprint">xml(..)</code> and <code class="prettyprint">json(..)</code> helpers let you ask Oraclize to only return part of the JSON or XML-parsed response. 
+For example:</p>
+
+<ul>
+<li>in order to get the whole response back, you use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> </li>
+<li>but if all you want is the last-price field, you need to use the <code class="prettyprint">json</code> parsing call as <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></li>
+</ul></li>
+<li><p><code class="prettyprint">html(..).xpath(..)</code> helper is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. For Example:</p>
+
+<ul>
+<li>to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
+</ul></li>
+</ul>
+
+<aside class="notice">
+Note:
+Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation that we use is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
+</aside>
+
+<ul>
+<li><code class="prettyprint">binary(..)</code> helper is useful to get binary files such as certificate files
+
+<ul>
+<li>to fetch only a portion of the binary file you can use <code class="prettyprint">slice(offset,length)</code> the first parameter is the offset while the second one is the length of the slice you want back (both in <strong>bytes</strong>).<br> example: fetch only the first 300 bytes from a binary CRL: <code class="prettyprint">binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code> <strong>binary helper must be used with the slice option and only binary files (not encoded) are accepted</strong></li>
+</ul></li>
+</ul>
+
+<aside class="notice">
+Note:
+when the server is not responding, the server is unreachable or your parsing helper is not applicable, we will send you an empty response
+</aside>
 
 <h2 id="authenticity-proofs">Authenticity proofs</h2>
 
@@ -223,6 +266,89 @@
 <h2 id="data-privacy">Data privacy</h2>
 
 <p>In some context, like smart contract living on the blockchain, you might require some level of privacy to protect your data from public scrutiny. This is possible thanks to the use of encrypted queries. What in means is that you can encrypt with the Oraclize public key your queries, or part of them, so that the level of privacy your application has is fully dependant on your will.</p>
+
+<h2 id="encrypted-queries">Encrypted Queries</h2>
+
+<p>There are some use cases where you are interested in not disclosing your clear text query to the blockchain: for example, if your query includes some API secret credentials.</p>
+
+<p>One option is to encrypt the entire query using Oraclize public key <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code></p>
+
+<p>This means your request will be stored in the blockchain in an encrypted form and that only Oraclize will be able to decrypt it by using its paired private key.</p>
+
+<p>To encrypt the query, you can use our <code class="prettyprint">encrypted_queries_tools.py</code> python script (you can find it <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>).</p>
+
+<p>The CLI command to encrypt an arbitrary string of text is then:</p>
+
+<p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
+
+<p>It will encrypt the query with the default Oraclize public key. You can then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
+<pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
+  bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
+  31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
+</code></pre>
+
+<p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
+
+<aside class="notice">
+You can also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
+</aside>
+
+<p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
+<pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span>
+  <span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
+</code></pre>
+
+<p>Encrypt the datasource (URL in this case):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
+
+<p>Result in: <br>
+<code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
+<br>
+<br></p>
+
+<p>Encrypt the argument(in this case we are using JSON parse helper to retrieve the &ldquo;status&rdquo; ):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
+
+<p>Result in:<br>
+<code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
+<br>
+<br></p>
+
+<p>Encrypt the JSON (third argument, the data to POST):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
+
+<p>Result in:<br>
+<code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
+<br>
+<br></p>
+<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
+<span class="c1">// to the oraclize_query (in the right order)</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
+  uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8
+  v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/
+  y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span> <span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxG
+  NtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvp
+  J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">);</span>
+</code></pre>
+
+<p>Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.</p>
+
+<aside class="notice">
+In order to prevent the misuse of encrypted queries (i.e.: replay attacks) the first contract querying Oraclize with a specific encrypted query becomes its rightful owner. Any other contract reusing the exact same string will not be allowed to use it and will receive back an empty result.
+
+As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
+</aside>
+
+<h3 id="chosen-encryption-scheme">Chosen Encryption Scheme</h3>
+
+<p>To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:</p>
+
+<ul>
+<li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.</li>
+<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separated document.</li>
+</ul>
 
           <h1 id="datasources">Datasources</h1>
 
