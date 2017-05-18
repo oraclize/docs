@@ -368,6 +368,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
   <tr>
     <td>None</td>
     <td>TLSNotary</td>
+    <td>Android</td>
+    <td>Ledger</td>
   </tr>
   <tr>
     <td><a href="#datasources-url">URL</a></td>
@@ -375,6 +377,18 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-random">Random</a></td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
     <td>✓</td>
   </tr>
   <tr>
@@ -384,6 +398,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-blockchain">Blockchain</a></td>
@@ -392,6 +408,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-ipfs">IPFS</a><sup> 1</sup></td>
@@ -399,6 +417,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
@@ -408,6 +428,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-nested">nested</a><sup> 1</sup></td>
@@ -416,6 +438,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>✓<sup> 3</sup></td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
   <tr>
     <td><a href="#datasources-computation">computation</a><sup> 1</sup></td>
@@ -424,6 +448,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
 </table>
 
@@ -437,6 +463,16 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
 <p>The most generic data-source we provide is the <code class="prettyprint">URL</code> one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP <code class="prettyprint">GET</code> / <code class="prettyprint">POST</code> output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the <code class="prettyprint">TLSNotary</code> proof.</p>
+
+<h2 id="random">Random</h2>
+
+<p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.</p>
+
+<p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.</p>
+
+<p>The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don&rsquo;t pass the verification process.</p>
+
+<p>The randon datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
 
 <h2 id="wolframalpha">WolframAlpha</h2>
 
@@ -711,6 +747,7 @@ All the code written here assumes that you have already included all the necessa
 <ul>
 <li>either <code class="prettyprint">oraclize_setProof(proofType_NONE)</code></li>
 <li>or <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> </li>
+<li>or, when the Ledger proof wants to be used, <code class="prettyprint">oraclize_setProof(proofType_Ledger)</code></li>
 </ul>
 
 <p>You may execute this method just once, for instance in the constructor, or at any other time, if, for instance, you need the proof for certain queries only. </p>
