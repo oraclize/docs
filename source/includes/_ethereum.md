@@ -180,6 +180,7 @@ In order to get, or not, the TLSNotary proof back from Oraclize you need to spec
 
 * either `oraclize_setProof(proofType_NONE)`
 * or `oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)` 
+* or, when the Ledger proof wants to be used, `oraclize_setProof(proofType_Ledger)`
 
 You may execute this method just once, for instance in the constructor, or at any other time, if, for instance, you need the proof for certain queries only. 
 

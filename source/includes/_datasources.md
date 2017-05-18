@@ -16,6 +16,8 @@ We list here the data-sources you can choose from when using our oracle service.
   <tr>
     <td>None</td>
     <td>TLSNotary</td>
+    <td>Android</td>
+    <td>Ledger</td>
   </tr>
   <tr>
     <td><a href="#datasources-url">URL</a></td>
@@ -23,6 +25,18 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>✓</td>
+    <td>✓</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td><a href="#datasources-random">Random</a></td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
     <td>✓</td>
   </tr>
   <tr>
@@ -32,6 +46,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-blockchain">Blockchain</a></td>
@@ -40,6 +56,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-ipfs">IPFS</a><sup> 1</sup></td>
@@ -47,6 +65,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
@@ -56,6 +76,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td><a href="#datasources-nested">nested</a><sup> 1</sup></td>
@@ -64,6 +86,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>✓<sup> 3</sup></td>
+    <td>✓</td>
+    <td>✓</td>
   </tr>
   <tr>
     <td><a href="#datasources-computation">computation</a><sup> 1</sup></td>
@@ -72,6 +96,8 @@ We list here the data-sources you can choose from when using our oracle service.
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
 </table>
 
@@ -85,6 +111,17 @@ We list here the data-sources you can choose from when using our oracle service.
 
 The most generic data-source we provide is the `URL` one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP `GET` / `POST` output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the ``TLSNotary`` proof.
+
+## Random
+
+The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.
+
+The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.
+
+The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don't pass the verification process.
+
+The randon datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.
+
 
 ## WolframAlpha
 
