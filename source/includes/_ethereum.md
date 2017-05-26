@@ -1,9 +1,8 @@
 # &#9910; &nbsp; Ethereum
 
-The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
-To better profit from the documentation, previous knowledge of Solidity, the most used smart contract language on Ethereum, is required.
 
-All the reference code used is written in Solidity, but since the interface would be the same for any other language.
+The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
+To better profit from the documentation previous knowledge of Solidity is required.
 
 Sending a query to Oraclize means sending a contract call, also called internal transaction, to the on-chain Oraclize contract.
 

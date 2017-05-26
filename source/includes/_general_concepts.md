@@ -49,11 +49,16 @@ when the server is not responding, the server is unreachable or your parsing hel
 
 
 
-## Authenticity proofs
+## Authenticity Proofs
 
 While Oraclize acts as an intermediary, you don't need to trust it. You can easily verify the authenticity of the data provided thanks to the use of authenticity proofs. You can find more details on that in the "Security Deep-dive" section.
 
-## Data privacy
+<aside class="notice">
+If Oraclize is unable, for technical reasons, to generate the authenticity proof type specified for a given request it will return the result without proof. 
+It is up to the developer to decide how to handle this case: the result can be accepted or the request can be retried (recommended). 
+</aside>
+
+## Data Privacy
 
 In some context, like smart contract living on the blockchain, you might require some level of privacy to protect your data from public scrutiny. This is possible thanks to the use of encrypted queries. What in means is that you can encrypt with the Oraclize public key your queries, or part of them, so that the level of privacy your application has is fully dependant on your will.
 
