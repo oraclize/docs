@@ -259,11 +259,16 @@ Note:
 when the server is not responding, the server is unreachable or your parsing helper is not applicable, we will send you an empty response
 </aside>
 
-<h2 id="authenticity-proofs">Authenticity proofs</h2>
+<h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
 <p>While Oraclize acts as an intermediary, you don&rsquo;t need to trust it. You can easily verify the authenticity of the data provided thanks to the use of authenticity proofs. You can find more details on that in the &ldquo;Security Deep-dive&rdquo; section.</p>
 
-<h2 id="data-privacy">Data privacy</h2>
+<aside class="notice">
+If Oraclize is unable, for technical reasons, to generate the authenticity proof type specified for a given request it will return the result without proof. 
+It is up to the developer to decide how to handle this case: the result can be accepted or the request can be retried (recommended). 
+</aside>
+
+<h2 id="data-privacy">Data Privacy</h2>
 
 <p>In some context, like smart contract living on the blockchain, you might require some level of privacy to protect your data from public scrutiny. This is possible thanks to the use of encrypted queries. What in means is that you can encrypt with the Oraclize public key your queries, or part of them, so that the level of privacy your application has is fully dependant on your will.</p>
 
@@ -579,9 +584,7 @@ Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the 
           <h1 id="9910-nbsp-ethereum">&#9910; &nbsp; Ethereum</h1>
 
 <p>The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
-To better profit from the documentation, previous knowledge of Solidity, the most used smart contract language on Ethereum, is required.</p>
-
-<p>All the reference code used is written in Solidity, but since the interface would be the same for any other language.</p>
+To better profit from the documentation previous knowledge of Solidity is required.</p>
 
 <p>Sending a query to Oraclize means sending a contract call, also called internal transaction, to the on-chain Oraclize contract.</p>
 
