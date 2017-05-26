@@ -2,7 +2,7 @@
 
 ## If this than that
 
-The Oraclize engine replicates internally the "If This Than That" logic. This means that a given set of instructions is given to it and in the case the conditions are met, something you have described will happen. A typical scneario is the recurrent verification of a certain data and it being returned just when a given threshold is reached. This is very generic and can be leveraged in different ways.
+The Oraclize engine replicates internally the "If This Than That" logic. This means that a given set of instructions is given to it and in the case the conditions are met, something you have described will happen. A typical scenario is the recurrent verification of a certain data and it being returned just when a given threshold is reached. This is very generic and can be leveraged in different ways.
 
 ## Context abstraction
 
