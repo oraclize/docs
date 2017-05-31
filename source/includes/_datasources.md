@@ -183,7 +183,7 @@ Example: `[WolframAlpha] temperature in ${[IPFS] QmP2ZkdsJG7LTw7jBbizTTgY1ZBeen6
 The `computation` datasource enables the auditable execution of a given application into a secure blockchain-unrelated (off-chain) context.
 
 
-Such application has to print the query result on the last line (on standard output) before its quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the **maximum execution timeout is ~5 minutes on an AWS t2.micro instance.**
+Such application has to print the query result on the last line (on standard output, up to ~2500 chars) before its quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the **maximum execution timeout is ~5 minutes on an AWS t2.micro instance.**
 
 
 As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be places in the archive root), you should take care of preparing such archive and pushing it to IPFS beforehand.
