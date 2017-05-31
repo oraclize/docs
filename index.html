@@ -199,17 +199,17 @@
 
           <h1 id="general-concepts">General Concepts</h1>
 
-<h2 id="if-this-than-that">If this than that</h2>
+<h2 id="if-this-then-that">If this then that</h2>
 
-<p>The Oraclize engine replicates internally the &ldquo;If This Than That&rdquo; logic. This means that a given set of instructions is given to it and in the case the conditions are met, something you have described will happen. A typical scneario is the recurrent verification of a certain data and it being returned just when a given threshold is reached. This is very generic and can be leveraged in different ways.</p>
+<p>The Oraclize engine internally replicates the &ldquo;If This Then That&rdquo; logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.</p>
 
 <h2 id="context-abstraction">Context abstraction</h2>
 
-<p>Oraclize wants to stay as generic as possible in regards of the context. This is why each Oraclize query have to specify a datasource and a query text. The datasource is the source of data you want the query to be asked to, the query text is a unique reference to the data you want which is written in a way the datasource can understand. </p>
+<p>To allow Oraclize to stay as context-generic as possible, Oraclize queries must specify both a datasource and a query text. The &ldquo;datasource&rdquo; field tells Oraclize where to look for your data. Available datasources include &ldquo;URL&rdquo;, &ldquo;WolframAlpha&rdquo;, &ldquo;IFPS&rdquo;, and many others. The &ldquo;query&rdquo; field tells Oraclize what to fetch. An example URL query could be &ldquo;https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD&rdquo; while an example WolframAlpha query could be &ldquo;Who is the president of the US?&rdquo;</p>
 
 <h2 id="data-and-computations">Data and computations</h2>
 
-<p>Thanks to the datasource being generic, it does not need to be a Web API necessarly. It can even be something completely different like an individual, a judge/jury or a piece of code. You can look at the list of the supported datasources in the dedicated section to know more about the datasource we currently support.</p>
+<p>Thanks to our context-generic implementation, your queries don&rsquo;t necessarily need to be to Web APIs. You can query other blockchains, IPFS, WolframAlpha, and much more. You&rsquo;ll find a list of supported datasources in the dedicated &ldquo;Datasources&rdquo; section.  </p>
 
 <h2 id="examples">Examples</h2>
 
@@ -222,23 +222,24 @@
 
 <h2 id="parsing-helpers">Parsing helpers</h2>
 
-<p>In order to facilitate the post-processing of data, some simple to use (and simple to audit) parsing helpers are available. This means you can filter down the results coming from the datasource in a way that only the data you need is sent back to you. Note that the authenticity proof will still reference the full content.</p>
+<p>In ordet to facilitate data post-processing, we supply simple simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
 
 <p>The following parsing helpers are available:</p>
 
 <ul>
-<li><p><code class="prettyprint">xml(..)</code> and <code class="prettyprint">json(..)</code> helpers let you ask Oraclize to only return part of the JSON or XML-parsed response. 
-For example:</p>
+<li><code class="prettyprint">xml(..)</code> and <code class="prettyprint">json(..)</code> helpers let you return part of a JSON or XML-parsed response. </li>
+</ul>
+
+<p>For example, when querying the Kraken API:</p>
 
 <ul>
-<li>in order to get the whole response back, you use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> </li>
-<li>but if all you want is the last-price field, you need to use the <code class="prettyprint">json</code> parsing call as <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></li>
-</ul></li>
-<li><p><code class="prettyprint">html(..).xpath(..)</code> helper is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. For Example:</p>
+<li><p>in order to get the whole response back, you use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> </p></li>
+<li><p>but if all you want is the last-price field, you need to use the <code class="prettyprint">json</code> parsing call as <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></p>
 
 <ul>
-<li>to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
+<li><code class="prettyprint">html(..).xpath(..)</code> helper is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. For example:</li>
 </ul></li>
+<li><p>to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</p></li>
 </ul>
 
 <aside class="notice">
@@ -256,29 +257,28 @@ Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH 
 
 <aside class="notice">
 Note:
-when the server is not responding, the server is unreachable or your parsing helper is not applicable, we will send you an empty response
+When the server is not responding or is unreachable, or your parsing helper is not applicable, we will send you an empty response.
 </aside>
 
 <h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
-<p>While Oraclize acts as an intermediary, you don&rsquo;t need to trust it. You can easily verify the authenticity of the data provided thanks to the use of authenticity proofs. You can find more details on that in the &ldquo;Security Deep-dive&rdquo; section.</p>
+<p>Oraclize is designed to act as an intermediary that you shouldn&rsquo;t have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You&rsquo;ll find more details on authenticity proofs in the &ldquo;Security Deep-dive&rdquo; section.</p>
 
 <aside class="notice">
-If Oraclize is unable, for technical reasons, to generate the authenticity proof type specified for a given request it will return the result without proof. 
-It is up to the developer to decide how to handle this case: the result can be accepted or the request can be retried (recommended). 
+If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended for the request to be retried.
 </aside>
 
 <h2 id="data-privacy">Data Privacy</h2>
 
-<p>In some context, like smart contract living on the blockchain, you might require some level of privacy to protect your data from public scrutiny. This is possible thanks to the use of encrypted queries. What in means is that you can encrypt with the Oraclize public key your queries, or part of them, so that the level of privacy your application has is fully dependant on your will.</p>
+<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.</p>
 
 <h2 id="encrypted-queries">Encrypted Queries</h2>
 
-<p>There are some use cases where you are interested in not disclosing your clear text query to the blockchain: for example, if your query includes some API secret credentials.</p>
+<p>Developers might be interested in keeping part (or all) of their queries private. For example, you might want to keep an API key secret from the rest of a public blockchain.</p>
 
 <p>One option is to encrypt the entire query using Oraclize public key <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code></p>
 
-<p>This means your request will be stored in the blockchain in an encrypted form and that only Oraclize will be able to decrypt it by using its paired private key.</p>
+<p>This means your request will be encrypted before being stored in the blockchain, and that only Oraclize will be able to decrypt your request using its paired private key. </p>
 
 <p>To encrypt the query, you can use our <code class="prettyprint">encrypted_queries_tools.py</code> python script (you can find it <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>).</p>
 
@@ -286,7 +286,7 @@ It is up to the developer to decide how to handle this case: the result can be a
 
 <p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
 
-<p>It will encrypt the query with the default Oraclize public key. You can then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
+<p>This will encrypt the query with the default Oraclize public key. You could then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
 <pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
   bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
@@ -296,7 +296,7 @@ It is up to the developer to decide how to handle this case: the result can be a
 <p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
 
 <aside class="notice">
-You can also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
+You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
 </aside>
 
 <p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
@@ -308,7 +308,7 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
 <p>Encrypt the datasource (URL in this case):<br>
 <code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
 
-<p>Result in: <br>
+<p>Returns: <br>
 <code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
 <br>
 <br></p>
@@ -316,7 +316,7 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
 <p>Encrypt the argument(in this case we are using JSON parse helper to retrieve the &ldquo;status&rdquo; ):<br>
 <code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
 
-<p>Result in:<br>
+<p>Returns:<br>
 <code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
 <br>
 <br></p>
@@ -324,7 +324,7 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
 <p>Encrypt the JSON (third argument, the data to POST):<br>
 <code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
 
-<p>Result in:<br>
+<p>Returns:<br>
 <code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
 <br>
 <br></p>
@@ -338,10 +338,10 @@ You can also encrypt only 1 parameter of oraclize_query(), leaving the other one
   J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">);</span>
 </code></pre>
 
-<p>Another use case may be a request from a datasource, as WolframAlpha, Bitcoin blockchain or IPFS. Our encryption system also permits users to encrypt any of the supported datasource option.</p>
+<p>You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.</p>
 
 <aside class="notice">
-In order to prevent the misuse of encrypted queries (i.e.: replay attacks) the first contract querying Oraclize with a specific encrypted query becomes its rightful owner. Any other contract reusing the exact same string will not be allowed to use it and will receive back an empty result.
+In order to prevent other users from using your exact encrypted query (&ldquo;replay attacks&rdquo;), the first contract querying Oraclize with a given encrypted query becomes its rightful &ldquo;owner&rdquo;. Any other contract using that exact same string will receive an empty result. 
 
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
@@ -941,7 +941,7 @@ Note: Oraclize calls are free when used on testnets! This works for moderate usa
 
 <ul>
 <li>a price in $ depending on the datasource used and the proof chosen (see table below). This $ price is automatically converted to Ether at the current rate when you call <code class="prettyprint">oraclize_query</code></li>
-<li>a refund of the full <code class="prettyprint">gasLimit</code> we are setting in the callback transaction (the minimum and default value is 200k gas)</li>
+<li>a prepayment of the full <code class="prettyprint">gasLimit</code> we will set for the callback transaction (the minimum and default value is 200k gas)</li>
 </ul>
 
 <style type="text/css">
