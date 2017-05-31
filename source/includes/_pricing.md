@@ -24,7 +24,7 @@ Note: Oraclize calls are free when used on testnets! This works for moderate usa
 Payment is part and parcel of the `oraclize_query` function call, and our pricing model is simple. It's composed of two parts:
 
 * a price in $ depending on the datasource used and the proof chosen (see table below). This $ price is automatically converted to Ether at the current rate when you call `oraclize_query`
-* a refund of the full `gasLimit` we are setting in the callback transaction (the minimum and default value is 200k gas)
+* a prepayment of the full `gasLimit` we will set for the callback transaction (the minimum and default value is 200k gas)
 
 <style type="text/css">
 	tr, td, th {
