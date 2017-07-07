@@ -2,7 +2,7 @@
 
 ## If this then that
 
-The Oraclize engine internally replicates the "If This Then That" logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.
+The Oraclize engine internally replicates "If This Then That" logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.
 
 ## Context abstraction
 
@@ -21,7 +21,7 @@ Given the above, you can ask things like:
 
 ## Parsing helpers
 
-In ordet to facilitate data post-processing, we supply simple simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.
+In ordet to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.
 
 The following parsing helpers are available:
 
@@ -56,7 +56,7 @@ When the server is not responding or is unreachable, or your parsing helper is n
 Oraclize is designed to act as an intermediary that you shouldn't have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You'll find more details on authenticity proofs in the "Security Deep-dive" section.
 
 <aside class="notice">
-If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended for the request to be retried.
+If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended that the query be retried.
 </aside>
 
 ## Data Privacy
@@ -89,7 +89,7 @@ oraclize_query("URL","AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQ
 In this case, we have encrypted the following string `json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last`, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. 
 
 <aside class="notice">
-You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
+You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in cleartext.
 </aside>
 
 The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:
@@ -109,7 +109,7 @@ Returns: <br>
 <br>
 <br>
 
-Encrypt the argument(in this case we are using JSON parse helper to retrieve the "status" ):<br>
+Encrypt the argument(in this case we are using the JSON parsing helper to retrieve the "status" ):<br>
 `python encrypted_queries_tools.py -e -p 044992e94... "json(https://api.postcodes.io/postcodes).status"`
 
 Returns:<br>
@@ -148,4 +148,4 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:
 
 * An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.
-* The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be '000000000000' (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separated document.
+* The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be '000000000000' (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separate document.

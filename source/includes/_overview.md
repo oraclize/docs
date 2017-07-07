@@ -22,7 +22,7 @@ Oraclize is an elegant solution to the "oracle problem" and is the "state-of-the
 
 This means that existing datasources can be used without needing to adapt them for the blockchain and can continue providing data via existing channels (typically a Web API). 
 
-Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a "weakness", it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful
+Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a "weakness", it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful.
 
 ##  Rationale
 

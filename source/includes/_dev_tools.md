@@ -8,7 +8,7 @@ The <a href="https://app.oraclize.it/home/test_query" target="_blank">TestQuery<
 
 The <a href="https://app.oraclize.it/service/monitor" target="_blank">Network Monitor</a>, along with the <a href="https://github.com/oraclize/proof-verification-tool" target="_blank">Proof Verification Tool</a>, can be used to verify the integrity and correctness of the authenticity proofs Oraclize has provided.
 
-It is very important to verify independently that those proofs are valid, as this is the only way you can verify if Oraclize has ever provided a wrong answer.
+It is very important to independently verify that those proofs are valid, as this is the only way you can verify if Oraclize has ever provided a wrong answer.
 
 ## Encryption
 
@@ -20,7 +20,7 @@ If you need to use Oraclize in a private testnet, the Stargate tool enables a fu
 
 ## Browser-solidity
 
-The <a hre"http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize</a> browser-solidity plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in "VM mode"), with no need for you to install or setup anything. This is a very handy tool to use fo development.
+The <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize browser-solidity</a> plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in "VM mode"), with no need for you to install or setup anything. This is a very handy tool to use fo development.
 
 ## Ethereum Studio plugin
 
@@ -28,8 +28,8 @@ If you are familiar with the  <a hre"https://live.ether.camp" target="_blank">Et
 
 ## Truffle & ethpm
 
-When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and use download the oraclizeAPI Solidity contract by just typing `ethpm install oraclize`.
+When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing `ethpm install oraclize`.
 
 ## Oraclize-lib
 
-<a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an handy nodejs library that you can use to build applications based on the top of the Oraclize service. Note that this is no dependant to the blockchain in any way!
+<a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is a nodejs library that you can use to build applications based on top of the Oraclize service. Note that this isn't dependant on a blockchain in any way and therefore could be integrated into any service!

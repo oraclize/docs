@@ -14,7 +14,7 @@ With that, Oraclize will:
 * Fetch your result
 * Send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated `__callback` method.
 
-Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done in the `__callback` method is only bounded by the block gas limit.
+Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done within the `__callback` method is only limited by the block gas limit.
 
 ## Getting Everything on Track
 
@@ -22,7 +22,7 @@ First, place `usingOraclize` contract into your code. You do not need to import 
 
 The purpose of the `usingOraclize` contract is to make calls to `OraclizeI` and `OraclizeAddrResolverI` as painless as possible for you. However, if you know what you are doing, you are free to call our `OraclizeI` and `OraclizeAddrResolverI` interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a `throw` is raised.
 
-In order to simplify the use of our API, we highly recommend that you simply extend the `usingOraclize` contract and use its inherited methods, about which we discuss below. Indeed, these methods already handle payments and API calls correctly.
+In order to simplify the use of our API, we highly recommend that you simply extend the `usingOraclize` contract and use its inherited methods, discussed below. These methods indeed already handle payments and API calls correctly.
 
 All the code you need is found here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a>. After making your contract extend `usingOraclize`, it would look like:
 
@@ -45,7 +45,7 @@ contract YourContractName is usingOraclize {
 
 When sending a query to Oraclize you have to specify at least two arguments:
 
-* The data-source you want to fetch the data from. Supported values are `URL`, `WolframAlpha`, `Blockchain`, `IPFS`
+* The data-source you want to fetch the data from. Some basic supported values are `URL`, `WolframAlpha`, `Blockchain`, `IPFS`
 * The argument for the given data-source:
  * the full `URL`, which might use our JSON / XML parsing helpers
  * or the `WolframAlpha` formula
@@ -79,7 +79,8 @@ oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU")
 
 ```javascript
 /* 
-  the only data-source accepting 2 string arguments is
+  the only data-sources accepting 2 string arguments are
+  the 'computation', in the case of a supplemental arg and 
   'URL' when we want it to send an HTTP POST request
   with the 2nd argument being the query-string we want
   to send to the given server.
@@ -95,35 +96,31 @@ oraclize_query("URL", "json(https://shapeshift.io/sendamount).success.deposit",
 
 If you want Oraclize to execute your query at a scheduled future time, just specify the delay (in seconds) from the current time or the timestamp in the future as first argument.
 
-Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.
+Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than 60 days. 
 
 ```javascript
+// Relative time
 // get the result from the given URL 60 seconds from now
 oraclize_query(60, "URL",
   "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0")
 ```
 
 ```javascript
-// get the result from the given datasource at the specified timestamp in the future
+// Absolute time
+// get the result from the given datasource at the specified UTC timestamp in the future
 oraclize_query(scheduled_arrivaltime+3*3600,
   "WolframAlpha", strConcat("flight ", flight_number, " landed"));
 ```
 
 ## Recursive queries
 
-Thanks to the service offered by Oraclize, you can have a smart contract being effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuos manner.
+Thanks to the service offered by Oraclize, you can have a smart contract be effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuous manner.
 
-This can be useful to implement periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.
+This can be useful for implementing periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.
 
 ## The query ID
 
 Every time you call `oraclize_query(...)`, it returns you a unique ID that represents your query. Whether you store this ID for future reference is up to you.
-
-```javascript
-// get the result from the given URL 60 seconds from now
-bytes32 myid = oraclize_query(60, "URL",
-  "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0");
-```
 
 ## Callback Functions
 
@@ -148,7 +145,7 @@ function __callback(bytes32 myid, string result) {
 }
 ```
 
-In the snippet above we call `oraclize_query` again within the `__callback` function. In effect, this makes the contract receive automatically `__callback` every minute forever. Or at least, until you run out of funds!
+In the snippet above we call `oraclize_query` again within the `__callback` function. In effect, this makes the contract automatically receive `__callback` every minute forever. Or at least, until you run out of funds!
 
 Note that `myid` can be used to implement different behaviours into the `__callback` function, in particular when there is more than one pending call from Oraclize.
 
@@ -157,9 +154,9 @@ Note that `myid` can be used to implement different behaviours into the `__callb
 
 The transaction originating from Oraclize to your `__callback` function costs gas, just like any other transaction. However, as you learned earlier, you need to cover Oraclize for this gas cost, and the `oraclize_query` function helpfully handles that. It defaults at 200,000 gas.
 
-This *return* gas cost is actually in your control since you write the code in the `__callback` method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the `gasLimit` should be on the `__callback` transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.
+This *return* gas cost is actually under your control since you write the code in the `__callback` method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the `gasLimit` should be on the `__callback` transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.
 
-If the default, and minimum, value of 200,000 gas,  is not enough, you can increase it by specifying a different `gasLimit` in this way:
+If the default, and minimum, value of 200,000 gas, is not enough, you can increase it by specifying a different `gasLimit` in this way:
 
 ```javascript
 // Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k
@@ -171,17 +168,17 @@ oraclize_query("WolframAlpha", "random number between 0 and 100", 500000);
 oraclize_query(60, "WolframAlpha", "random number between 0 and 100", 500000);
 ```
 
-Note also that if you offer too low a `gasLimit`, and your `__callback` method is long, you may never see a callback.
+Note also that if you set your `gasLimit` too low, and your `__callback` method requires more gas than was set, the callback will run out of gas and fail to execute whatever is in your callback.
 
 ## Authenticity Proof
 
-In order to get, or not, the TLSNotary proof back from Oraclize you need to specify the `proofType` and `proofStorage`. You do this by calling: 
+In order to receive any proof for your query, you will need to make an explicit request. To get the TLSNotary proof back from Oraclize you need to specify the `proofType` and `proofStorage`. You do this by calling: 
 
 * either `oraclize_setProof(proofType_NONE)`
 * or `oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)` 
-* or, when the Ledger proof wants to be used, `oraclize_setProof(proofType_Ledger)`
+* or, when the Ledger proof is to be used, `oraclize_setProof(proofType_Ledger)`
 
-You may execute this method just once, for instance in the constructor, or at any other time, if, for instance, you need the proof for certain queries only. 
+You only need to execute this method once, for instance in the constructor, or at any other time. If, for instance, you need the proof for certain queries only, you can also reset it back to proofType_NONE after making your query. 
 
 * `proofType_NONE` is the default setting
 * `proofType_IPFS` is the only method of storage supported, at the time of writing, for the TLSNotary proof.
@@ -191,7 +188,7 @@ You may execute this method just once, for instance in the constructor, or at an
 * use <a href="http://ipfs.io/" target="_blank">IPFS</a> to store your complete TLSNotary proof
 * and will call back your contract on the `__callback(bytes32 myid, string result, bytes proof)` function **instead of the default** `__callback(bytes32 myid, string result)`
 
-The `proof` string is exactly the IPFS multihash that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/`proof`
+The `proof` bytes variable returned is the base58 decoded IPFS multihash string (you can re-encode the bytes output in base58 to get the string-equivalent multihash that can be entered into IPFS) that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/`proof`
 
 
 > **Note:**
@@ -216,8 +213,9 @@ contract YourContractName is usingOraclize {
     }
 }
 ```
+### Verifiability
 
-### Verificability
+Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> 
 
 ## More Examples
 
@@ -226,7 +224,7 @@ You can have a look at more complete and complex examples by heading to our dedi
 
 ## Random Utilities
 
-Since the callback transaction always provides results as strings, the Solidity API helpers also include some convenience functions, which might prove useful to you. Especially since Solidity does not provide any official "standard Library" yet.
+Since the callback transaction always provides results as strings, the Solidity API helpers also include various helper functions, which might prove useful to you. Especially since Solidity does not provide any official "standard Library" yet.
 
 You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.
 
@@ -260,4 +258,4 @@ What follows are some practical tips we recommend you to use when writing Oracli
 
  * when integrating the Oraclize service into your smart contract it's better to use our <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol" target="_blank">API helpers</a> instead of interfacing with the connector directly as the connector address may be updated.
      
- * the `myid` returned by Oraclize in the `__callback` function should always be checked by your smart contract. Specifically, the smart contract should verify that the `myid` is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuses of your contract logic.
+ * the `myid` returned by Oraclize in the `__callback` function should always be checked by your smart contract. Specifically, the smart contract should verify that the `myid` is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuse of your contract logic.
