@@ -187,7 +187,7 @@
 
 <p>This means that existing datasources can be used without needing to adapt them for the blockchain and can continue providing data via existing channels (typically a Web API). </p>
 
-<p>Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a &ldquo;weakness&rdquo;, it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful</p>
+<p>Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a &ldquo;weakness&rdquo;, it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful.</p>
 
 <h2 id="rationale">Rationale</h2>
 
@@ -201,7 +201,7 @@
 
 <h2 id="if-this-then-that">If this then that</h2>
 
-<p>The Oraclize engine internally replicates the &ldquo;If This Then That&rdquo; logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.</p>
+<p>The Oraclize engine internally replicates &ldquo;If This Then That&rdquo; logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.</p>
 
 <h2 id="context-abstraction">Context abstraction</h2>
 
@@ -222,7 +222,7 @@
 
 <h2 id="parsing-helpers">Parsing helpers</h2>
 
-<p>In ordet to facilitate data post-processing, we supply simple simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
+<p>In ordet to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
 
 <p>The following parsing helpers are available:</p>
 
@@ -265,7 +265,7 @@ When the server is not responding or is unreachable, or your parsing helper is n
 <p>Oraclize is designed to act as an intermediary that you shouldn&rsquo;t have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You&rsquo;ll find more details on authenticity proofs in the &ldquo;Security Deep-dive&rdquo; section.</p>
 
 <aside class="notice">
-If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended for the request to be retried.
+If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended that the query be retried.
 </aside>
 
 <h2 id="data-privacy">Data Privacy</h2>
@@ -296,7 +296,7 @@ If Oraclize is unable to generate an authenticity proof (for technical reasons),
 <p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
 
 <aside class="notice">
-You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in clear text
+You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in cleartext.
 </aside>
 
 <p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
@@ -313,7 +313,7 @@ You could also encrypt only 1 parameter of oraclize_query(), leaving the other o
 <br>
 <br></p>
 
-<p>Encrypt the argument(in this case we are using JSON parse helper to retrieve the &ldquo;status&rdquo; ):<br>
+<p>Encrypt the argument(in this case we are using the JSON parsing helper to retrieve the &ldquo;status&rdquo; ):<br>
 <code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
 
 <p>Returns:<br>
@@ -352,12 +352,12 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
 <ul>
 <li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.</li>
-<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separated document.</li>
+<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separate document.</li>
 </ul>
 
           <h1 id="datasources">Datasources</h1>
 
-<p>We list here the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.</p>
+<p>Listed here are the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.</p>
 
 <table>
   <tr>
@@ -477,11 +477,11 @@ As a first step you need to provide the actual URL whose HTTP <code class="prett
 
 <p>The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don&rsquo;t pass the verification process.</p>
 
-<p>The randon datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
+<p>The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
 
 <h2 id="wolframalpha">WolframAlpha</h2>
 
-<p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as argument a query to submit to the WolframAlpha knowledge engine. Oraclize will send you back the primary response as a string if any.</p>
+<p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as an argument a query to submit to the WolframAlpha knowledge engine. Oraclize will send you back the primary response as a string if any.</p>
 
 <aside class="notice">
 There may not always be a primary response for your query, please test your query in advance on our Web IDE widget to make sure your syntax makes sense to Wolfram&rsquo;s engine.
@@ -502,7 +502,10 @@ Possible query arguments are:</p>
 <li><code class="prettyprint">litecoin hashrate</code>,</li>
 <li><code class="prettyprint">bitcoin difficulty</code>, </li>
 <li><code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> 
-and so on.</li>
+and so on.
+<aside class="warning">
+This datasource may be deprecated in the near future, therefore it is recommended to not be used in production. 
+</aside></li>
 </ul>
 
 <h2 id="ipfs">IPFS</h2>
@@ -511,21 +514,21 @@ and so on.</li>
 
 <p>This datasource expects you to specify the IPFS multihash in the query i.e. <code class="prettyprint">QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o</code> will return <code class="prettyprint">&quot;hello world\n&quot;</code> (note that in this case we have a terminating new line because the original IPFS file had it).</p>
 
-<p>Please note that if we fail to fetch the IPFS content within <i>20</i> seconds, such request will fail.</p>
+<p>Please note that if we fail to fetch the IPFS content within <i>20</i> seconds, the request will fail.</p>
 
 <h2 id="decrypt">decrypt</h2>
 
 <p>Even though the <code class="prettyprint">decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#datasources-nested"><code class="prettyprint">nested</code></a> datasource to enable partial query encryption.</p>
 
-<p>The result is the decrypted query string. <strong>Please note that all the logic, limitations and tools provided by the <code class="prettyprint">Encryption</code> feature do apply here with no modification.</strong></p>
+<p>The result is the decrypted query string. <strong>Please note that all the logic, limitations and tools provided by the <code class="prettyprint">Encryption</code> feature apply here as well.</strong></p>
 
 <h2 id="nested">nested</h2>
 
-<p>The <code class="prettyprint">nested</code> datasource is a meta datasource, it does not provide access to additional services. It was designed to provide a simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and producing as result a single string.</p>
+<p>The <code class="prettyprint">nested</code> datasource is a meta datasource, it does not provide access to additional services. It was designed to provide some simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and produce a single stringas a result.</p>
 
-<p>The <code class="prettyprint">query</code> format is built in a way you can specify a sub-datasource and a sub-query as follows: <code class="prettyprint">[datasource_name] query_content</code>.</p>
+<p>The <code class="prettyprint">query</code> format is built in a way you that you can specify a sub-datasource and a sub-query as follows: <code class="prettyprint">[datasource_name] query_content</code>.</p>
 
-<p>Please mind the square brakets delimiting the datasource name and the whitespace prefixing the actual sub-query. The sub-query content can optionally be delimited by either single or double quotes.</p>
+<p>Please mind the square brackets delimiting the datasource name and the whitespace prefixing the actual sub-query. The sub-query content can optionally be delimited by either single or double quotes.</p>
 
 <p>You can optionally specify more than one sub-query, by using as delimitators the <code class="prettyprint">${</code> special opener and the <code class="prettyprint">}</code> special closer.</p>
 
@@ -535,11 +538,11 @@ and so on.</li>
 
 <p><img src="http://i.imgur.com/BPneTYH.png" /></p>
 
-<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of a given application into a secure blockchain-unrelated (off-chain) context.</p>
+<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of a given application into a secure non-blockchain (off-chain) context.</p>
 
-<p>Such application has to print the query result on the last line (on standard output, up to ~2500 chars) before its quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the <strong>maximum execution timeout is ~5 minutes on an AWS t2.micro instance.</strong></p>
+<p>Such an application has to print the query result on the last line (on standard output, up to ~2500 chars) before it quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the <strong>maximum execution timeout is ~5 minutes on an AWS t2.micro instance.</strong></p>
 
-<p>As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be places in the archive root), you should take care of preparing such archive and pushing it to IPFS beforehand.</p>
+<p>As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be placed in the root directory of the archive), you should take care of preparing such archive and pushing it to IPFS beforehand.</p>
 
 <p>Example:</p>
 
@@ -564,7 +567,7 @@ CMD python -c &ldquo;import numpy; print int(numpy.linalg.det(numpy.array([[1,2,
 </ol>
 
 <aside class="notice">
-Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the email address specified there to contact you in case any issue arises
+Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the email address specified there to contact you in case any issue arises.
 </aside>
 
           <h1 id="integrations">Integrations</h1>
@@ -600,7 +603,7 @@ To better profit from the documentation previous knowledge of Solidity is requir
 <li>Send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated <code class="prettyprint">__callback</code> method.</li>
 </ul>
 
-<p>Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done in the <code class="prettyprint">__callback</code> method is only bounded by the block gas limit.</p>
+<p>Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done within the <code class="prettyprint">__callback</code> method is only limited by the block gas limit.</p>
 
 <h2 id="getting-everything-on-track">Getting Everything on Track</h2>
 
@@ -608,7 +611,7 @@ To better profit from the documentation previous knowledge of Solidity is requir
 
 <p>The purpose of the <code class="prettyprint">usingOraclize</code> contract is to make calls to <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> as painless as possible for you. However, if you know what you are doing, you are free to call our <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a <code class="prettyprint">throw</code> is raised.</p>
 
-<p>In order to simplify the use of our API, we highly recommend that you simply extend the <code class="prettyprint">usingOraclize</code> contract and use its inherited methods, about which we discuss below. Indeed, these methods already handle payments and API calls correctly.</p>
+<p>In order to simplify the use of our API, we highly recommend that you simply extend the <code class="prettyprint">usingOraclize</code> contract and use its inherited methods, discussed below. These methods indeed already handle payments and API calls correctly.</p>
 
 <p>All the code you need is found here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a>. After making your contract extend <code class="prettyprint">usingOraclize</code>, it would look like:</p>
 <pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
@@ -632,7 +635,7 @@ All the code written here assumes that you have already included all the necessa
 <p>When sending a query to Oraclize you have to specify at least two arguments:</p>
 
 <ul>
-<li>The data-source you want to fetch the data from. Supported values are <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>, <code class="prettyprint">IPFS</code></li>
+<li>The data-source you want to fetch the data from. Some basic supported values are <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>, <code class="prettyprint">IPFS</code></li>
 <li>The argument for the given data-source:
 
 <ul>
@@ -660,7 +663,8 @@ All the code written here assumes that you have already included all the necessa
 <pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">)</span>
 </code></pre>
 <pre class="highlight javascript"><code><span class="cm">/* 
-  the only data-source accepting 2 string arguments is
+  the only data-sources accepting 2 string arguments are
+  the 'computation', in the case of a supplemental arg and 
   'URL' when we want it to send an HTTP POST request
   with the 2nd argument being the query-string we want
   to send to the given server.
@@ -676,29 +680,27 @@ All the code written here assumes that you have already included all the necessa
 
 <p>If you want Oraclize to execute your query at a scheduled future time, just specify the delay (in seconds) from the current time or the timestamp in the future as first argument.</p>
 
-<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days from the current time.</p>
-<pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
+<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than 60 days. </p>
+<pre class="highlight javascript"><code><span class="c1">// Relative time</span>
+<span class="c1">// get the result from the given URL 60 seconds from now</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
   <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">)</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="c1">// get the result from the given datasource at the specified timestamp in the future</span>
+<pre class="highlight javascript"><code><span class="c1">// Absolute time</span>
+<span class="c1">// get the result from the given datasource at the specified UTC timestamp in the future</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>
   <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
 </code></pre>
 
 <h2 id="recursive-queries">Recursive queries</h2>
 
-<p>Thanks to the service offered by Oraclize, you can have a smart contract being effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuos manner.</p>
+<p>Thanks to the service offered by Oraclize, you can have a smart contract be effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuous manner.</p>
 
-<p>This can be useful to implement periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.</p>
+<p>This can be useful for implementing periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.</p>
 
 <h2 id="the-query-id">The query ID</h2>
 
 <p>Every time you call <code class="prettyprint">oraclize_query(...)</code>, it returns you a unique ID that represents your query. Whether you store this ID for future reference is up to you.</p>
-<pre class="highlight javascript"><code><span class="c1">// get the result from the given URL 60 seconds from now</span>
-<span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
-  <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
-</code></pre>
 
 <h2 id="callback-functions">Callback Functions</h2>
 
@@ -723,7 +725,7 @@ All the code written here assumes that you have already included all the necessa
 <span class="p">}</span>
 </code></pre>
 
-<p>In the snippet above we call <code class="prettyprint">oraclize_query</code> again within the <code class="prettyprint">__callback</code> function. In effect, this makes the contract receive automatically <code class="prettyprint">__callback</code> every minute forever. Or at least, until you run out of funds!</p>
+<p>In the snippet above we call <code class="prettyprint">oraclize_query</code> again within the <code class="prettyprint">__callback</code> function. In effect, this makes the contract automatically receive <code class="prettyprint">__callback</code> every minute forever. Or at least, until you run out of funds!</p>
 
 <p>Note that <code class="prettyprint">myid</code> can be used to implement different behaviours into the <code class="prettyprint">__callback</code> function, in particular when there is more than one pending call from Oraclize.</p>
 
@@ -731,9 +733,9 @@ All the code written here assumes that you have already included all the necessa
 
 <p>The transaction originating from Oraclize to your <code class="prettyprint">__callback</code> function costs gas, just like any other transaction. However, as you learned earlier, you need to cover Oraclize for this gas cost, and the <code class="prettyprint">oraclize_query</code> function helpfully handles that. It defaults at 200,000 gas.</p>
 
-<p>This <em>return</em> gas cost is actually in your control since you write the code in the <code class="prettyprint">__callback</code> method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the <code class="prettyprint">gasLimit</code> should be on the <code class="prettyprint">__callback</code> transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.</p>
+<p>This <em>return</em> gas cost is actually under your control since you write the code in the <code class="prettyprint">__callback</code> method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the <code class="prettyprint">gasLimit</code> should be on the <code class="prettyprint">__callback</code> transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.</p>
 
-<p>If the default, and minimum, value of 200,000 gas,  is not enough, you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
+<p>If the default, and minimum, value of 200,000 gas, is not enough, you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
 <pre class="highlight javascript"><code><span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
@@ -741,19 +743,19 @@ All the code written here assumes that you have already included all the necessa
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
 
-<p>Note also that if you offer too low a <code class="prettyprint">gasLimit</code>, and your <code class="prettyprint">__callback</code> method is long, you may never see a callback.</p>
+<p>Note also that if you set your <code class="prettyprint">gasLimit</code> too low, and your <code class="prettyprint">__callback</code> method requires more gas than was set, the callback will run out of gas and fail to execute whatever is in your callback.</p>
 
 <h2 id="authenticity-proof">Authenticity Proof</h2>
 
-<p>In order to get, or not, the TLSNotary proof back from Oraclize you need to specify the <code class="prettyprint">proofType</code> and <code class="prettyprint">proofStorage</code>. You do this by calling: </p>
+<p>In order to receive any proof for your query, you will need to make an explicit request. To get the TLSNotary proof back from Oraclize you need to specify the <code class="prettyprint">proofType</code> and <code class="prettyprint">proofStorage</code>. You do this by calling: </p>
 
 <ul>
 <li>either <code class="prettyprint">oraclize_setProof(proofType_NONE)</code></li>
 <li>or <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> </li>
-<li>or, when the Ledger proof wants to be used, <code class="prettyprint">oraclize_setProof(proofType_Ledger)</code></li>
+<li>or, when the Ledger proof is to be used, <code class="prettyprint">oraclize_setProof(proofType_Ledger)</code></li>
 </ul>
 
-<p>You may execute this method just once, for instance in the constructor, or at any other time, if, for instance, you need the proof for certain queries only. </p>
+<p>You only need to execute this method once, for instance in the constructor, or at any other time. If, for instance, you need the proof for certain queries only, you can also reset it back to proofType_NONE after making your query. </p>
 
 <ul>
 <li><code class="prettyprint">proofType_NONE</code> is the default setting</li>
@@ -767,7 +769,7 @@ All the code written here assumes that you have already included all the necessa
 <li>and will call back your contract on the <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code> function <strong>instead of the default</strong> <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
 </ul>
 
-<p>The <code class="prettyprint">proof</code> string is exactly the IPFS multihash that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/<code class="prettyprint">proof</code></p>
+<p>The <code class="prettyprint">proof</code> bytes variable returned is the base58 decoded IPFS multihash string (you can re-encode the bytes output in base58 to get the string-equivalent multihash that can be entered into IPFS) that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/<code class="prettyprint">proof</code></p>
 
 <blockquote>
 <p><strong>Note:</strong>
@@ -792,7 +794,9 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 <span class="p">}</span>
 </code></pre>
 
-<h3 id="verificability">Verificability</h3>
+<h3 id="verifiability">Verifiability</h3>
+
+<p>Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> </p>
 
 <h2 id="more-examples">More Examples</h2>
 
@@ -800,7 +804,7 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <h2 id="random-utilities">Random Utilities</h2>
 
-<p>Since the callback transaction always provides results as strings, the Solidity API helpers also include some convenience functions, which might prove useful to you. Especially since Solidity does not provide any official &ldquo;standard Library&rdquo; yet.</p>
+<p>Since the callback transaction always provides results as strings, the Solidity API helpers also include various helper functions, which might prove useful to you. Especially since Solidity does not provide any official &ldquo;standard Library&rdquo; yet.</p>
 
 <p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.</p>
 
@@ -832,7 +836,7 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <ul>
 <li><p>when integrating the Oraclize service into your smart contract it&rsquo;s better to use our <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol" target="_blank">API helpers</a> instead of interfacing with the connector directly as the connector address may be updated.</p></li>
-<li><p>the <code class="prettyprint">myid</code> returned by Oraclize in the <code class="prettyprint">__callback</code> function should always be checked by your smart contract. Specifically, the smart contract should verify that the <code class="prettyprint">myid</code> is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuses of your contract logic.</p></li>
+<li><p>the <code class="prettyprint">myid</code> returned by Oraclize in the <code class="prettyprint">__callback</code> function should always be checked by your smart contract. Specifically, the smart contract should verify that the <code class="prettyprint">myid</code> is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuse of your contract logic.</p></li>
 </ul>
 
           <h1 id="9885-nbsp-rootstock">&#9885; &nbsp; Rootstock</h1>
@@ -857,7 +861,7 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <p>The <a href="https://app.oraclize.it/service/monitor" target="_blank">Network Monitor</a>, along with the <a href="https://github.com/oraclize/proof-verification-tool" target="_blank">Proof Verification Tool</a>, can be used to verify the integrity and correctness of the authenticity proofs Oraclize has provided.</p>
 
-<p>It is very important to verify independently that those proofs are valid, as this is the only way you can verify if Oraclize has ever provided a wrong answer.</p>
+<p>It is very important to independently verify that those proofs are valid, as this is the only way you can verify if Oraclize has ever provided a wrong answer.</p>
 
 <h2 id="encryption">Encryption</h2>
 
@@ -869,7 +873,7 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <h2 id="browser-solidity">Browser-solidity</h2>
 
-<p>The <a hre"http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize</a> browser-solidity plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in &ldquo;VM mode&rdquo;), with no need for you to install or setup anything. This is a very handy tool to use fo development.</p>
+<p>The <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize browser-solidity</a> plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in &ldquo;VM mode&rdquo;), with no need for you to install or setup anything. This is a very handy tool to use fo development.</p>
 
 <h2 id="ethereum-studio-plugin">Ethereum Studio plugin</h2>
 
@@ -877,11 +881,11 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <h2 id="truffle-amp-ethpm">Truffle &amp; ethpm</h2>
 
-<p>When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and use download the oraclizeAPI Solidity contract by just typing <code class="prettyprint">ethpm install oraclize</code>.</p>
+<p>When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing <code class="prettyprint">ethpm install oraclize</code>.</p>
 
 <h2 id="oraclize-lib">Oraclize-lib</h2>
 
-<p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an handy nodejs library that you can use to build applications based on the top of the Oraclize service. Note that this is no dependant to the blockchain in any way!</p>
+<p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is a nodejs library that you can use to build applications based on top of the Oraclize service. Note that this isn&rsquo;t dependant on a blockchain in any way and therefore could be integrated into any service!</p>
 
           <h1 id="security-deep-dive">Security deep-dive</h1>
 
