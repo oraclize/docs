@@ -37,34 +37,60 @@ Payment is part and parcel of the `oraclize_query` function call, and our pricin
   <tr>
     <th rowspan="2" style="vertical-align: bottom !important;">Datasource</th>
     <th rowspan="2" style="vertical-align: bottom !important;">Base price</th>
-    <th colspan="2">Proof type</th>
+    <th colspan="4">Proof type</th>
   </tr>
   <tr>
     <td>None</td>
     <td>TLSNotary</td>
+    <td>Android</td>
+    <td>Ledger</td>
   </tr>
   <tr>
     <td>URL</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
     <td>+0.0$</td>
     <td>+0.04$</td>
+    <td>+0.04$</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td>Blockchain</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
     <td>+0.0$</td>
     <td>+0.04$</td>
+    <td>+0.04$</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td>WolframAlpha</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.03$</td>
     <td>+0.0$</td>
     <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
   </tr>
   <tr>
     <td>IPFS</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
     <td>+0.0$</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>N/A</td>
+  </tr>
+  <tr>
+    <td>random</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.05$</td>
+    <td>+0.0$</td>
+    <td>N/A</td>
+    <td>N/A</td>
+    <td>+0.0$</td>
+  </tr>
+  <tr>
+    <td>computation</td>
+    <td style="background-color:#FFEFD0;font-weight: 700;">0.50$</td>
+    <td>+0.0$</td>
+    <td>+0.04$</td>
+    <td>+0.04$</td>
     <td>N/A</td>
   </tr>
 </table>
