@@ -199,15 +199,15 @@
 
           <h1 id="general-concepts">General Concepts</h1>
 
-<h2 id="if-this-then-that">If this then that</h2>
+<h2 id="if-this-then-that">If This Then That</h2>
 
 <p>The Oraclize engine internally replicates &ldquo;If This Then That&rdquo; logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.</p>
 
-<h2 id="context-abstraction">Context abstraction</h2>
+<h2 id="context-abstraction">Context Abstraction</h2>
 
 <p>To allow Oraclize to stay as context-generic as possible, Oraclize queries must specify both a datasource and a query text. The &ldquo;datasource&rdquo; field tells Oraclize where to look for your data. Available datasources include &ldquo;URL&rdquo;, &ldquo;WolframAlpha&rdquo;, &ldquo;IFPS&rdquo;, and many others. The &ldquo;query&rdquo; field tells Oraclize what to fetch. An example URL query could be &ldquo;https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD&rdquo; while an example WolframAlpha query could be &ldquo;Who is the president of the US?&rdquo;</p>
 
-<h2 id="data-and-computations">Data and computations</h2>
+<h2 id="data-and-computations">Data and Computations</h2>
 
 <p>Thanks to our context-generic implementation, your queries don&rsquo;t necessarily need to be to Web APIs. You can query other blockchains, IPFS, WolframAlpha, and much more. You&rsquo;ll find a list of supported datasources in the dedicated &ldquo;Datasources&rdquo; section.  </p>
 
@@ -220,7 +220,7 @@
 <li>datasource: <code class="prettyprint">URL</code>, query: <code class="prettyprint">https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD</code> </li>
 </ul>
 
-<h2 id="parsing-helpers">Parsing helpers</h2>
+<h2 id="parsing-helpers">Parsing Helpers</h2>
 
 <p>In ordet to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
 
@@ -355,7 +355,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 <li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separate document.</li>
 </ul>
 
-          <h1 id="datasources">Datasources</h1>
+          <h1 id="data-sources">Data-Sources</h1>
 
 <p>Listed here are the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.</p>
 
@@ -586,266 +586,297 @@ Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the 
 
           <h1 id="9910-nbsp-ethereum">&#9910; &nbsp; Ethereum</h1>
 
-<p>The following is meant to be a short but complete introduction to explain how the interfacing of an Ethereum contract with Oraclize actually works. 
-To better profit from the documentation previous knowledge of Solidity is required.</p>
+<p>The following section is dedicated to the Ethereum and Oraclize integration. 
+To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.</p>
 
-<p>Sending a query to Oraclize means sending a contract call, also called internal transaction, to the on-chain Oraclize contract.</p>
-
-<ul>
-<li>Take care of paying Oraclize the expected amount, which can vary depending on the sent query</li>
-<li>Pass the query in the right format.</li>
-</ul>
-
-<p>With that, Oraclize will:</p>
+<p>The interaction between Oraclize and an Ethereum smart contract is asyncronous. Any request for data is composed of two steps:</p>
 
 <ul>
-<li>Fetch your result</li>
-<li>Send it back to your address, which most of the time will be your own contract address, with a transaction calling a dedicated <code class="prettyprint">__callback</code> method.</li>
+<li>Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by an user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.</li>
+<li>Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the <code class="prettyprint">__callback</code> function which should be placed in the smart contract by its developer: for this reason, this transaction is refered in the documentation as the Oraclize callback transaction.</li>
 </ul>
 
-<p>Note that the transaction sent back by Oraclize can trigger any status change in the calling contract, and can include the sending of another query to Oraclize. What can be done within the <code class="prettyprint">__callback</code> method is only limited by the block gas limit.</p>
+<p>As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  </p>
 
-<h2 id="getting-everything-on-track">Getting Everything on Track</h2>
+<h2 id="quick-start">Quick Start</h2>
+<pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<p>First, place <code class="prettyprint">usingOraclize</code> contract into your code. You do not need to import the <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> contract interfaces as this is taken care of.</p>
+<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-<p>The purpose of the <code class="prettyprint">usingOraclize</code> contract is to make calls to <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> as painless as possible for you. However, if you know what you are doing, you are free to call our <code class="prettyprint">OraclizeI</code> and <code class="prettyprint">OraclizeAddrResolverI</code> interfaces directly. The upside is that you would spend a lower amount of gas for contract deployment. The downside is that if anything goes wrong a <code class="prettyprint">throw</code> is raised.</p>
+    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
+    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
 
-<p>In order to simplify the use of our API, we highly recommend that you simply extend the <code class="prettyprint">usingOraclize</code> contract and use its inherited methods, discussed below. These methods indeed already handle payments and API calls correctly.</p>
+    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
 
-<p>All the code you need is found here <a href="http://dev.oraclize.it/api.sol" target="_blank">http://dev.oraclize.it/api.sol</a>. After making your contract extend <code class="prettyprint">usingOraclize</code>, it would look like:</p>
-<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+    <span class="p">}</span>
 
-<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
-
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">()</span> <span class="p">{</span>
-        <span class="p">..</span>
-    <span class="p">}</span> 
-
+    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 
-<h2 id="simple-query">Simple Query</h2>
-
-<blockquote>
-<p><strong>Note:</strong>
-All the code written here assumes that you have already included all the necessary code as described in the paragraphs above, and that your contract already extends our <code class="prettyprint">usingOraclize</code> contract (if you are using Solidity).</p>
-</blockquote>
-
-<p>When sending a query to Oraclize you have to specify at least two arguments:</p>
+<p>The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right. 
+This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:</p>
 
 <ul>
-<li>The data-source you want to fetch the data from. Some basic supported values are <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">Blockchain</code>, <code class="prettyprint">IPFS</code></li>
-<li>The argument for the given data-source:
-
-<ul>
-<li>the full <code class="prettyprint">URL</code>, which might use our JSON / XML parsing helpers</li>
-<li>or the <code class="prettyprint">WolframAlpha</code> formula</li>
-<li>or the <code class="prettyprint">Blockchain</code>-provided syntax</li>
-<li>or the <code class="prettyprint">IPFS</code> multihash</li>
-</ul></li>
+<li>The contract should be a child of the contract usingOraclize</li>
+<li>The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository. </li>
 </ul>
 
-<p>More information about these can be found in the <a href="#overview">Overview</a> document.</p>
+<p>The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the oraclizeAPI.sol file since direct import from Github may not be supported.</p>
 
-<p>An example code might look like this:</p>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">);</span>
-</code></pre>
+<p>To ease development, Oraclize doesn&rsquo;t charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn&rsquo;t have enough funds in his balance, the request will fail and Oraclize won&rsquo;t return any data. </p>
 
-<p>This code example will ask Oraclize to send you back immediately a transaction with the primary result (as a string) of the given formula (&ldquo;random number between 0 and 100&rdquo;) fetched from the data-source &ldquo;WolframAlpha&rdquo;.</p>
+<h3 id="simple-query">Simple Query</h3>
+<pre class="highlight javascript"><code><span class="c1">// This code example will ask Oraclize to send as soon as possible</span>
+<span class="c1">// a transaction with the primary result (as a string) of the given</span>
+<span class="c1">// formula ("random number between 0 and 100") fetched from the</span>
+<span class="c1">// data-source "WolframAlpha".</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">);</span>
 
-<p>Similarly, you can use any other data-source, here we list some examples:</p>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.kraken.com/0/public/Ticker?pair=ETHXBT"</span><span class="p">)</span>
+
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span>
   <span class="s2">"json(https://www.therocktrading.com/api/ticker/BTCEUR).result.0.last"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight javascript"><code><span class="cm">/* 
-  the only data-sources accepting 2 string arguments are
-  the 'computation', in the case of a supplemental arg and 
-  'URL' when we want it to send an HTTP POST request
-  with the 2nd argument being the query-string we want
-  to send to the given server.
 
-  note that when the 2nd argument is a valid JSON string
-  it will be automatically sent as JSON
-*/</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">)</span>
+
+<span class="c1">// The URL datasource also supports a supplement argument, useful for creating HTTP POST requests.</span>
+<span class="c1">// If that argument is a valid JSON string, it will be automatically sent as JSON. </span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span>
   <span class="s1">'{"pair":"eth_btc","amount":"1","withdrawal":"1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">)</span>
 </code></pre>
 
-<h2 id="schedule-a-query-in-the-future">Schedule a Query in the Future</h2>
+<p>A request for data is called <strong>query</strong>. The <code class="prettyprint">oraclize_query</code> is a function, inhered from the parent usingOraclize contract, which expects at least two arguments:</p>
 
-<p>If you want Oraclize to execute your query at a scheduled future time, just specify the delay (in seconds) from the current time or the timestamp in the future as first argument.</p>
+<ul>
+<li>A data-source such as <code class="prettyprint">URL</code>, <code class="prettyprint">WolframAlpha</code>, <code class="prettyprint">IPFS</code>, &lsquo;Swarm&rsquo; and others listed here</li>
+<li>The argument for the given data-source. For examples:
 
-<p>Please note that in order for the future timestamp to be accepted by Oraclize it must be within 60 days of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than 60 days. </p>
-<pre class="highlight javascript"><code><span class="c1">// Relative time</span>
-<span class="c1">// get the result from the given URL 60 seconds from now</span>
+<ul>
+<li>the full <code class="prettyprint">URL</code>, which may inclued the use of JSON or XML parsing helpers as it can be seen in the previous example</li>
+<li>or a <code class="prettyprint">WolframAlpha</code> formula</li>
+<li>or an <code class="prettyprint">IPFS</code> multihash</li>
+</ul></li>
+</ul>
+
+<p>The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.  </p>
+
+<h3 id="schedule-a-query-in-the-future">Schedule a Query in the Future</h3>
+<pre class="highlight javascript"><code><span class="c1">// Relative time: get the result from the given URL 60 seconds from now</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
   <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">)</span>
-</code></pre>
-<pre class="highlight javascript"><code><span class="c1">// Absolute time</span>
-<span class="c1">// get the result from the given datasource at the specified UTC timestamp in the future</span>
+
+<span class="c1">// Absolute time: get the result from the given datasource at the specified UTC timestamp in the future</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">scheduled_arrivaltime</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>
   <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="nx">strConcat</span><span class="p">(</span><span class="s2">"flight "</span><span class="p">,</span> <span class="nx">flight_number</span><span class="p">,</span> <span class="s2">" landed"</span><span class="p">));</span>
 </code></pre>
 
-<h2 id="recursive-queries">Recursive queries</h2>
+<p>The execution of a query can be scheduled in a future date. The function <code class="prettyprint">oraclize_query</code> accepts as a parameter the delay in seconds from the current time or the timestamp in the future as first argument.
+Please note that in order for the future timestamp to be accepted by Oraclize it must be within <strong>60 days</strong> of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than <strong>60 days</strong>. </p>
 
-<p>Thanks to the service offered by Oraclize, you can have a smart contract be effectively autonomous. If your __callback method implements a recursive call (meaning that a new oraclize_query is initiated there), the contract will start interacting with Oraclize in a continuous manner.</p>
+<h3 id="recursive-queries">Recursive Queries</h3>
+<pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<p>This can be useful for implementing periodic updates of some on-chain reference data (like price feeds) or to periodically check for some off-chain conditions.</p>
+<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-<h2 id="the-query-id">The query ID</h2>
+    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
+    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
 
-<p>Every time you call <code class="prettyprint">oraclize_query(...)</code>, it returns you a unique ID that represents your query. Whether you store this ID for future reference is up to you.</p>
-
-<h2 id="callback-functions">Callback Functions</h2>
-
-<p>Once your result is ready, Oraclize will send a transaction back to your contract address, and invoke 1 of these 3 methods:</p>
-
-<ul>
-<li>either <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
-<li>or, <strong>if you requested for the TLS Notary proof, <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code></strong></li>
-<li>or, as a last resort, if the other methods are absent, the fallback function <code class="prettyprint">function()</code></li>
-</ul>
-
-<p>Here are some handling examples:</p>
-<pre class="highlight javascript"><code><span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="p">{</span>
-      <span class="c1">// just to be sure the calling address is the Oraclize authorized one</span>
-      <span class="k">throw</span><span class="p">;</span>
+    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
-    <span class="nx">ETHXBT</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span> <span class="c1">// doing something with the result..</span>
-    <span class="c1">// new query for Oraclize!</span>
-    <span class="nx">bytes32</span> <span class="nx">myid</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span>
-      <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 
-<p>In the snippet above we call <code class="prettyprint">oraclize_query</code> again within the <code class="prettyprint">__callback</code> function. In effect, this makes the contract automatically receive <code class="prettyprint">__callback</code> every minute forever. Or at least, until you run out of funds!</p>
+<p>Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  <code class="prettyprint">__callback</code> method. 
+This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.</p>
 
-<p>Note that <code class="prettyprint">myid</code> can be used to implement different behaviours into the <code class="prettyprint">__callback</code> function, in particular when there is more than one pending call from Oraclize.</p>
+<p>This modified version of the previous example will update the EUR/GBP exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.</p>
 
-<h2 id="custom-gas">Custom Gas</h2>
+<h3 id="the-query-id">The Query ID</h3>
+<pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<p>The transaction originating from Oraclize to your <code class="prettyprint">__callback</code> function costs gas, just like any other transaction. However, as you learned earlier, you need to cover Oraclize for this gas cost, and the <code class="prettyprint">oraclize_query</code> function helpfully handles that. It defaults at 200,000 gas.</p>
+<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-<p>This <em>return</em> gas cost is actually under your control since you write the code in the <code class="prettyprint">__callback</code> method, and as such, can estimate it. So, when placing a query with Oraclize, you can also specify how much the <code class="prettyprint">gasLimit</code> should be on the <code class="prettyprint">__callback</code> transaction. Note however that, since  Oraclize sends the transaction, any unspent gas is returned to Oraclize, not you.</p>
+    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
+    <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
+    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
 
-<p>If the default, and minimum, value of 200,000 gas, is not enough, you can increase it by specifying a different <code class="prettyprint">gasLimit</code> in this way:</p>
-<pre class="highlight javascript"><code><span class="c1">// Oraclize will use a 500k gasLimit for the callback transaction, instead of 200k</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
-<pre class="highlight javascript"><code><span class="c1">// you can set both custom timestamp/delay and custom gasLimit</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"WolframAlpha"</span><span class="p">,</span> <span class="s2">"random number between 0 and 100"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+
+<p>Every time the function <code class="prettyprint">oraclize_query</code> is called, it returns a unique ID, hereby refered to as <code class="prettyprint">queryId</code>, which depends from the number of previous requests and the address of smart contract.
+The queryId identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback transaction. </p>
+
+<p>Oraclize recommends smart contract developers to verify if the queryId sends by the callback transaction was generated by a valid call to the <code class="prettyprint">oracize_query</code> function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the smart contract logic. Moreover, it protects the smart contract during blockchain reorganizations, as explained in the dedicated paragraph of this section.</p>
+
+<p>The <code class="prettyprint">queryId</code> can be used as well to implement different behaviours into the <code class="prettyprint">__callback</code> function, in particular when there is more than one pending call from Oraclize. </p>
+
+<h3 id="custom-gas-limit-and-gas-price">Custom Gas Limit and Gas Price</h3>
+<pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
+
+<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
+    <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
+    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </code></pre>
 
-<p>Note also that if you set your <code class="prettyprint">gasLimit</code> too low, and your <code class="prettyprint">__callback</code> method requires more gas than was set, the callback will run out of gas and fail to execute whatever is in your callback.</p>
+<p>The transaction originating from Oraclize to the  <code class="prettyprint">__callback</code> function pays a fee to the miner which include the transaction in a block, just like any other transaction. The miner fee is paid in Ether and it is calculated by taking the amount of gas which covers the execution costs of the transaction multiplied by the selected gas/ether price. Oraclize will set those parameters accordingly to the parameters specified in the smart contract, for contract-wide settings, and in the <code class="prettyprint">oraclize_query</code> function, for query-specific settings. The miner fee for the callback transaction is taken from the contract balance when the query transaction is executed.</p>
 
-<h2 id="authenticity-proof">Authenticity Proof</h2>
+<p>If no settings are specified, Oraclize will use the default values of 200,000 gas and 20 GWei. This last value is on the higher-end of the pricing spectrum right now, but it helps having faster confirmation times during network-wide congestions. </p>
 
-<p>In order to receive any proof for your query, you will need to make an explicit request. To get the TLSNotary proof back from Oraclize you need to specify the <code class="prettyprint">proofType</code> and <code class="prettyprint">proofStorage</code>. You do this by calling: </p>
+<p>A different value for the Oraclize callback gas can be passed as the argument <code class="prettyprint">_gasLimit</code> to the <code class="prettyprint">oraclize_query</code> function as shown in the following examples.</p>
+<pre class="highlight javascript"><code><span class="c1">// If the callback transaction requires little gas, the value can be lowered:</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">100000</span><span class="p">);</span>
 
-<ul>
-<li>either <code class="prettyprint">oraclize_setProof(proofType_NONE)</code></li>
-<li>or <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> </li>
-<li>or, when the Ledger proof is to be used, <code class="prettyprint">oraclize_setProof(proofType_Ledger)</code></li>
-</ul>
+<span class="c1">// Callback methods may be expensive. The example requires the JSON parsing </span>
+<span class="c1">// a string in the smart contract. If that's the case, the gas should be increased:</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.fixer.io/latest?symbols=USD,GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+</code></pre>
 
-<p>You only need to execute this method once, for instance in the constructor, or at any other time. If, for instance, you need the proof for certain queries only, you can also reset it back to proofType_NONE after making your query. </p>
+<p>The gas price of the callback transaction can be set by calling the <code class="prettyprint">oraclize_setCustomGasPrice</code> function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.</p>
 
-<ul>
-<li><code class="prettyprint">proofType_NONE</code> is the default setting</li>
-<li><code class="prettyprint">proofType_IPFS</code> is the only method of storage supported, at the time of writing, for the TLSNotary proof.</li>
-</ul>
+<p>Smart contract developers should estimate correctly and minimize the cost of their <code class="prettyprint">__callback</code> method, as any unspent gas will be returned to Oraclize and no refund is available. </p>
 
-<p><code class="prettyprint">proofStorage_IPFS</code> means that Oraclize will:</p>
+<h3 id="authenticity-proofs">Authenticity Proofs</h3>
+<pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<ul>
-<li>use <a href="http://ipfs.io/" target="_blank">IPFS</a> to store your complete TLSNotary proof</li>
-<li>and will call back your contract on the <code class="prettyprint">__callback(bytes32 myid, string result, bytes proof)</code> function <strong>instead of the default</strong> <code class="prettyprint">__callback(bytes32 myid, string result)</code></li>
-</ul>
+<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-<p>The <code class="prettyprint">proof</code> bytes variable returned is the base58 decoded IPFS multihash string (you can re-encode the bytes output in base58 to get the string-equivalent multihash that can be entered into IPFS) that identifies your TLSNotary proof, so you can fetch it for example at http://ipfs.io/ipfs/<code class="prettyprint">proof</code></p>
+    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
+    <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
+    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
 
-<blockquote>
-<p><strong>Note:</strong>
-There might not always be a TLSNotary proof for your query, depending on the data source you have chosen</p>
-</blockquote>
-
-<p>Here is an example:</p>
-<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
-
-<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
-
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
-        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span>
-          <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="p">..</span>
+        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
+        <span class="nx">updatePrice</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
+
+<p>Authenticity proofs are at the core of Oraclize&rsquo;s oracle model. Smart contracts can request authenticity proofs together with their data by calling the <code class="prettyprint">oraclize_setProof</code> function available in the usingOraclize. The authenticity proof can be either deliver directly to the smart contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>. </p>
+
+<p>When a smart contract requests for an authenticity proof, it <strong>must</strong> define a different callback function with the following arguments: <code class="prettyprint">function __callback(bytes32 queryId, string result, bytes proof)</code></p>
+
+<p>The <code class="prettyprint">oraclize_setProof</code> function expects the following format: <code class="prettyprint">oraclize_setProof(proofType_ | proofStorage_ )</code></p>
+
+<p>Both proofType and proofStorage are byte constants defined in usingOraclize:  </p>
+
+<p>Available parameters for proofTypes are:</p>
+
+<ul>
+<li><code class="prettyprint">proofType_NONE</code>: the default value of any smart contracts </li>
+<li><code class="prettyprint">proofType_TLSNotary</code> </li>
+<li><code class="prettyprint">proofType_Android</code></li>
+<li><code class="prettyprint">proofType_Native</code></li>
+<li><code class="prettyprint">proofType_Ledger</code> </li>
+</ul>
+
+<p>While for proofStorage:</p>
+
+<ul>
+<li><code class="prettyprint">proofStorage_IPFS</code></li>
+</ul>
+
+<p>For example, <code class="prettyprint">oraclize_setProof(proofType_TLSNotary)</code> will return the full TLSNotary Proof bytes as the proof argument in the callback transaction. If instead <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> is used, then Oraclize will return only the base58-decoded IPFS multihash as the proof argument. To obtain the IPFS multihash, the bytes must be encoded to base58. 
+The method <code class="prettyprint">oraclize_setProof</code> can be executed in the constructor, becoming a contract-wide lasting setting, or it can be set directly before a specific query is to be made. Authentiticity proofs can be disabled by calling <code class="prettyprint">oraclize_setProof(proofType_NONE)</code>. Smart contract developer should be aware that the helper method <code class="prettyprint">oraclize_setProof</code> is an internal function of usingOraclize, and therefore it must be included specifically in their smart contract at compile time, before deployment. 
+The following builds on our previous example:</p>
 
 <h3 id="verifiability">Verifiability</h3>
 
 <p>Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> </p>
 
-<h2 id="more-examples">More Examples</h2>
+<h3 id="more-examples">More Examples</h3>
 
-<p>You can have a look at more complete and complex examples by heading to our dedicated github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
-
-<h2 id="random-utilities">Random Utilities</h2>
-
-<p>Since the callback transaction always provides results as strings, the Solidity API helpers also include various helper functions, which might prove useful to you. Especially since Solidity does not provide any official &ldquo;standard Library&rdquo; yet.</p>
-
-<p>You can check them out <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol#L124" target="_blank">here</a>.</p>
-
-<h2 id="best-practices">Best Practices</h2>
-<pre class="highlight javascript"><code><span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
-
-<span class="nx">contract</span> <span class="nx">YourContractName</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
-
-    <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">myidList</span><span class="p">;</span>
-
-    <span class="kd">function</span> <span class="nx">YourContractName</span><span class="p">(){</span>
-         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(http://exampleUrl.url).result"</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span><span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="k">if</span><span class="p">(</span><span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span><span class="o">==</span><span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
-          <span class="c1">// check if this myid was already processed before</span>
-          <span class="k">throw</span><span class="p">;</span>
-        <span class="p">}</span>
-        <span class="nx">myidList</span><span class="p">[</span><span class="nx">myid</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="c1">// mark this myid (default bool value is false)</span>
-        <span class="p">...</span>
-    <span class="p">}</span>
-
-<span class="p">}</span>
-</code></pre>
-
-<p>What follows are some practical tips we recommend you to use when writing Oraclize-based smart contracts:</p>
-
-<ul>
-<li><p>when integrating the Oraclize service into your smart contract it&rsquo;s better to use our <a href="https://github.com/oraclize/ethereum-api/blob/master/oraclizeAPI.sol" target="_blank">API helpers</a> instead of interfacing with the connector directly as the connector address may be updated.</p></li>
-<li><p>the <code class="prettyprint">myid</code> returned by Oraclize in the <code class="prettyprint">__callback</code> function should always be checked by your smart contract. Specifically, the smart contract should verify that the <code class="prettyprint">myid</code> is unique and consequently mark it. This ensures each query response is processed only once and helps to avoid misuse of your contract logic.</p></li>
-</ul>
+<p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
 
           <h1 id="9885-nbsp-rootstock">&#9885; &nbsp; Rootstock</h1>
 
 <p>The Oraclize integration with Roostock is fully compatible with the one we have with Ethereum, please refer to that one.</p>
 
-          <h1 id="9737-nbsp-eris">&#9737; &nbsp; Eris</h1>
+          <h1 id="9737-nbsp-monax">&#9737; &nbsp; Monax</h1>
 
-<p>The Oraclize integration with Eris is fully compatible with the one we have with Ethereum, please refer to that one.</p>
+<p>The Oraclize integration with Monax, previously Eris, is fully compatible with the one we have with Ethereum, please refer to that one.</p>
 
           <h1 id="9964-nbsp-bitcoin">&#9964; &nbsp; Bitcoin</h1>
 
@@ -875,19 +906,15 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 
 <p>The <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize browser-solidity</a> plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in &ldquo;VM mode&rdquo;), with no need for you to install or setup anything. This is a very handy tool to use fo development.</p>
 
-<h2 id="ethereum-studio-plugin">Ethereum Studio plugin</h2>
-
-<p>If you are familiar with the  <a hre"https://live.ether.camp" target="_blank">Ethereum-Studio IDE</a>, you can follow the short tutorial Ether-camp provides to enable the Oraclize plugin and test your Oraclize-based contracts straight from there.</p>
-
 <h2 id="truffle-amp-ethpm">Truffle &amp; ethpm</h2>
 
-<p>When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing <code class="prettyprint">ethpm install oraclize</code>.</p>
+<p>When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing <code class="prettyprint">truffle install oraclize</code>.</p>
 
 <h2 id="oraclize-lib">Oraclize-lib</h2>
 
 <p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is a nodejs library that you can use to build applications based on top of the Oraclize service. Note that this isn&rsquo;t dependant on a blockchain in any way and therefore could be integrated into any service!</p>
 
-          <h1 id="security-deep-dive">Security deep-dive</h1>
+          <h1 id="security-deep-dive">Security Deep Dive</h1>
 
 <p>As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source. </p>
 
@@ -898,7 +925,7 @@ There might not always be a TLSNotary proof for your query, depending on the dat
 <p>This is the reason why Oraclize has been designing systems for authenticating data and made it part of its core business. These systems are called <em>authenticity proofs</em>, which enable auditability of the oracle&rsquo;s service record in delivering untampered data. 
 The authenticity proofs leverage different attestation technologies: some are software-based and some rely on trusted hardware technologies. </p>
 
-<h2 id="authenticity-proofs">Authenticity proofs</h2>
+<h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
 <h3 id="tlsnotary-proof">TLSNotary Proof</h3>
 
@@ -908,6 +935,8 @@ The authenticity proofs leverage different attestation technologies: some are so
 
 <p>The Android Proof is a result of some of Oraclize&rsquo;s internal R&amp;D work. It leverages software remote attestation technology developed by Google, called SafetyNet, to validate that a given Android application is running on a safe, non-rooted physical device, connected to Oraclize&rsquo;s infrastructure. It also remotely validates the application code hash, enabling authentication of the application running on the device. The application code is open-source, thereby enabling auditability and verification of the code hash. The Android Proof goes further, by using the newly introduced Android Hardware Attestion to prove that the physical device is updated to the latest available Android version, further ensuring integrity by having any potential exploits within the system patched. Furthermore, it verifies that the device&rsquo;s Root-of-Binding-Trust is valid. Both these technologies together effectively turn the physical Android device into a provably-secure environment in which an untampered HTTPS connection to a remote datasource can be initiated. For Oraclize or an external attacker with unauthorized gained access to the infrastructure to compromise the device and generate a false but valid proof, a zero-day exploit unbeknownst to Google must be discovered by said party, which either breaks the Android sandboxing model or is a kernel-level exploit, of the latest version of Android OS and its available security patches.
 You can access more information about the Android Proof by reading the white paper on it and experiment with it on the Ethereum and Bitcoin testnets. The enabling of the Android Proof on mainnet is pending based on an update by Google, effectively enabling Android Nougat Hardware Attestation.</p>
+
+<h3 id="ledger-proof">Ledger Proof</h3>
 
 <h3 id="storage-and-delivery">Storage and Delivery</h3>
 
