@@ -22,13 +22,10 @@ If you need to use Oraclize in a private testnet, the Stargate tool enables a fu
 
 The <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Oraclize browser-solidity</a> plugin enables you to test Ethereum Oraclize-based contracts straight from your browser (in "VM mode"), with no need for you to install or setup anything. This is a very handy tool to use fo development.
 
-## Ethereum Studio plugin
-
-If you are familiar with the  <a hre"https://live.ether.camp" target="_blank">Ethereum-Studio IDE</a>, you can follow the short tutorial Ether-camp provides to enable the Oraclize plugin and test your Oraclize-based contracts straight from there.
 
 ## Truffle & ethpm
 
-When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing `ethpm install oraclize`.
+When testing your Oraclize-based contracts with Truffle, you can fully benefit from our ethpm integration and download the oraclizeAPI Solidity contract just by typing `truffle install oraclize`.
 
 ## Oraclize-lib
 

@@ -1,14 +1,14 @@
 # General Concepts
 
-## If this then that
+## If This Then That
 
 The Oraclize engine internally replicates "If This Then That" logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.
 
-## Context abstraction
+## Context Abstraction
 
 To allow Oraclize to stay as context-generic as possible, Oraclize queries must specify both a datasource and a query text. The "datasource" field tells Oraclize where to look for your data. Available datasources include "URL", "WolframAlpha", "IFPS", and many others. The "query" field tells Oraclize what to fetch. An example URL query could be "https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD" while an example WolframAlpha query could be "Who is the president of the US?"
 
-## Data and computations
+## Data and Computations
 
 Thanks to our context-generic implementation, your queries don't necessarily need to be to Web APIs. You can query other blockchains, IPFS, WolframAlpha, and much more. You'll find a list of supported datasources in the dedicated "Datasources" section.  
 
@@ -19,7 +19,7 @@ Given the above, you can ask things like:
 * datasource: `WolframAlpha`, query: `who is the president of the US?`
 * datasource: `URL`, query: `https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD` 
 
-## Parsing helpers
+## Parsing Helpers
 
 In ordet to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.
 
