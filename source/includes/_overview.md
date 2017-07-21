@@ -31,6 +31,7 @@ The solution developed by Oraclize is instead to demonstrate that the data fetch
 A more detailed overview of Oraclize authenticity proofs is provided in the [Authenticity Proofs](#Authenticity Proof) section of this documentation.
 
 This solutions elegantly solves the Oracle Problem:
+
 * Blockchain Application's developers and the users of such applications don't have to trust Oraclize; the security model is mantained.
 * Data providers don't have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs. 
 
