@@ -161,68 +161,62 @@
       <div class="dark-box"></div>
       <div class="content">
         
-          <h1 id="overview">Overview</h1>
+          <h1 id="home">Home</h1>
 
-<blockquote>
-<p><img src="images/flowchart.png" /></p>
-</blockquote>
+<p>Welcome to the Documentation of Oraclize!</p>
 
-<p>Oraclize aims to be the preeminent data carrier between blockchain protocols and the wider Internet. </p>
+<p>The documentation is divided in the following sections:</p>
 
-<p>The Oraclize service allows smart contracts to break free from their constraints by providing a trustless way to access data from the web.</p>
+<ul>
+<li><a href="#background">Background</a>: the rationale behind the Oraclize&rsquo;s Oracle Model</li>
+<li><a href="#general-concepts">General Concepts</a>: the main concepts behind Oraclize </li>
+<li><a href="#data-source">Data-Sources</a>:  information regarding the types of data sources Oraclize supports</li>
+<li><a href="#integrations">Integrations</a>: how to integrate a blockchain application with Oraclize</li>
+<li><a href="#development-tools">Development Tools</a>: a list of tools to aide development of Oraclize-integrated smart contracts</li>
+<li><a href="#security-deep-dive">Security Deep Dive</a>: how Oraclize&rsquo;s Authenticity proofs works </li>
+<li><a href="#pricing">Pricing</a>: information on our pricing model for production uses </li>
+</ul>
 
-<p>Smart contract developers should not have to blindly trust Oraclize to securely and accurately transmit the data they need. Oraclize provides a proof of authenticity along with the data requested to prove that the data was transmitted untampered from the provider defined by the smart contract.</p>
+<h2 id="background">Background</h2>
 
-<p>A more detailed overview of Oraclize authenticity proofs is provided in the Authenticity Proofs section of this documentation.</p>
+<p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.</p>
 
-<h2 id="what-is-an-oracle">What is an oracle?</h2>
+<p>In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related informations for peer-to-peer insurance; random number generation for gambling. </p>
 
-<p>In a nutshell, an oracle is something (or someone) that provides data to blockchain applications that these applications cannot (efficiently) access by themselves. </p>
+<p>But to rely on a new trusted intermidiary, the oracle in this case, it would be betraying the security and reduced-trust model of blockchain applications: which is what makes them interesting and useful in first place. </p>
 
-<p>Oracles are necessary because it is inefficient and often impossible to reach a decentralized consensus on centralized data.</p>
+<p>One solution is to accept data inputs from more than one untrusted or partially trusted party and then execute the data-dependant action only after a number of them have provided the same answer or an answer within some constrains. This type of system can be considered a decentralized oracle system. Unfortunately, this approach has severe limitations:</p>
 
-<h2 id="what-is-oraclize">What is Oraclize?</h2>
+<ul>
+<li>It requires a predefined standard on data format </li>
+<li>It is inherently inefficient: all the parties participating will require a fee and, for every request, it will take time before reaching a sufficient number of answers. </li>
+</ul>
 
-<p>Oraclize is an elegant solution to the &ldquo;oracle problem&rdquo; and is the &ldquo;state-of-the-art&rdquo; oracle service. We allow blockchain applications to easily and efficiently access data from any datasource (ex. Web APIs).</p>
+<p>The solution developed by Oraclize is instead to demonstrate that the data fetched from the original data-source is genuine and untampered. This is accomplished by accompanying the returned data together with a document called authenticity proof. The authenticity proofs can build upon different technologies such as auditable virtual machines and Trusted Execution Environments. </p>
 
-<p>This means that existing datasources can be used without needing to adapt them for the blockchain and can continue providing data via existing channels (typically a Web API). </p>
+<p>A more detailed overview of Oraclize authenticity proofs is provided in the <a href="#Authenticity Proof">Authenticity Proofs</a> section of this documentation.</p>
 
-<p>Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a &ldquo;weakness&rdquo;, it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful.</p>
+<p>This solutions elegantly solves the Oracle Problem:
+* Blockchain Application&rsquo;s developers and the users of such applications don&rsquo;t have to trust Oraclize; the security model is mantained.
+* Data providers don&rsquo;t have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs. </p>
 
-<h2 id="rationale">Rationale</h2>
+<p>Oraclize engine can be easily integrated with both private and public instances of different blockchain protocols.</p>
 
-<p>When desiging Oraclize, we initally considered reiterating the concepts of decentralized oracle systems like Orisi. We soon realized that the limitations of the decentralized approach make it basically unacceptable. Our core design philosophy required that existing datasources not have to adapt to or even understand the blockchain. We felt it was important to ensure that the datasource and oracle components of the service were separated. Our approach allows blockchain applications to interact with any datasource via standard channels, out of the box. Oraclize authenticity proofs provide strong guarantees regarding the authenticity of the data. Applications can be 100% certain that requested data is being transmitted, without modifications, from the datasource it was requested from.</p>
-
-<h2 id="integrations">Integrations</h2>
-
-<p>Thanks to our model, you can easily leverage our service from multiple contexts. Currently, Oraclize can be used from Ethereum, Eris, Rootstock, Bitcoin, and from any non-blockchain application. As the state-of-the-art oracle service for both public and private blockchains, Oraclize can be used without limitations in pretty much any context.</p>
+<p>While building the service, the Oraclize team has realized that the concept of authenticity proofs has much broader applicability that initially envisioned. For example, the Oraclize Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation</p>
 
           <h1 id="general-concepts">General Concepts</h1>
 
-<h2 id="if-this-then-that">If This Then That</h2>
+<h2 id="oraclize-engine">Oraclize Engine</h2>
 
-<p>The Oraclize engine internally replicates &ldquo;If This Then That&rdquo; logic. This means that it will execute a given set of instructions if some other given conditions are met. For example, you might want to repeatedly verify and return some data every x seconds. This is very generic and can be leveraged in many different ways.</p>
+<p>The Oraclize Engine internally replicates an &ldquo;If This Then That&rdquo; logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be can be leveraged in many different ways and contexts.</p>
 
 <h2 id="context-abstraction">Context Abstraction</h2>
 
 <p>To allow Oraclize to stay as context-generic as possible, Oraclize queries must specify both a datasource and a query text. The &ldquo;datasource&rdquo; field tells Oraclize where to look for your data. Available datasources include &ldquo;URL&rdquo;, &ldquo;WolframAlpha&rdquo;, &ldquo;IFPS&rdquo;, and many others. The &ldquo;query&rdquo; field tells Oraclize what to fetch. An example URL query could be &ldquo;https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD&rdquo; while an example WolframAlpha query could be &ldquo;Who is the president of the US?&rdquo;</p>
 
-<h2 id="data-and-computations">Data and Computations</h2>
-
-<p>Thanks to our context-generic implementation, your queries don&rsquo;t necessarily need to be to Web APIs. You can query other blockchains, IPFS, WolframAlpha, and much more. You&rsquo;ll find a list of supported datasources in the dedicated &ldquo;Datasources&rdquo; section.  </p>
-
-<h2 id="examples">Examples</h2>
-
-<p>Given the above, you can ask things like:</p>
-
-<ul>
-<li>datasource: <code class="prettyprint">WolframAlpha</code>, query: <code class="prettyprint">who is the president of the US?</code></li>
-<li>datasource: <code class="prettyprint">URL</code>, query: <code class="prettyprint">https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD</code> </li>
-</ul>
-
 <h2 id="parsing-helpers">Parsing Helpers</h2>
 
-<p>In ordet to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
+<p>In order to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
 
 <p>The following parsing helpers are available:</p>
 
@@ -262,100 +256,18 @@ When the server is not responding or is unreachable, or your parsing helper is n
 
 <h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
-<p>Oraclize is designed to act as an intermediary that you shouldn&rsquo;t have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You&rsquo;ll find more details on authenticity proofs in the &ldquo;Security Deep-dive&rdquo; section.</p>
+<p>Oraclize is designed to act as an intermediary that you shouldn&rsquo;t have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You&rsquo;ll find more details on authenticity proofs in the &ldquo;<a href="#Security Deep Dive">#Security Deep Dive</a>&rdquo; section.</p>
 
 <aside class="notice">
-If Oraclize is unable to generate an authenticity proof (for technical reasons), it will return the result without the requested proof. It is up to the developer to decide how to handle this case. The result can be accepted, but it is recommended that the query be retried.
+If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
 </aside>
 
 <h2 id="data-privacy">Data Privacy</h2>
 
-<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.</p>
+<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
+More information can be found in the <a href="#Encrypted Queries">Encrypted Queries</a> section.</p>
 
-<h2 id="encrypted-queries">Encrypted Queries</h2>
-
-<p>Developers might be interested in keeping part (or all) of their queries private. For example, you might want to keep an API key secret from the rest of a public blockchain.</p>
-
-<p>One option is to encrypt the entire query using Oraclize public key <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code></p>
-
-<p>This means your request will be encrypted before being stored in the blockchain, and that only Oraclize will be able to decrypt your request using its paired private key. </p>
-
-<p>To encrypt the query, you can use our <code class="prettyprint">encrypted_queries_tools.py</code> python script (you can find it <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>).</p>
-
-<p>The CLI command to encrypt an arbitrary string of text is then:</p>
-
-<p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
-
-<p>This will encrypt the query with the default Oraclize public key. You could then use the encrypted string to query Oraclize in an on-chain Ethereum smart contract.</p>
-<pre class="highlight javascript"><code><span class="c1">// here we specify the encrypted formula directly</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
-  bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
-  31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
-</code></pre>
-
-<p>In this case, we have encrypted the following string <code class="prettyprint">json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</code>, which uses the JSON helper to parse the API response, but in the query you can specify any datasource and helper that you want. The example uses a public API, but you can use any private API that only require a secret user key authentication method. </p>
-
-<aside class="notice">
-You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in cleartext.
-</aside>
-
-<p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
-<pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span>
-  <span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
-</code></pre>
-
-<p>Encrypt the datasource (URL in this case):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
-
-<p>Returns: <br>
-<code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
-<br>
-<br></p>
-
-<p>Encrypt the argument(in this case we are using the JSON parsing helper to retrieve the &ldquo;status&rdquo; ):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
-
-<p>Returns:<br>
-<code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
-<br>
-<br></p>
-
-<p>Encrypt the JSON (third argument, the data to POST):<br>
-<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
-
-<p>Returns:<br>
-<code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
-<br>
-<br></p>
-<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
-<span class="c1">// to the oraclize_query (in the right order)</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
-  uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8
-  v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/
-  y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span> <span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxG
-  NtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvp
-  J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">);</span>
-</code></pre>
-
-<p>You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.</p>
-
-<aside class="notice">
-In order to prevent other users from using your exact encrypted query (&ldquo;replay attacks&rdquo;), the first contract querying Oraclize with a given encrypted query becomes its rightful &ldquo;owner&rdquo;. Any other contract using that exact same string will receive an empty result. 
-
-As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
-</aside>
-
-<h3 id="chosen-encryption-scheme">Chosen Encryption Scheme</h3>
-
-<p>To protect your encrypted queries, we have chosen an Elliptic Curve Integrated Encryption Scheme composed of the following algorithms:</p>
-
-<ul>
-<li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and the sender private key.</li>
-<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query. The authentication tag is 16-bytes of length and the nonce is chosen to be &lsquo;000000000000&rsquo; (96 bits of length), which is safe because the shared secret is different for every encrypted query. We then return the concatenation of the encoded point (i.e the public key of the senders), the authentication tag and the encrypted text. The rationale for the chosen encryption scheme will be presented soon in a separate document.</li>
-</ul>
-
-          <h1 id="data-sources">Data-Sources</h1>
+          <h1 id="data-sources">Data Sources</h1>
 
 <p>Listed here are the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.</p>
 
@@ -469,16 +381,6 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 <p>The most generic data-source we provide is the <code class="prettyprint">URL</code> one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP <code class="prettyprint">GET</code> / <code class="prettyprint">POST</code> output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the <code class="prettyprint">TLSNotary</code> proof.</p>
 
-<h2 id="random">Random</h2>
-
-<p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.</p>
-
-<p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.</p>
-
-<p>The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don&rsquo;t pass the verification process.</p>
-
-<p>The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
-
 <h2 id="wolframalpha">WolframAlpha</h2>
 
 <p>The <code class="prettyprint">WolframAlpha</code> data-source lets you specify as an argument a query to submit to the WolframAlpha knowledge engine. Oraclize will send you back the primary response as a string if any.</p>
@@ -491,22 +393,6 @@ There may not always be a primary response for your query, please test your quer
 Note:
 With this data-source we will not give you back the `TLSNotary` proof as returning the whole API response is against WolframAlpha Terms of Service.
 </aside>
-
-<h2 id="blockchain">Blockchain</h2>
-
-<p>The <code class="prettyprint">Blockchain</code> data-source provides you with easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorer APIs, but with a built-in easy-to-use syntax.
-Possible query arguments are:</p>
-
-<ul>
-<li><code class="prettyprint">bitcoin blockchain height</code>,</li>
-<li><code class="prettyprint">litecoin hashrate</code>,</li>
-<li><code class="prettyprint">bitcoin difficulty</code>, </li>
-<li><code class="prettyprint">1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance</code> 
-and so on.
-<aside class="warning">
-This datasource may be deprecated in the near future, therefore it is recommended to not be used in production. 
-</aside></li>
-</ul>
 
 <h2 id="ipfs">IPFS</h2>
 
@@ -533,16 +419,19 @@ This datasource may be deprecated in the near future, therefore it is recommende
 <p>You can optionally specify more than one sub-query, by using as delimitators the <code class="prettyprint">${</code> special opener and the <code class="prettyprint">}</code> special closer.</p>
 
 <p>Example: <code class="prettyprint">[WolframAlpha] temperature in ${[IPFS] QmP2ZkdsJG7LTw7jBbizTTgY1ZBeen64PqMgCAWz2koJBL}</code></p>
+<pre class="highlight javascript"><code><span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"nested"</span><span class="p">,</span> <span class="s2">"[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random.data.0', '\\n{\"jsonrpc\":\"2.0\",\"method\":\"generateSignedIntegers\",\"params\":{\"apiKey\":${[decrypt] BIm/tGMbfbvgqpywDDC201Jxob7/6+sSkRBtfCXN94GO0C7uD4eQ+aF+9xNJOigntWu8QHXU6XovJqRMEGHhnEnoaVqVWSqH1U1UFyE6WySavcbOb/h8hOfXv+jYBRuhkQr+tHXYrt1wx0P0dRdeCxbLp1nDuq8=},\"n\":1,\"min\":1,\"max\":10000${[identity] \"}\"},\"id\":1${[identity] \"}\"}']"</span><span class="p">,</span> <span class="nx">ORACLIZE_GAS_LIMIT</span> <span class="o">+</span> <span class="nx">safeGas</span><span class="p">);</span>
+</code></pre>
 
 <h2 id="computation">computation</h2>
 
 <p><img src="http://i.imgur.com/BPneTYH.png" /></p>
 
-<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of a given application into a secure non-blockchain (off-chain) context.</p>
+<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine. </p>
 
-<p>Such an application has to print the query result on the last line (on standard output, up to ~2500 chars) before it quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the <strong>maximum execution timeout is ~5 minutes on an AWS t2.micro instance.</strong></p>
+<p>The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes.</p>
 
-<p>As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be placed in the root directory of the archive), you should take care of preparing such archive and pushing it to IPFS beforehand.</p>
+<p>The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
+The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application. </p>
 
 <p>Example:</p>
 
@@ -563,12 +452,22 @@ CMD python -c &ldquo;import numpy; print int(numpy.linalg.det(numpy.array([[1,2,
 <ul>
 <li>Output: <code class="prettyprint">added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip</code></li>
 </ul></li>
-<li><p>our query argument is <code class="prettyprint">QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s</code> and the query result will be <code class="prettyprint">72</code></p></li>
+<li><p>The query argument is <code class="prettyprint">QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s</code> and the query result will be <code class="prettyprint">72</code></p></li>
 </ol>
 
 <aside class="notice">
 Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the email address specified there to contact you in case any issue arises.
 </aside>
+
+<h2 id="random">random</h2>
+
+<p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.</p>
+
+<p>The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don&rsquo;t pass the verification process.</p>
+
+<p>The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
+
+<p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.</p>
 
           <h1 id="integrations">Integrations</h1>
 
@@ -606,6 +505,7 @@ To better profit from this section of the documentation, previous knowledge of S
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -617,8 +517,13 @@ To better profit from this section of the documentation, previous knowledge of S
         <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
     <span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+    <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -691,6 +596,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -704,9 +610,14 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+        <span class="p">}</span>
     <span class="p">}</span>
-<span class="p">}</span>
+
 </code></pre>
 
 <p>Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  <code class="prettyprint">__callback</code> method. 
@@ -723,6 +634,7 @@ This can be useful for implementing periodic updates of some on-chain reference 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span> 
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -738,9 +650,14 @@ This can be useful for implementing periodic updates of some on-chain reference 
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
-        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+            <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -761,7 +678,10 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
+    <span class="c1">// This example requires funds to be send along with the contract deployment</span>
+    <span class="c1">// transaction </span>
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -777,9 +697,14 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
-        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+            <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -810,7 +735,11 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">updatePrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
+
+    <span class="c1">// This example requires funds to be send along with the contract deployment</span>
+    <span class="c1">// transaction </span>
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
@@ -827,9 +756,14 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
-        <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+            <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -866,6 +800,87 @@ The following builds on our previous example:</p>
 
 <p>Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> </p>
 
+<h2 id="advanced-topics">Advanced Topics</h2>
+
+<h3 id="encrypted-queries">Encrypted Queries</h3>
+
+<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
+The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  </p>
+
+<p>Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize&rsquo;s public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9.
+Only Oraclize will then be able to decrypt the request using its paired private key. </p>
+
+<p>To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,<br>
+The CLI command to encrypt an arbitrary string of text is then:</p>
+
+<p><code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 &quot;YOUR QUERY&quot;</code></p>
+
+<p>This will encrypt the query with the default Oraclize public key. The encrypted string can then be used as an argument for an Oraclize query.</p>
+<pre class="highlight javascript"><code><span class="c1">// In this example, the entire first argument of an oraclize_query has been encrypted.</span>
+<span class="c1">// The actual string encrypted is:  json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
+  bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
+  31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI"</span><span class="p">);</span>
+</code></pre>
+
+<aside class="notice">
+You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in cleartext.
+</aside>
+
+<p>The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:</p>
+<pre class="highlight javascript"><code><span class="c1">// This is the query that we want to encrypt</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span><span class="s2">"json(https://api.postcodes.io/postcodes).status"</span><span class="p">,</span>
+  <span class="s1">'{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'</span><span class="p">)</span>
+</code></pre>
+
+<p>Encrypt the datasource (URL in this case):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;URL&quot;</code></p>
+
+<p>Returns: <br>
+<code class="prettyprint">BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS</code>
+<br>
+<br></p>
+
+<p>Encrypt the argument(in this case we are using the JSON parsing helper to retrieve the &ldquo;status&rdquo; ):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &quot;json(https://api.postcodes.io/postcodes).status&quot;</code></p>
+
+<p>Returns:<br>
+<code class="prettyprint">BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=</code>
+<br>
+<br></p>
+
+<p>Encrypt the JSON (third argument, the data to POST):<br>
+<code class="prettyprint">python encrypted_queries_tools.py -e -p 044992e94... &#39;{&quot;postcodes&quot; : [&quot;OX49 5NU&quot;, &quot;M32 0JG&quot;, &quot;NE30 1DP&quot;]}&#39;</code></p>
+
+<p>Returns:<br>
+<code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
+<br>
+<br></p>
+<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
+<span class="c1">// to the oraclize_query (in the right order)</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
+  uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8
+  v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/
+  y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE="</span><span class="p">,</span> <span class="s2">"BF5u1td9ugoacDabyfVzoTxPBxG
+  NtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvp
+  J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI"</span><span class="p">);</span>
+</code></pre>
+
+<p>You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.</p>
+
+<aside class="notice">
+In order to prevent other users from using your exact encrypted query (&ldquo;replay attacks&rdquo;), the first contract querying Oraclize with a given encrypted query becomes its rightful &ldquo;owner&rdquo;. Any other contract using that exact same string will receive an empty result. 
+
+As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
+</aside>
+
+<p>To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:</p>
+
+<ul>
+<li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.</li>
+<li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be &#39;000000000000&rsquo; (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.</li>
+</ul>
+
 <h3 id="more-examples">More Examples</h3>
 
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
@@ -874,10 +889,7 @@ The following builds on our previous example:</p>
 
 <p>The Oraclize integration with Roostock is fully compatible with the one we have with Ethereum, please refer to that one.</p>
 
-          <h1 id="9737-nbsp-monax">&#9737; &nbsp; Monax</h1>
-
-<p>The Oraclize integration with Monax, previously Eris, is fully compatible with the one we have with Ethereum, please refer to that one.</p>
-
+          
           <h1 id="9964-nbsp-bitcoin">&#9964; &nbsp; Bitcoin</h1>
 
 <p>The Oraclize integration with Bitcoin works in a very different way compared to the Ethereum one - we plan to document it in the coming weeks, stay tuned!</p>
@@ -935,8 +947,6 @@ The authenticity proofs leverage different attestation technologies: some are so
 
 <p>The Android Proof is a result of some of Oraclize&rsquo;s internal R&amp;D work. It leverages software remote attestation technology developed by Google, called SafetyNet, to validate that a given Android application is running on a safe, non-rooted physical device, connected to Oraclize&rsquo;s infrastructure. It also remotely validates the application code hash, enabling authentication of the application running on the device. The application code is open-source, thereby enabling auditability and verification of the code hash. The Android Proof goes further, by using the newly introduced Android Hardware Attestion to prove that the physical device is updated to the latest available Android version, further ensuring integrity by having any potential exploits within the system patched. Furthermore, it verifies that the device&rsquo;s Root-of-Binding-Trust is valid. Both these technologies together effectively turn the physical Android device into a provably-secure environment in which an untampered HTTPS connection to a remote datasource can be initiated. For Oraclize or an external attacker with unauthorized gained access to the infrastructure to compromise the device and generate a false but valid proof, a zero-day exploit unbeknownst to Google must be discovered by said party, which either breaks the Android sandboxing model or is a kernel-level exploit, of the latest version of Android OS and its available security patches.
 You can access more information about the Android Proof by reading the white paper on it and experiment with it on the Ethereum and Bitcoin testnets. The enabling of the Android Proof on mainnet is pending based on an update by Google, effectively enabling Android Nougat Hardware Attestation.</p>
-
-<h3 id="ledger-proof">Ledger Proof</h3>
 
 <h3 id="storage-and-delivery">Storage and Delivery</h3>
 
