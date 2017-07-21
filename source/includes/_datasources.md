@@ -1,6 +1,7 @@
-# Data-Sources
+# Data Sources
 
 Listed here are the data-sources you can choose from when using our oracle service.<br>Please note that datasource selection is <i>not</i> case-sensitive.
+
 
 <table>
   <tr>
@@ -101,6 +102,8 @@ Listed here are the data-sources you can choose from when using our oracle servi
   </tr>
 </table>
 
+
+
 <sup> 1</sup> Still experimental
 
 <sup> 2</sup> Still experimental, will be available on mainnet once it's stable
@@ -111,17 +114,6 @@ Listed here are the data-sources you can choose from when using our oracle servi
 
 The most generic data-source we provide is the `URL` one, which can be used to access any public API or page on the Internet.
 As a first step you need to provide the actual URL whose HTTP `GET` / `POST` output you want Oraclize to fetch; and optionally the query-string parameters. Oraclize will forward you the response, while optionally attaching the ``TLSNotary`` proof.
-
-## Random
-
-The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.
-
-The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.
-
-The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don't pass the verification process.
-
-The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.
-
 
 ## WolframAlpha
 
@@ -135,20 +127,6 @@ Note:
 With this data-source we will not give you back the `TLSNotary` proof as returning the whole API response is against WolframAlpha Terms of Service.
 </aside>
 
-
-## Blockchain
-
-The `Blockchain` data-source provides you with easy access to blockchain-related data. You can see this data-source as a shortcut to common block explorer APIs, but with a built-in easy-to-use syntax.
-Possible query arguments are:
-
-* `bitcoin blockchain height`,
-* `litecoin hashrate`,
-* `bitcoin difficulty`, 
-* `1NPFRDJuEdyqEn2nmLNaWMfojNksFjbL4S balance` 
-and so on.
-<aside class="warning">
-This datasource may be deprecated in the near future, therefore it is recommended to not be used in production. 
-</aside>
 
 ## IPFS
 
@@ -178,17 +156,20 @@ You can optionally specify more than one sub-query, by using as delimitators the
 
 Example: `[WolframAlpha] temperature in ${[IPFS] QmP2ZkdsJG7LTw7jBbizTTgY1ZBeen64PqMgCAWz2koJBL}`
 
+```javascript
+oraclize_query("nested", "[URL] ['json(https://api.random.org/json-rpc/1/invoke).result.random.data.0', '\\n{\"jsonrpc\":\"2.0\",\"method\":\"generateSignedIntegers\",\"params\":{\"apiKey\":${[decrypt] BIm/tGMbfbvgqpywDDC201Jxob7/6+sSkRBtfCXN94GO0C7uD4eQ+aF+9xNJOigntWu8QHXU6XovJqRMEGHhnEnoaVqVWSqH1U1UFyE6WySavcbOb/h8hOfXv+jYBRuhkQr+tHXYrt1wx0P0dRdeCxbLp1nDuq8=},\"n\":1,\"min\":1,\"max\":10000${[identity] \"}\"},\"id\":1${[identity] \"}\"}']", ORACLIZE_GAS_LIMIT + safeGas);
+```
+
 ## computation
 
 ![](http://i.imgur.com/BPneTYH.png)
 
-The `computation` datasource enables the auditable execution of a given application into a secure non-blockchain (off-chain) context.
+The `computation` datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine. 
 
+The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes.
 
-Such an application has to print the query result on the last line (on standard output, up to ~2500 chars) before it quits. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start your main application straight away. The Dockerfile initialization + your application execution should terminate as soon as possible: the **maximum execution timeout is ~5 minutes on an AWS t2.micro instance.**
-
-
-As the query is the IPFS multihash of a zip archive containing such files (Dockerfile + any external file dependencies, the Dockerfile has to be placed in the root directory of the archive), you should take care of preparing such archive and pushing it to IPFS beforehand.
+The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
+The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application. 
 
 
 Example:
@@ -206,8 +187,21 @@ CMD python -c "import numpy; print int(numpy.linalg.det(numpy.array([[1,2,3],[7,
 3. `ipfs add archive.zip`
  * Output: `added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip`
 
-4. our query argument is `QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s` and the query result will be `72`
+4. The query argument is `QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s` and the query result will be `72`
 
 <aside class="notice">
 Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the email address specified there to contact you in case any issue arises.
 </aside>
+
+
+## random
+
+The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.
+
+The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don't pass the verification process.
+
+The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.
+
+The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.
+
+

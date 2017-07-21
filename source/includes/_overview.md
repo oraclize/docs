@@ -1,33 +1,40 @@
-# Overview
+# Home
 
-> ![](images/flowchart.png)
+Welcome to the Documentation of Oraclize!
 
-Oraclize aims to be the preeminent data carrier between blockchain protocols and the wider Internet. 
+The documentation is divided in the following sections:
 
-The Oraclize service allows smart contracts to break free from their constraints by providing a trustless way to access data from the web.
+* [Background](#background): the rationale behind the Oraclize's Oracle Model
+* [General Concepts](#general-concepts): the main concepts behind Oraclize 
+* [Data-Sources](#data-source):  information regarding the types of data sources Oraclize supports
+* [Integrations](#integrations): how to integrate a blockchain application with Oraclize
+* [Development Tools](#development-tools): a list of tools to aide development of Oraclize-integrated smart contracts
+* [Security Deep Dive](#security-deep-dive): how Oraclize's Authenticity proofs works 
+* [Pricing](#pricing): information on our pricing model for production uses 
 
-Smart contract developers should not have to blindly trust Oraclize to securely and accurately transmit the data they need. Oraclize provides a proof of authenticity along with the data requested to prove that the data was transmitted untampered from the provider defined by the smart contract.
 
-A more detailed overview of Oraclize authenticity proofs is provided in the Authenticity Proofs section of this documentation.
+## Background 
 
-##  What is an oracle?
+Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.
 
-In a nutshell, an oracle is something (or someone) that provides data to blockchain applications that these applications cannot (efficiently) access by themselves. 
+In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related informations for peer-to-peer insurance; random number generation for gambling. 
 
-Oracles are necessary because it is inefficient and often impossible to reach a decentralized consensus on centralized data.
+But to rely on a new trusted intermidiary, the oracle in this case, it would be betraying the security and reduced-trust model of blockchain applications: which is what makes them interesting and useful in first place. 
 
-##  What is Oraclize?
+One solution is to accept data inputs from more than one untrusted or partially trusted party and then execute the data-dependant action only after a number of them have provided the same answer or an answer within some constrains. This type of system can be considered a decentralized oracle system. Unfortunately, this approach has severe limitations:
 
-Oraclize is an elegant solution to the "oracle problem" and is the "state-of-the-art" oracle service. We allow blockchain applications to easily and efficiently access data from any datasource (ex. Web APIs).
+* It requires a predefined standard on data format 
+* It is inherently inefficient: all the parties participating will require a fee and, for every request, it will take time before reaching a sufficient number of answers. 
 
-This means that existing datasources can be used without needing to adapt them for the blockchain and can continue providing data via existing channels (typically a Web API). 
+The solution developed by Oraclize is instead to demonstrate that the data fetched from the original data-source is genuine and untampered. This is accomplished by accompanying the returned data together with a document called authenticity proof. The authenticity proofs can build upon different technologies such as auditable virtual machines and Trusted Execution Environments. 
 
-Oraclize can be seen as an intermediary in a world designed to exist without intermediaries. While this can be seen as a "weakness", it actually provides significant benefits. The following Rationale section details why we designed the system in this way and why this approach is so powerful.
+A more detailed overview of Oraclize authenticity proofs is provided in the [Authenticity Proofs](#Authenticity Proof) section of this documentation.
 
-##  Rationale
+This solutions elegantly solves the Oracle Problem:
+* Blockchain Application's developers and the users of such applications don't have to trust Oraclize; the security model is mantained.
+* Data providers don't have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs. 
 
-When desiging Oraclize, we initally considered reiterating the concepts of decentralized oracle systems like Orisi. We soon realized that the limitations of the decentralized approach make it basically unacceptable. Our core design philosophy required that existing datasources not have to adapt to or even understand the blockchain. We felt it was important to ensure that the datasource and oracle components of the service were separated. Our approach allows blockchain applications to interact with any datasource via standard channels, out of the box. Oraclize authenticity proofs provide strong guarantees regarding the authenticity of the data. Applications can be 100% certain that requested data is being transmitted, without modifications, from the datasource it was requested from.
+Oraclize engine can be easily integrated with both private and public instances of different blockchain protocols.
 
-##  Integrations
+While building the service, the Oraclize team has realized that the concept of authenticity proofs has much broader applicability that initially envisioned. For example, the Oraclize Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation
 
-Thanks to our model, you can easily leverage our service from multiple contexts. Currently, Oraclize can be used from Ethereum, Eris, Rootstock, Bitcoin, and from any non-blockchain application. As the state-of-the-art oracle service for both public and private blockchains, Oraclize can be used without limitations in pretty much any context.

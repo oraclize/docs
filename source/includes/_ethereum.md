@@ -20,6 +20,7 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	event updatedPrice(string price);
+	event newOraclizeQuery(string description);
 
     function ExampleContract() payable {
         updatePrice();
@@ -31,8 +32,13 @@ contract ExampleContract is usingOraclize {
 		updatedPrice(result);
     }
 
-    function updatePrice() payable {
-        oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+ 	function update() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        	oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+        }
     }
 }
 ```
@@ -103,6 +109,7 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	event updatedPrice(string price);
+	event newOraclizeQuery(string description);
 
     function ExampleContract() payable {
         updatePrice();
@@ -115,10 +122,15 @@ contract ExampleContract is usingOraclize {
 		updatePrice();
     }
 
-    function updatePrice() payable {
-        oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+ 	function updatePrice() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        	oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+        }
     }
-}
+
 ```
 Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method. 
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
@@ -135,7 +147,8 @@ contract ExampleContract is usingOraclize {
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
 	event updatedPrice(string price);
-	
+    event newOraclizeQuery(string description); 
+   	
     function ExampleContract() payable {
         updatePrice();
     }
@@ -149,11 +162,16 @@ contract ExampleContract is usingOraclize {
 		updatePrice();
     }
 
-    function updatePrice() payable {
-        bytes32 queryId = 
-			oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
-		validIds[queryId] = true;
-	}
+ 	function updatePrice() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+			bytes32 queryId = 
+				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+			validIds[queryId] = true;
+        }
+    }
 }
 ```
 
@@ -174,7 +192,10 @@ contract ExampleContract is usingOraclize {
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
 	event updatedPrice(string price);
-	
+	event newOraclizeQuery(string description);
+
+	// This example requires funds to be send along with the contract deployment
+	// transaction 
     function ExampleContract() payable {
         oraclize_setCustomGasPrice(4000000000 wei);
 		updatePrice();
@@ -189,11 +210,16 @@ contract ExampleContract is usingOraclize {
 		updatePrice();
     }
 
-    function updatePrice() payable {
-        bytes32 queryId = 
-			oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
-		validIds[queryId] = true;
-	}
+ 	function updatePrice() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+			bytes32 queryId = 
+				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
+			validIds[queryId] = true;
+        }
+    }
 }
 ```
 
@@ -228,8 +254,12 @@ contract ExampleContract is usingOraclize {
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
 	event updatedPrice(string price);
-	
-    function ExampleContract() payable {
+	event updatePrice(string description);
+
+    
+	// This example requires funds to be send along with the contract deployment
+	// transaction 
+	function ExampleContract() payable {
         oraclize_setCustomGasPrice(4000000000 wei);
 		oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
 		updatePrice();
@@ -243,12 +273,17 @@ contract ExampleContract is usingOraclize {
 		delete validIds[myid];
 		updatePrice();
     }
-
-    function updatePrice() payable {
-        bytes32 queryId = 
-			oraclize_query(60, "URL", "json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
-		validIds[queryId] = true;
-	}
+	
+ 	function updatePrice() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+			bytes32 queryId = 
+				oraclize_query(60, "URL", "json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
+			validIds[queryId] = true;
+        }
+    }
 }
 ```
 Authenticity proofs are at the core of Oraclize's oracle model. Smart contracts can request authenticity proofs together with their data by calling the `oraclize_setProof` function available in the usingOraclize. The authenticity proof can be either deliver directly to the smart contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>. 
@@ -280,6 +315,92 @@ The following builds on our previous example:
 
 Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> 
 
-### More Examples
 
+## Advanced Topics
+
+### Encrypted Queries
+Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
+The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  
+
+Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9.
+Only Oraclize will then be able to decrypt the request using its paired private key. 
+
+To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,  
+The CLI command to encrypt an arbitrary string of text is then:
+
+`python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 "YOUR QUERY"`
+
+This will encrypt the query with the default Oraclize public key. The encrypted string can then be used as an argument for an Oraclize query.
+
+```javascript
+// In this example, the entire first argument of an oraclize_query has been encrypted.
+// The actual string encrypted is:  json(https://poloniex.com/public?command=returnTicker).BTC_ETH.last
+oraclize_query("URL","AzK149Vj4z65WphbBPiuWQ2PStTINeVp5sS9PSwqZi8NsjQy6jJLH765qQu3U/
+  bZPNeEB/bYZJYBivwmmREXTGjmKJk/62ikcO6mIMQfB5jBVVUOqzzZ/A8ecWR2nOLv0CKkkkFzBYp2sW1H
+  31GI+SQzWV9q64WdqZsAa4gXqHb6jmLkVFjOGI0JvrA/Zh6T5lyeLPSmaslI");
+```
+
+<aside class="notice">
+You could also encrypt only 1 parameter of oraclize_query(), leaving the other ones in cleartext.
+</aside>
+
+The encryption method is also available for POST requests: you can encrypt both the URL and the POST data field as in the following example:
+
+```javascript
+// This is the query that we want to encrypt
+oraclize_query("URL","json(https://api.postcodes.io/postcodes).status",
+  '{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}')
+```
+
+
+Encrypt the datasource (URL in this case):<br>
+`python encrypted_queries_tools.py -e -p 044992e94... "URL"`
+
+Returns: <br>
+`BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS`
+<br>
+<br>
+
+Encrypt the argument(in this case we are using the JSON parsing helper to retrieve the "status" ):<br>
+`python encrypted_queries_tools.py -e -p 044992e94... "json(https://api.postcodes.io/postcodes).status"`
+
+Returns:<br>
+`BNKdFtmfmazLLR/bfey4mP8v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=`
+<br>
+<br>
+
+Encrypt the JSON (third argument, the data to POST):<br>
+`python encrypted_queries_tools.py -e -p 044992e94... '{"postcodes" : ["OX49 5NU", "M32 0JG", "NE30 1DP"]}'`
+
+Returns:<br>
+`BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI`
+<br>
+<br>
+
+```javascript
+// Finally we add all the encrypted text 
+// to the oraclize_query (in the right order)
+oraclize_query("BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
+  uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS","BNKdFtmfmazLLR/bfey4mP8
+  v/R5zCIUK7obcUrF2d6CWUMvKKUorQqYZNu1YfRZsGlp/F96CAQhSGomJC7oJa3PktwoW5J1Oti/
+  y2v4+b5+vN8yLIj1trS7p1l341Jf66AjaxnoFPplwLqE=", "BF5u1td9ugoacDabyfVzoTxPBxG
+  NtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvp
+  J6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI");
+```
+
+You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.
+
+<aside class="notice">
+In order to prevent other users from using your exact encrypted query ("replay attacks"), the first contract querying Oraclize with a given encrypted query becomes its rightful "owner". Any other contract using that exact same string will receive an empty result. 
+
+As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
+</aside>
+
+To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:
+
+* An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.
+* The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be '000000000000' (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.
+
+
+### More Examples
 More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
