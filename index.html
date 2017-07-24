@@ -152,7 +152,6 @@
       </div>
         <ul class="toc-footer">
             <li><a href='https://github.com/oraclize/docs/wiki' target='_blank'>Suggest an edit</a></li>
-            <li><a href='https://github.com/oraclize/docs/blob/master/CHANGELOG.md' target='_blank'>Documentation changelog</a></li>
             <li><a href='https://gitter.im/oraclize/' target='_blank'>Join the Oraclize Dev Community</a></li>
             <li><span id='lastupdate'></span></li>
         </ul>
@@ -177,7 +176,7 @@
 <li><a href="#pricing">Pricing</a>: information on our pricing model for production uses </li>
 </ul>
 
-<h2 id="background">Background</h2>
+          <h1 id="background">Background</h1>
 
 <p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.</p>
 
@@ -209,57 +208,67 @@
 
           <h1 id="general-concepts">General Concepts</h1>
 
+<p>Oraclize is integrated with a number of blockchain protocols and its service is usefull and accessible also for non-blockchain applications. In the following section, general concepts which apply to all integrations will be explained.</p>
+
 <h2 id="oraclize-engine">Oraclize Engine</h2>
 
-<p>The Oraclize Engine internally replicates an &ldquo;If This Then That&rdquo; logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be can be leveraged in many different ways and contexts.</p>
+<p>The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an &ldquo;If This Then That&rdquo; logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.</p>
 
-<h2 id="context-abstraction">Context Abstraction</h2>
+<p>A valid request for data to Oraclize, done via the native blockchain integration or via the HTTP API, should specify the following arguments:
+* A Data Source Type
+* A Query
+* Optionally, an Authenticity Proof Type </p>
 
-<p>To allow Oraclize to stay as context-generic as possible, Oraclize queries must specify both a datasource and a query text. The &ldquo;datasource&rdquo; field tells Oraclize where to look for your data. Available datasources include &ldquo;URL&rdquo;, &ldquo;WolframAlpha&rdquo;, &ldquo;IFPS&rdquo;, and many others. The &ldquo;query&rdquo; field tells Oraclize what to fetch. An example URL query could be &ldquo;https://min-api.cryptocompare.com/data/price?fsym=ETH&amp;tsyms=USD&rdquo; while an example WolframAlpha query could be &ldquo;Who is the president of the US?&rdquo;</p>
+<h2 id="data-source-type">Data Source Type</h2>
+
+<p>A data source is a trusted provider of data. It can be a website or web API such as Reuters, Weather.com, BBC.com etc, or a secure application running on an hardware-enforced Trusted Execution Environment (TEE) or an auditable, locked-down virtual machine instance running in a cloud provider. Oraclize currently offers the following types of native data sources:</p>
+
+<ul>
+<li><strong>URL</strong>: enables the access to any webpage or HTTP API endpoint</li>
+<li><strong>WolframAlpha</strong>: enables native access to WolframAlpha computational engine</li>
+<li><strong>IPFS</strong>: provides access to any content stored on an IPFS file</li>
+<li><strong>random</strong>: provides untampered random bytes coming from a secure application running on a Ledger Nano S.</li>
+<li><strong>computation</strong>: provides the result of arbitrary computation</li>
+</ul>
+
+<p>Additionaly, there also some meta data source such as:</p>
+
+<ul>
+<li><strong>nested</strong>: enables the combination of different types of data source o multiple requests using the same data source, and it returns an unique result</li>
+<li><strong>identity</strong>: it returns the query </li>
+<li><strong>decrypt</strong>: it decrypts a string encrypted to the Oraclize private key</li>
+</ul>
+
+<h2 id="query">Query</h2>
+
+<p>A query is an array of parameters which needs to evaluated in order to complete a specific data source type request: <code class="prettyprint">query: [ parameter_1, parameters_2, ...];</code></p>
+
+<p>The first parameter is the main argument and it is usually mandatory. For example, in the case of the URL Data Source Type, the first argument is the expected URL where the resource resides. If only the first argument is present, then the URL Data Source assumes that an HTTP GET was requested. The second parameters, which it is optional, should contain the data payload of the HTTP POST request.</p>
+
+<p>The intermediate result of a query may need to be parsed: for example, to extract a precise field in JSON API response. Therefore, the query can also specify parsing helpers to be applied.  </p>
 
 <h2 id="parsing-helpers">Parsing Helpers</h2>
 
-<p>In order to facilitate data post-processing, we supply simple to use (and audit) parsing helpers. This makes it easier to return only the necessary data and decrease on-chain processing cost and complexity. Note that authenticity proofs will still reference the full, original content.</p>
-
-<p>The following parsing helpers are available:</p>
+<p>Oraclize offers XML, JSON, XHTML and a binary parser helpers. Examples:</p>
 
 <ul>
-<li><code class="prettyprint">xml(..)</code> and <code class="prettyprint">json(..)</code> helpers let you return part of a JSON or XML-parsed response. </li>
-</ul>
-
-<p>For example, when querying the Kraken API:</p>
-
-<ul>
-<li><p>in order to get the whole response back, you use the <code class="prettyprint">URL</code> data-source with the URL argument <code class="prettyprint">api.kraken.com/0/public/Ticker?pair=ETHUSD</code> </p></li>
-<li><p>but if all you want is the last-price field, you need to use the <code class="prettyprint">json</code> parsing call as <code class="prettyprint">json(api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></p>
-
-<ul>
-<li><code class="prettyprint">html(..).xpath(..)</code> helper is useful for html scraping. Just specify the <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> you want as <code class="prettyprint">xpath(..)</code> argument. For example:</li>
-</ul></li>
-<li><p>to fetch the text of a specific tweet: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</p></li>
+<li><strong>JSON Parsing</strong>: To extract the last-price field from the Kraken API, the fist parameter of the query <code class="prettyprint">json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></li>
+<li><strong>XML Parser</strong>: </li>
+<li><strong>HTML Parser</strong>: helper is useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of <code class="prettyprint">xpath(..)</code>as shown in the example: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
+<li><strong>Binary Helper</strong>: It can be useful to extract parts of a binary intermediate result by using the <code class="prettyprint">slice(offset,length)</code> operator.
+The first parameter is the expected to be the offset, while the second one is the length of the returned slice. 
+For example, <code class="prettyprint">binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code>returns the raw bytes of the first certificate of the linked certificate revocation list.<br>
+<strong>Binary helper must be used with the slice option and only raw binary inputs are accepted</strong></li>
 </ul>
 
 <aside class="notice">
 Note:
-Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation that we use is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
-</aside>
-
-<ul>
-<li><code class="prettyprint">binary(..)</code> helper is useful to get binary files such as certificate files
-
-<ul>
-<li>to fetch only a portion of the binary file you can use <code class="prettyprint">slice(offset,length)</code> the first parameter is the offset while the second one is the length of the slice you want back (both in <strong>bytes</strong>).<br> example: fetch only the first 300 bytes from a binary CRL: <code class="prettyprint">binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code> <strong>binary helper must be used with the slice option and only binary files (not encoded) are accepted</strong></li>
-</ul></li>
-</ul>
-
-<aside class="notice">
-Note:
-When the server is not responding or is unreachable, or your parsing helper is not applicable, we will send you an empty response.
+Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
 </aside>
 
 <h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
-<p>Oraclize is designed to act as an intermediary that you shouldn&rsquo;t have to trust. You can easily verify the authenticity of query data returned via authenticity proofs. You&rsquo;ll find more details on authenticity proofs in the &ldquo;<a href="#Security Deep Dive">#Security Deep Dive</a>&rdquo; section.</p>
+<p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &ldquo;<a href="#Security Deep Dive">#Security Deep Dive</a>&rdquo; section.</p>
 
 <aside class="notice">
 If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
@@ -267,7 +276,7 @@ If Oraclize is unable to generate an authenticity proof for technical reasons, i
 
 <h2 id="data-privacy">Data Privacy</h2>
 
-<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
+<p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting an entire query or some of its arguments with the Oraclize public key.
 More information can be found in the <a href="#Encrypted Queries">Encrypted Queries</a> section.</p>
 
           <h1 id="data-sources">Data Sources</h1>
@@ -486,7 +495,7 @@ Note: if you choose to specify a MAINTAINER in the Dockerfile, we might use the 
 
 <p>Thanks to the features provided by the oraclize-lib, it is possible to fully leverage the Oraclize service potential in any non blockchain context as well.</p>
 
-          <h1 id="9910-nbsp-ethereum">&#9910; &nbsp; Ethereum</h1>
+          <h1 id="diams-nbsp-ethereum">&diams; &nbsp; Ethereum</h1>
 
 <p>The following section is dedicated to the Ethereum and Oraclize integration. 
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.</p>
@@ -888,12 +897,15 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
 
-          <h1 id="9885-nbsp-rootstock">&#9885; &nbsp; Rootstock</h1>
+          <h1 id="9784-nbsp-rootstock">&#9784; &nbsp; Rootstock</h1>
 
 <p>The Oraclize integration with Roostock is fully compatible with the one we have with Ethereum, please refer to that one.</p>
 
-          
-          <h1 id="9964-nbsp-bitcoin">&#9964; &nbsp; Bitcoin</h1>
+          <h1 id="9737-nbsp-monax">&#9737; &nbsp; Monax</h1>
+
+<p>The Oraclize integration with Monax, previously Eris, is fully compatible with the one we have with Ethereum, please refer to that one.</p>
+
+          <h1 id="3647-nbsp-bitcoin">&#3647; &nbsp; Bitcoin</h1>
 
 <p>The Oraclize integration with Bitcoin works in a very different way compared to the Ethereum one - we plan to document it in the coming weeks, stay tuned!</p>
 
