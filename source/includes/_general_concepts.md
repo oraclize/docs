@@ -7,13 +7,15 @@ Oraclize is integrated with a number of blockchain protocols and its service is 
 The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an "If This Then That" logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.
 
 A valid request for data to Oraclize, done via the native blockchain integration or via the HTTP API, should specify the following arguments:
-* A Data Source Type
-* A Query
-* Optionally, an Authenticity Proof Type 
 
-## Data Source Type
+* A data source type
+* A query
+* Optionally, an authenticity proof type 
 
-A data source is a trusted provider of data. It can be a website or web API such as Reuters, Weather.com, BBC.com etc, or a secure application running on an hardware-enforced Trusted Execution Environment (TEE) or an auditable, locked-down virtual machine instance running in a cloud provider. Oraclize currently offers the following types of native data sources:
+
+## Data Source Types
+
+A data source is a trusted provider of data. It can be a website or web API such as Reuters, Weather.com, BBC.com, or a secure application running on an hardware-enforced Trusted Execution Environment (TEE) or an auditable, locked-down virtual machine instance running in a cloud provider. Oraclize currently offers the following types of native data sources:
 
 * **URL**: enables the access to any webpage or HTTP API endpoint
 * **WolframAlpha**: enables native access to WolframAlpha computational engine
@@ -23,7 +25,7 @@ A data source is a trusted provider of data. It can be a website or web API such
 
 Additionaly, there also some meta data source such as:
 
-* **nested**: enables the combination of different types of data source o multiple requests using the same data source, and it returns an unique result
+* **nested**: enables the combination of different types of data source or multiple requests using the same data source, and it returns an unique result
 * **identity**: it returns the query 
 * **decrypt**: it decrypts a string encrypted to the Oraclize private key
 

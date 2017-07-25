@@ -19,7 +19,6 @@ includes:
   - integrations
   - ethereum
   - rootstock
-  - monax
   - bitcoin
   - dev_tools
   - security

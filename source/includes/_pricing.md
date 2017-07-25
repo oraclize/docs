@@ -1,30 +1,19 @@
 # Pricing
+The use of Oraclize requires the payment of a small fee, which depends from the data source type used and by the authenticity proof requested. The pricing listed below is valid for both Ethereum and Rootstock.
 
-The use of Oraclize APIs requires the payment of a small fee, you can check out the pricing for each integration below:
+### First Free Request
 
- * <a href="#pricing-ethereum">Ethereum</a>
+To facilatate testing, the first call to Oraclize from any smart contract address, if used with standard setting, is free of charge. This includes the gas costs of the callback transaction.
 
+### Testnets Policy
+To keep compatibility with the main-net deployed, smart contracts testing Oraclize on any of the testnets are expected to pay the same fee they would on the main-net. Since the payment expected is in testnet Ether, which holds no value, the calls to Oraclize are the facto free. 
+Oraclize reserve the rights to discontinue the service for abuse or excessive use. 
 
-## Ethereum
+### Call Fee
+The `oraclize_query` automatically recovers the fee at execution time. The fee consist of two parts:
 
-The fee for Ethereum comes on top of the reimbursement for the full `gasLimit` we are setting in the transaction when we call back your contract.
-
-### Free calls
-
-In order to make the testing of our service a little bit easier (and cheaper) to you, **the first Oraclize query call coming from any Ethereum address is completely free of charge**. This means we are even covering the callback transaction gas costs for you (up to the default `gasLimit` of 200k gas).
-
-This might be helpful, for example, to send the first call to Oraclize directly from your contract constructor function without having to create your contract with an attached amount of Wei. This means, again, that you can have one free triggering transaction for any date in the future (up to 60 days).
-
-<aside class="notice">
-Note: Oraclize calls are free when used on testnets! This works for moderate usage in test environments only.
-</aside>
-
-### Call fees
-
-Payment is part and parcel of the `oraclize_query` function call, and our pricing model is simple. It's composed of two parts:
-
-* a price in $ depending on the datasource used and the proof chosen (see table below). This $ price is automatically converted to Ether at the current rate when you call `oraclize_query`
-* a prepayment of the full `gasLimit` we will set for the callback transaction (the minimum and default value is 200k gas)
+* The amount of Wei which corrispond, using a recent exchange rate, to the USD price for the data source and the authenticity proof requested
+* The amount of Wei which Oraclize will spend in gas for sending the callback transaction
 
 <style type="text/css">
 	tr, td, th {
@@ -47,14 +36,6 @@ Payment is part and parcel of the `oraclize_query` function call, and our pricin
   </tr>
   <tr>
     <td>URL</td>
-    <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
-    <td>+0.0$</td>
-    <td>+0.04$</td>
-    <td>+0.04$</td>
-    <td>N/A</td>
-  </tr>
-  <tr>
-    <td>Blockchain</td>
     <td style="background-color:#FFEFD0;font-weight: 700;">0.01$</td>
     <td>+0.0$</td>
     <td>+0.04$</td>
@@ -94,3 +75,6 @@ Payment is part and parcel of the `oraclize_query` function call, and our pricin
     <td>N/A</td>
   </tr>
 </table>
+
+### Offchain Payments
+Oraclize will soon start testing offchain payments, in different currencies, for both the Oraclize fee and the gas callback transactions costs. Interested parties should get in touch at info@oraclize.it

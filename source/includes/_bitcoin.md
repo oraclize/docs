@@ -1,3 +1,3 @@
 # &#3647; &nbsp; Bitcoin
 
-The Oraclize integration with Bitcoin works in a very different way compared to the Ethereum one - we plan to document it in the coming weeks, stay tuned!
+Oraclize is building a native integration with Bitcoin, leveraging the HTTP API exposed by the Oraclize Engine and the oraclize-lib. More information will be available soon.

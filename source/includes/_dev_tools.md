@@ -12,9 +12,11 @@ It is very important to independently verify that those proofs are valid, as thi
 
 ## Encryption
 
-In order to use the encryption-enabling features of Oraclize, you can use tools like the <a href="https://app.oraclize.it/home/test_query" target="_blank">TestQuery</a> page or the <a href="https://github.com/oraclize/encrypted-queries" target="_blank">Python Encryption Tool</a>. Keep in mind that every time you need to use the same encrypted content in a different Oraclize context (like a different Ethereum contract or a different Oraclize contract), you will need to generate and use a different encrypted string; this is to prevent replay attacks.
+In order to use the encryption-enabling features of Oraclize, developers can use the <a href="https://app.oraclize.it/home/test_query" target="_blank">TestQuery</a> page or the <a href="https://github.com/oraclize/encrypted-queries" target="_blank">Python Encryption Tool</a>. Keep in mind that every time you need to use the same encrypted content in a different Oraclize context (like a different Ethereum contract or a different Oraclize contract), you will need to generate and use a different encrypted string; this is to prevent replay attacks.
 
 ## Stargate
+
+Stargate will enables direct integration with your private deployment of an Ethereum-based chain, including testnets. It will
 
 If you need to use Oraclize in a private testnet, the Stargate tool enables a full integration of the service in your private context. You can find more information on how to use it in the dedicated section of the documentation. 
 
