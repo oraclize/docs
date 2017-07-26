@@ -826,13 +826,6 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 <li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be &#39;000000000000&rsquo; (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.</li>
 </ul>
 
-<h3 id="computation-data-source">Computation Data Source</h3>
-<pre class="highlight javascript"><code>
-<span class="nx">contract</span> <span class="p">{</span>
-
-<span class="p">}</span>
-</code></pre>
-
 <h3 id="more-examples">More Examples</h3>
 
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
