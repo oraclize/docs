@@ -3,7 +3,7 @@
 The following section is dedicated to the Ethereum and Oraclize integration. 
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.
 
-The interaction between Oraclize and an Ethereum smart contract is asyncronous. Any request for data is composed of two steps:
+The interaction between Oraclize and an Ethereum smart contract is asynchronous. Any request for data is composed of two steps:
 
 * Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by an user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
 * Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the `__callback` function which should be placed in the smart contract by its developer: for this reason, this transaction is refered in the documentation as the Oraclize callback transaction.
@@ -400,6 +400,124 @@ To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme
 
 * An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.
 * The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be '000000000000' (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.
+
+### Computation Data Source
+
+#### Passing Arguments to the Package
+```javascript
+pragma solidity ^0.4.11;
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+
+contract Random is usingOraclize {
+    
+    event newOraclizeQuery(string description);
+    event newRandomNumber(uint number);
+    
+
+    function Random() {
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+        update();
+    }
+
+    function __callback(bytes32 myid, string result, bytes proof) {
+        if (msg.sender != oraclize_cbAddress()) throw;
+        newRandomNumber(parseInt(result));
+    }
+    
+    function update() payable {
+        if (oraclize.getPrice("URL") > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+            newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            oraclize_query("computation",["QmR6qXv65K2EjKj5H9tFfzU6GDd9STYYvJMXFRRAskm3uF", "2"]);
+        }
+    }
+    
+} 
+
+```
+Arguments can be passed to the package by adding parameters to the query array. They will be accesssible from within the Docker instances as environmental parameters.
+
+```shell
+FROM ubuntu:14.04
+MAINTAINER Oraclize "marco@oraclize.it"
+
+RUN apt-get update && apt-get -y install python-minimal
+
+CMD /usr/bin/python -c "import os; print os.urandom(int(os.environ['ARG0'], 10))"
+```
+
+#### Passing Encrypted Arguments 
+```javascript
+pragma solidity ^0.4.11;
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+
+contract ComputationTest is usingOraclize {
+    
+
+    event newOraclizeQuery(string description);
+    event newResult(string result);
+
+    function ComputationTest() {
+        update(); // first check at contract creation
+    }
+
+    function __callback(bytes32 myid, string result) {
+        if (msg.sender != oraclize_cbAddress()) throw;
+        newResult(result);
+        
+    }
+    
+    function update() payable {
+        newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        oraclize_query("nested", "[computation] ['QmaqMYPnmSHEgoWRMP3WSrUYsPWKjT85C81PgJa2SXBs8u', \
+'Example of decrypted string', '${[decrypt] BOYnQstP700X10I+WWNUVVNZEmal+rZ0GD1CgcW5P5wUSFKr2QoIwHLvkHfQR5e4Bfakq0CIviJnjkfKFD+ZJzzxcaFUQITDZJxsRLtKuxvAuh6IccUJ+jDF/znTH+8x8EE1Tt9SY7RvqtVao2vxm4CxIWq1vk4=}', 'Hello there!']");
+    }
+    
+}
+```
+Encrypted arguments can be passed using the nested and the decrypt meta data sources, as shown in the example at the right.
+
+### Random Data Source
+
+In the contract usingOraclize, which smart contracts should use to interface with Oraclize, some specific functions related to the Oraclize Random Data Source have been added. In particular:
+
+* `oraclize_newRandomDSQuery`: helper to perform an Oraclize random DS query correctly
+	* `oraclize_randomDS_setCommitment`: set in the smart contract storage the commitment for the current request
+	* `oraclize_randomDS_getSessionPubKeyHash`: recovers the hash of a session pub key presents in the connector
+* `oraclize_randomDS_proofVerify_main`: performs the verification of the proof returned with the callback transaction
+	* `oraclize_randomDS_sessionKeyValidity`: verify that the session key chain of trust is valid and its root is a Ledger Root Key
+	* `matchBytes32Prefix`: verify that the result returned is the sha256 of the session key signature over the request data payload
+
+For advance usage of Random Data Source, it is recommended to read the following section.
+
+#### Two Party Interactions
+```javascript
+    function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
+        if ((_nbytes == 0)||(_nbytes > 32)) throw;
+        bytes memory nbytes = new bytes(1);
+        nbytes[0] = byte(_nbytes);
+        bytes memory unonce = new bytes(32);
+        bytes memory sessionKeyHash = new bytes(32);
+        bytes32 sessionKeyHash_bytes32 = oraclize_randomDS_getSessionPubKeyHash();
+        assembly {
+            mstore(unonce, 0x20)
+            mstore(add(unonce, 0x20), xor(blockhash(sub(number, 1)), xor(xor(caller,coinbase), xor(callvalue,timestamp)))
+            mstore(sessionKeyHash, 0x20)
+            mstore(add(sessionKeyHash, 0x20), sessionKeyHash_bytes32)
+        }
+        bytes[3] memory args = [unonce, nbytes, sessionKeyHash]; 
+        bytes32 queryId = oraclize_query(_delay, "random", args, _customGasLimit);
+        oraclize_randomDS_setCommitment(queryId, sha3(bytes8(_delay), args[1], sha256(args[0]), args[2]));
+        return queryId;
+    }
+
+```
+
+The `oraclize_newRandomDSQuery` can be used for different kind of interactions, but the security can be incresed further by additing additional commitment data to the request. For example, for two party interactions, the `oraclize_newRandomDSQuery` can be modified as showon the side to include the sender address and the value send along as commitment data. This more strongly commitment the request for random bytes to current party, which are assumed to have a stake in the contract, making it impossible for miners to replay transactions on potential forks or reorg of the current chain. 
+
+#### Multi-Party Interactions
+In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn't put a stake. 
 
 
 ### More Examples
