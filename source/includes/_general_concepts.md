@@ -1,10 +1,10 @@
 # General Concepts
 
-Oraclize is integrated with a number of blockchain protocols and its service is usefull and accessible also for non-blockchain applications. In the following section, general concepts which apply to all integrations will be explained.
+Oraclize is integrated with a number of blockchain protocols and its service is useful and accessible also for non-blockchain applications. In the following section, general concepts which apply to all integrations will be explained.
 
 
 ## Oraclize Engine
-The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an "If This Then That" logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.
+The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an "If This Then That" logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexibility enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.
 
 A valid request for data to Oraclize, done via the native blockchain integration or via the HTTP API, should specify the following arguments:
 
