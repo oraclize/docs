@@ -168,38 +168,38 @@
 
 <ul>
 <li><a href="#background">Background</a>: the rationale behind the Oraclize&rsquo;s Oracle Model</li>
-<li><a href="#general-concepts">General Concepts</a>: the main concepts behind Oraclize </li>
-<li><a href="#data-source">Data-Sources</a>:  information regarding the types of data sources Oraclize supports</li>
+<li><a href="#general-concepts">General Concepts</a>: the main concepts behind Oraclize</li>
+<li><a href="#data-sources">Data-Sources</a>:  information regarding the types of data sources Oraclize supports</li>
 <li><a href="#integrations">Integrations</a>: how to integrate a blockchain application with Oraclize</li>
 <li><a href="#development-tools">Development Tools</a>: a list of tools to aide development of Oraclize-integrated smart contracts</li>
-<li><a href="#security-deep-dive">Security Deep Dive</a>: how Oraclize&rsquo;s Authenticity proofs works </li>
-<li><a href="#pricing">Pricing</a>: information on our pricing model for production uses </li>
+<li><a href="#security-deep-dive">Security Deep Dive</a>: how Oraclize&rsquo;s Authenticity proofs works</li>
+<li><a href="#pricing">Pricing</a>: information on our pricing model for production uses</li>
 </ul>
 
           <h1 id="background">Background</h1>
 
 <p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.</p>
 
-<p>In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related informations for peer-to-peer insurance; random number generation for gambling. </p>
+<p>In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related informations for peer-to-peer insurance; random number generation for gambling.</p>
 
-<p>But to rely on a new trusted intermidiary, the oracle in this case, it would be betraying the security and reduced-trust model of blockchain applications: which is what makes them interesting and useful in first place. </p>
+<p>But to rely on a new trusted intermediary, the oracle in this case, it would be betraying the security and reduced-trust model of blockchain applications: which is what makes them interesting and useful in first place.</p>
 
-<p>One solution is to accept data inputs from more than one untrusted or partially trusted party and then execute the data-dependant action only after a number of them have provided the same answer or an answer within some constrains. This type of system can be considered a decentralized oracle system. Unfortunately, this approach has severe limitations:</p>
+<p>One solution is to accept data inputs from more than one untrusted or partially trusted party and then execute the data-dependent action only after a number of them have provided the same answer or an answer within some constrains. This type of system can be considered a decentralized oracle system. Unfortunately, this approach has severe limitations:</p>
 
 <ul>
-<li>It requires a predefined standard on data format </li>
-<li>It is inherently inefficient: all the parties participating will require a fee and, for every request, it will take time before reaching a sufficient number of answers. </li>
+<li>It requires a predefined standard on data format</li>
+<li>It is inherently inefficient: all the parties participating will require a fee and, for every request, it will take time before reaching a sufficient number of answers.</li>
 </ul>
 
-<p>The solution developed by Oraclize is instead to demonstrate that the data fetched from the original data-source is genuine and untampered. This is accomplished by accompanying the returned data together with a document called authenticity proof. The authenticity proofs can build upon different technologies such as auditable virtual machines and Trusted Execution Environments. </p>
+<p>The solution developed by Oraclize is instead to demonstrate that the data fetched from the original data-source is genuine and untampered. This is accomplished by accompanying the returned data together with a document called authenticity proof. The authenticity proofs can build upon different technologies such as auditable virtual machines and Trusted Execution Environments.</p>
 
-<p>A more detailed overview of Oraclize authenticity proofs is provided in the <a href="#Authenticity Proof">Authenticity Proofs</a> section of this documentation.</p>
+<p>A more detailed overview of Oraclize authenticity proofs is provided in the <a href="#ethereum-quick-start-authenticity-proofs">Authenticity Proofs</a> section of this documentation.</p>
 
 <p>This solutions elegantly solves the Oracle Problem:</p>
 
 <ul>
-<li>Blockchain Application&rsquo;s developers and the users of such applications don&rsquo;t have to trust Oraclize; the security model is mantained.</li>
-<li>Data providers don&rsquo;t have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs. </li>
+<li>Blockchain Application&rsquo;s developers and the users of such applications don&rsquo;t have to trust Oraclize; the security model is maintained.</li>
+<li>Data providers don&rsquo;t have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs.</li>
 </ul>
 
 <p>Oraclize engine can be easily integrated with both private and public instances of different blockchain protocols.</p>
@@ -208,18 +208,18 @@
 
           <h1 id="general-concepts">General Concepts</h1>
 
-<p>Oraclize is integrated with a number of blockchain protocols and its service is usefull and accessible also for non-blockchain applications. In the following section, general concepts which apply to all integrations will be explained.</p>
+<p>Oraclize is integrated with a number of blockchain protocols and its service is useful and accessible also for non-blockchain applications. In the following section, general concepts which apply to all integrations will be explained.</p>
 
 <h2 id="oraclize-engine">Oraclize Engine</h2>
 
-<p>The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an &ldquo;If This Then That&rdquo; logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexiblity enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.</p>
+<p>The Oraclize Engine powers the service for both blockchain-based and non-blockchain-based application. Internally replicates an &ldquo;If This Then That&rdquo; logical model. This means that it will execute a given set of instructions if some other given conditions are met. For example, it could repeatedly verify a condition and only return data or perform an action when the condition has been met. This flexibility enables the engine to be leveraged in many different ways and contexts, even outside of the blockchain context.</p>
 
 <p>A valid request for data to Oraclize, done via the native blockchain integration or via the HTTP API, should specify the following arguments:</p>
 
 <ul>
 <li>A data source type</li>
 <li>A query</li>
-<li>Optionally, an authenticity proof type </li>
+<li>Optionally, an authenticity proof type</li>
 </ul>
 
 <h2 id="data-source-types">Data Source Types</h2>
@@ -238,7 +238,7 @@
 
 <ul>
 <li><strong>nested</strong>: enables the combination of different types of data source or multiple requests using the same data source, and it returns an unique result</li>
-<li><strong>identity</strong>: it returns the query </li>
+<li><strong>identity</strong>: it returns the query</li>
 <li><strong>decrypt</strong>: it decrypts a string encrypted to the Oraclize private key</li>
 </ul>
 
@@ -256,10 +256,10 @@
 
 <ul>
 <li><strong>JSON Parsing</strong>: To extract the last-price field from the Kraken API, the fist parameter of the query <code class="prettyprint">json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></li>
-<li><strong>XML Parser</strong>: </li>
+<li><strong>XML Parser</strong>:</li>
 <li><strong>HTML Parser</strong>: helper is useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of <code class="prettyprint">xpath(..)</code>as shown in the example: <code class="prettyprint">html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
 <li><strong>Binary Helper</strong>: It can be useful to extract parts of a binary intermediate result by using the <code class="prettyprint">slice(offset,length)</code> operator.
-The first parameter is the expected to be the offset, while the second one is the length of the returned slice. 
+The first parameter is the expected to be the offset, while the second one is the length of the returned slice.
 For example, <code class="prettyprint">binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code>returns the raw bytes of the first certificate of the linked certificate revocation list.<br>
 <strong>Binary helper must be used with the slice option and only raw binary inputs are accepted</strong></li>
 </ul>
@@ -271,7 +271,7 @@ Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH 
 
 <h2 id="authenticity-proofs">Authenticity Proofs</h2>
 
-<p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &ldquo;<a href="#Security Deep Dive">#Security Deep Dive</a>&rdquo; section.</p>
+<p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &ldquo;<a href="##security-deep-dive">Security Deep Dive</a>&rdquo; section.</p>
 
 <aside class="notice">
 If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
@@ -280,7 +280,7 @@ If Oraclize is unable to generate an authenticity proof for technical reasons, i
 <h2 id="data-privacy">Data Privacy</h2>
 
 <p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting an entire query or some of its arguments with the Oraclize public key.
-More information can be found in the <a href="#Encrypted Queries">Encrypted Queries</a> section.</p>
+More information can be found in the <a href="#ethereum-advanced-topics-encrypted-queries">Encrypted Queries</a> section.</p>
 
           <h1 id="data-sources">Data Sources</h1>
 
@@ -371,12 +371,12 @@ CMD python -c <span class="s2">"import numpy; print int(numpy.linalg.det(numpy.a
 added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
 </code></pre>
 
-<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine. </p>
+<p>The <code class="prettyprint">computation</code> datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.</p>
 
 <p>The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes.</p>
 
 <p>The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
-The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application. </p>
+The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application.</p>
 
 <aside class="notice">
 Oraclize might use the email specified in the MAINTAINER field of the Dockerfile, as contact information in case any issue arises.
@@ -384,13 +384,13 @@ Oraclize might use the email specified in the MAINTAINER field of the Dockerfile
 
 <h2 id="random">random</h2>
 
-<p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.</p>
+<p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Environment (TEE) and protects the user from a number of attack vectors.</p>
 
 <p>The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don&rsquo;t pass the verification process.</p>
 
 <p>The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.</p>
 
-<p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.</p>
+<p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> white paper.</p>
 
 <h2 id="decrypt">decrypt</h2>
 
@@ -400,7 +400,7 @@ Oraclize might use the email specified in the MAINTAINER field of the Dockerfile
 
 <h2 id="nested">nested</h2>
 
-<p>The <code class="prettyprint">nested</code> datasource is a meta datasource, it does not provide access to additional services. It was designed to provide some simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and produce a single stringas a result.</p>
+<p>The <code class="prettyprint">nested</code> datasource is a meta datasource, it does not provide access to additional services. It was designed to provide some simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and produce a single string as a result.</p>
 
 <p>The <code class="prettyprint">query</code> format is built in a way you that you can specify a sub-datasource and a sub-query as follows: <code class="prettyprint">[datasource_name] query_content</code>.</p>
 
@@ -418,30 +418,30 @@ Oraclize might use the email specified in the MAINTAINER field of the Dockerfile
 
 <h2 id="alternative-public-chains">Alternative Public Chains</h2>
 
-<p>Oraclize is constantly studying new public blockchain protocols and considering further blockchain integrations. Since the Oraclize Engine is completely blockchain agnostic and can interact via HTTP API, developers are encouraged to work on open-source indipedent Oraclize integration on the model of the Ethereum-Bridge.</p>
+<p>Oraclize is constantly studying new public blockchain protocols and considering further blockchain integrations. Since the Oraclize Engine is completely blockchain agnostic and can interact via HTTP API, developers are encouraged to work on open-source independent Oraclize integration on the model of the Ethereum-Bridge.</p>
 
 <h2 id="private-ethereum-based-chains">Private Ethereum-based Chains</h2>
 
-<p>Private, Ethereum-based chains can currently integrate with Oraclize by using the Ethereum-Bridge. Forks of Ethereum such as Monax included. More information on how to use the Ethereum-Bridge is available in the dedicated <a href="#development-tools">section</a>. </p>
+<p>Private, Ethereum-based chains can currently integrate with Oraclize by using the Ethereum-Bridge. Forks of Ethereum such as Monax included. More information on how to use the Ethereum-Bridge will become available in the <a href="#development-tools">development tools</a> section or refer to this <a href="https://ethereum.stackexchange.com/a/11389/5819">StackExchange answer</a> describing how to use it alongside testrpc.</p>
 
 <h2 id="alternative-private-chains">Alternative Private Chains</h2>
 
-<p>The Oraclize team is currently investigating to create software for a native integration for alternative private distributed ledger protocols such as Corda, Chain and Hyperledger. Additional information are available on contacts. </p>
+<p>The Oraclize team is currently investigating to create software for a native integration for alternative private distributed ledger protocols such as Corda, Chain and Hyperledger. Additional information are available on contacts.</p>
 
 <h2 id="non-blockchain-applications">Non-blockchain Applications</h2>
 
-<p>The <a href="https://github.com/oraclize/oraclize-lib">oraclize-lib</a> enables the use of the Oraclize engine capabilities also in a non-blockchain context, by providing an abstraction layer which resolves to Oraclize HTTP API. The oraclize-lib is currently in a experimental-stage. </p>
+<p>The <a href="https://github.com/oraclize/oraclize-lib">oraclize-lib</a> enables the use of the Oraclize engine capabilities also in a non-blockchain context, by providing an abstraction layer which resolves to Oraclize HTTP API. The oraclize-lib is currently in a experimental-stage.</p>
 
           <h1 id="diams-nbsp-ethereum">&diams; &nbsp; Ethereum</h1>
 
-<p>The following section is dedicated to the Ethereum and Oraclize integration. 
+<p>The following section is dedicated to the Ethereum and Oraclize integration.
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.</p>
 
 <p>The interaction between Oraclize and an Ethereum smart contract is asynchronous. Any request for data is composed of two steps:</p>
 
 <ul>
 <li>Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by an user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.</li>
-<li>Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the <code class="prettyprint">__callback</code> function which should be placed in the smart contract by its developer: for this reason, this transaction is refered in the documentation as the Oraclize callback transaction.</li>
+<li>Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the <code class="prettyprint">__callback</code> function which should be placed in the smart contract by its developer: for this reason, this transaction is referred in the documentation as the Oraclize callback transaction.</li>
 </ul>
 
 <p>As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  </p>
@@ -477,17 +477,17 @@ To better profit from this section of the documentation, previous knowledge of S
 <span class="p">}</span>
 </code></pre>
 
-<p>The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right. 
+<p>The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
 This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:</p>
 
 <ul>
 <li>The contract should be a child of the contract usingOraclize</li>
-<li>The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository. </li>
+<li>The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository.</li>
 </ul>
 
 <p>The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the oraclizeAPI.sol file since direct import from Github may not be supported.</p>
 
-<p>To ease development, Oraclize doesn&rsquo;t charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn&rsquo;t have enough funds in his balance, the request will fail and Oraclize won&rsquo;t return any data. </p>
+<p>To ease development, Oraclize doesn&rsquo;t charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn&rsquo;t have enough funds in his balance, the request will fail and Oraclize won&rsquo;t return any data.</p>
 
 <h3 id="simple-query">Simple Query</h3>
 <pre class="highlight javascript"><code><span class="c1">// This code example will ask Oraclize to send as soon as possible</span>
@@ -504,7 +504,7 @@ This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The up
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"IPFS"</span><span class="p">,</span> <span class="s2">"QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU"</span><span class="p">)</span>
 
 <span class="c1">// The URL datasource also supports a supplement argument, useful for creating HTTP POST requests.</span>
-<span class="c1">// If that argument is a valid JSON string, it will be automatically sent as JSON. </span>
+<span class="c1">// If that argument is a valid JSON string, it will be automatically sent as JSON.</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://shapeshift.io/sendamount).success.deposit"</span><span class="p">,</span>
   <span class="s1">'{"pair":"eth_btc","amount":"1","withdrawal":"1AAcCo21EUc1jbocjssSQDzLna9Vem2UN5"}'</span><span class="p">)</span>
 </code></pre>
@@ -535,7 +535,7 @@ This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The up
 </code></pre>
 
 <p>The execution of a query can be scheduled in a future date. The function <code class="prettyprint">oraclize_query</code> accepts as a parameter the delay in seconds from the current time or the timestamp in the future as first argument.
-Please note that in order for the future timestamp to be accepted by Oraclize it must be within <strong>60 days</strong> of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than <strong>60 days</strong>. </p>
+Please note that in order for the future timestamp to be accepted by Oraclize it must be within <strong>60 days</strong> of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than <strong>60 days</strong>.</p>
 
 <h3 id="recursive-queries">Recursive Queries</h3>
 <pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
@@ -569,7 +569,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 
 </code></pre>
 
-<p>Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  <code class="prettyprint">__callback</code> method. 
+<p>Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  <code class="prettyprint">__callback</code> method.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.</p>
 
 <p>This modified version of the previous example will update the EUR/GBP exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.</p>
@@ -583,7 +583,7 @@ This can be useful for implementing periodic updates of some on-chain reference 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
     <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span> 
+    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -603,7 +603,7 @@ This can be useful for implementing periodic updates of some on-chain reference 
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
@@ -611,12 +611,12 @@ This can be useful for implementing periodic updates of some on-chain reference 
 <span class="p">}</span>
 </code></pre>
 
-<p>Every time the function <code class="prettyprint">oraclize_query</code> is called, it returns a unique ID, hereby refered to as <code class="prettyprint">queryId</code>, which depends from the number of previous requests and the address of smart contract.
-The queryId identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback transaction. </p>
+<p>Every time the function <code class="prettyprint">oraclize_query</code> is called, it returns a unique ID, hereby referred to as <code class="prettyprint">queryId</code>, which depends from the number of previous requests and the address of smart contract.
+The queryId identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback transaction.</p>
 
 <p>Oraclize recommends smart contract developers to verify if the queryId sends by the callback transaction was generated by a valid call to the <code class="prettyprint">oracize_query</code> function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the smart contract logic. Moreover, it protects the smart contract during blockchain reorganizations, as explained in the dedicated paragraph of this section.</p>
 
-<p>The <code class="prettyprint">queryId</code> can be used as well to implement different behaviours into the <code class="prettyprint">__callback</code> function, in particular when there is more than one pending call from Oraclize. </p>
+<p>The <code class="prettyprint">queryId</code> can be used as well to implement different behaviors into the <code class="prettyprint">__callback</code> function, in particular when there is more than one pending call from Oraclize.</p>
 
 <h3 id="custom-gas-limit-and-gas-price">Custom Gas Limit and Gas Price</h3>
 <pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
@@ -630,7 +630,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
     <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="c1">// This example requires funds to be send along with the contract deployment</span>
-    <span class="c1">// transaction </span>
+    <span class="c1">// transaction</span>
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -650,7 +650,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
@@ -660,20 +660,20 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 
 <p>The transaction originating from Oraclize to the  <code class="prettyprint">__callback</code> function pays a fee to the miner which include the transaction in a block, just like any other transaction. The miner fee is paid in Ether and it is calculated by taking the amount of gas which covers the execution costs of the transaction multiplied by the selected gas/ether price. Oraclize will set those parameters accordingly to the parameters specified in the smart contract, for contract-wide settings, and in the <code class="prettyprint">oraclize_query</code> function, for query-specific settings. The miner fee for the callback transaction is taken from the contract balance when the query transaction is executed.</p>
 
-<p>If no settings are specified, Oraclize will use the default values of 200,000 gas and 20 GWei. This last value is on the higher-end of the pricing spectrum right now, but it helps having faster confirmation times during network-wide congestions. </p>
+<p>If no settings are specified, Oraclize will use the default values of 200,000 gas and 20 GWei. This last value is on the higher-end of the pricing spectrum right now, but it helps having faster confirmation times during network-wide congestions.</p>
 
 <p>A different value for the Oraclize callback gas can be passed as the argument <code class="prettyprint">_gasLimit</code> to the <code class="prettyprint">oraclize_query</code> function as shown in the following examples.</p>
 <pre class="highlight javascript"><code><span class="c1">// If the callback transaction requires little gas, the value can be lowered:</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">100000</span><span class="p">);</span>
 
-<span class="c1">// Callback methods may be expensive. The example requires the JSON parsing </span>
+<span class="c1">// Callback methods may be expensive. The example requires the JSON parsing</span>
 <span class="c1">// a string in the smart contract. If that's the case, the gas should be increased:</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.fixer.io/latest?symbols=USD,GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
 
 <p>The gas price of the callback transaction can be set by calling the <code class="prettyprint">oraclize_setCustomGasPrice</code> function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.</p>
 
-<p>Smart contract developers should estimate correctly and minimize the cost of their <code class="prettyprint">__callback</code> method, as any unspent gas will be returned to Oraclize and no refund is available. </p>
+<p>Smart contract developers should estimate correctly and minimize the cost of their <code class="prettyprint">__callback</code> method, as any unspent gas will be returned to Oraclize and no refund is available.</p>
 
 <h3 id="authenticity-proofs">Authenticity Proofs</h3>
 <pre class="highlight javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
@@ -688,7 +688,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 
 
     <span class="c1">// This example requires funds to be send along with the contract deployment</span>
-    <span class="c1">// transaction </span>
+    <span class="c1">// transaction</span>
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span> <span class="nx">wei</span><span class="p">);</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
@@ -709,7 +709,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> 
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
@@ -717,7 +717,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 <span class="p">}</span>
 </code></pre>
 
-<p>Authenticity proofs are at the core of Oraclize&rsquo;s oracle model. Smart contracts can request authenticity proofs together with their data by calling the <code class="prettyprint">oraclize_setProof</code> function available in the usingOraclize. The authenticity proof can be either deliver directly to the smart contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>. </p>
+<p>Authenticity proofs are at the core of Oraclize&rsquo;s oracle model. Smart contracts can request authenticity proofs together with their data by calling the <code class="prettyprint">oraclize_setProof</code> function available in the usingOraclize. The authenticity proof can be either deliver directly to the smart contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>.</p>
 
 <p>When a smart contract requests for an authenticity proof, it <strong>must</strong> define a different callback function with the following arguments: <code class="prettyprint">function __callback(bytes32 queryId, string result, bytes proof)</code></p>
 
@@ -728,11 +728,11 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 <p>Available parameters for proofTypes are:</p>
 
 <ul>
-<li><code class="prettyprint">proofType_NONE</code>: the default value of any smart contracts </li>
-<li><code class="prettyprint">proofType_TLSNotary</code> </li>
+<li><code class="prettyprint">proofType_NONE</code>: the default value of any smart contracts</li>
+<li><code class="prettyprint">proofType_TLSNotary</code></li>
 <li><code class="prettyprint">proofType_Android</code></li>
 <li><code class="prettyprint">proofType_Native</code></li>
-<li><code class="prettyprint">proofType_Ledger</code> </li>
+<li><code class="prettyprint">proofType_Ledger</code></li>
 </ul>
 
 <p>While for proofStorage:</p>
@@ -741,13 +741,13 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 <li><code class="prettyprint">proofStorage_IPFS</code></li>
 </ul>
 
-<p>For example, <code class="prettyprint">oraclize_setProof(proofType_TLSNotary)</code> will return the full TLSNotary Proof bytes as the proof argument in the callback transaction. If instead <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> is used, then Oraclize will return only the base58-decoded IPFS multihash as the proof argument. To obtain the IPFS multihash, the bytes must be encoded to base58. 
-The method <code class="prettyprint">oraclize_setProof</code> can be executed in the constructor, becoming a contract-wide lasting setting, or it can be set directly before a specific query is to be made. Authentiticity proofs can be disabled by calling <code class="prettyprint">oraclize_setProof(proofType_NONE)</code>. Smart contract developer should be aware that the helper method <code class="prettyprint">oraclize_setProof</code> is an internal function of usingOraclize, and therefore it must be included specifically in their smart contract at compile time, before deployment. 
+<p>For example, <code class="prettyprint">oraclize_setProof(proofType_TLSNotary)</code> will return the full TLSNotary Proof bytes as the proof argument in the callback transaction. If instead <code class="prettyprint">oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)</code> is used, then Oraclize will return only the base58-decoded IPFS multihash as the proof argument. To obtain the IPFS multihash, the bytes must be encoded to base58.
+The method <code class="prettyprint">oraclize_setProof</code> can be executed in the constructor, becoming a contract-wide lasting setting, or it can be set directly before a specific query is to be made. Authenticity proofs can be disabled by calling <code class="prettyprint">oraclize_setProof(proofType_NONE)</code>. Smart contract developer should be aware that the helper method <code class="prettyprint">oraclize_setProof</code> is an internal function of usingOraclize, and therefore it must be included specifically in their smart contract at compile time, before deployment.
 The following builds on our previous example:</p>
 
 <h3 id="verifiability">Verifiability</h3>
 
-<p>Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a> </p>
+<p>Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a></p>
 
 <h2 id="advanced-topics">Advanced Topics</h2>
 
@@ -757,7 +757,7 @@ The following builds on our previous example:</p>
 The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  </p>
 
 <p>Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize&rsquo;s public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9.
-Only Oraclize will then be able to decrypt the request using its paired private key. </p>
+Only Oraclize will then be able to decrypt the request using its paired private key.</p>
 
 <p>To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,<br>
 The CLI command to encrypt an arbitrary string of text is then:</p>
@@ -805,7 +805,7 @@ You could also encrypt only 1 parameter of oraclize_query(), leaving the other o
 <code class="prettyprint">BF5u1td9ugoacDabyfVzoTxPBxGNtmXuGV7AFcO1GLmXkXIKlBcAcelvaTKIbmaA6lXwZCJCSeWDHJOirHiEl1LtR8lCt+1ISttWuvpJ6sPx3Y/QxTajYzxZfQb6nCGkv+8cczX0PrqKKwOn/Elf9kpQQCXeMglunT09H2B4HfRs7uuI</code>
 <br>
 <br></p>
-<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text </span>
+<pre class="highlight javascript"><code><span class="c1">// Finally we add all the encrypted text</span>
 <span class="c1">// to the oraclize_query (in the right order)</span>
 <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
   uegdD1wtXTkP30sTW+3xR3w/un1i3caSO0Rfa+wmIMmNHt4aOS"</span><span class="p">,</span><span class="s2">"BNKdFtmfmazLLR/bfey4mP8
@@ -818,7 +818,7 @@ You could also encrypt only 1 parameter of oraclize_query(), leaving the other o
 <p>You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.</p>
 
 <aside class="notice">
-In order to prevent other users from using your exact encrypted query (&ldquo;replay attacks&rdquo;), the first contract querying Oraclize with a given encrypted query becomes its rightful &ldquo;owner&rdquo;. Any other contract using that exact same string will receive an empty result. 
+In order to prevent other users from using your exact encrypted query (&ldquo;replay attacks&rdquo;), the first contract querying Oraclize with a given encrypted query becomes its rightful &ldquo;owner&rdquo;. Any other contract using that exact same string will receive an empty result.
 
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
@@ -861,7 +861,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
         <span class="p">}</span>
     <span class="p">}</span>
 
-<span class="p">}</span> 
+<span class="p">}</span>
 
 </code></pre>
 
@@ -940,7 +940,7 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
             <span class="nx">mstore</span><span class="p">(</span><span class="nx">sessionKeyHash</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">)</span>
             <span class="nx">mstore</span><span class="p">(</span><span class="nx">add</span><span class="p">(</span><span class="nx">sessionKeyHash</span><span class="p">,</span> <span class="mh">0x20</span><span class="p">),</span> <span class="nx">sessionKeyHash_bytes32</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="nx">bytes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="nx">memory</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[</span><span class="nx">unonce</span><span class="p">,</span> <span class="nx">nbytes</span><span class="p">,</span> <span class="nx">sessionKeyHash</span><span class="p">];</span> 
+        <span class="nx">bytes</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="nx">memory</span> <span class="nx">args</span> <span class="o">=</span> <span class="p">[</span><span class="nx">unonce</span><span class="p">,</span> <span class="nx">nbytes</span><span class="p">,</span> <span class="nx">sessionKeyHash</span><span class="p">];</span>
         <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="nx">_delay</span><span class="p">,</span> <span class="s2">"random"</span><span class="p">,</span> <span class="nx">args</span><span class="p">,</span> <span class="nx">_customGasLimit</span><span class="p">);</span>
         <span class="nx">oraclize_randomDS_setCommitment</span><span class="p">(</span><span class="nx">queryId</span><span class="p">,</span> <span class="nx">sha3</span><span class="p">(</span><span class="nx">bytes8</span><span class="p">(</span><span class="nx">_delay</span><span class="p">),</span> <span class="nx">args</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nx">sha256</span><span class="p">(</span><span class="nx">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nx">args</span><span class="p">[</span><span class="mi">2</span><span class="p">]));</span>
         <span class="k">return</span> <span class="nx">queryId</span><span class="p">;</span>
@@ -948,11 +948,11 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 
 </code></pre>
 
-<p>The <code class="prettyprint">oraclize_newRandomDSQuery</code> can be used for different kind of interactions, but the security can be incresed further by additing additional commitment data to the request. For example, for two party interactions, the <code class="prettyprint">oraclize_newRandomDSQuery</code> can be modified as showon the side to include the sender address and the value send along as commitment data. This more strongly commitment the request for random bytes to current party, which are assumed to have a stake in the contract, making it impossible for miners to replay transactions on potential forks or reorg of the current chain. </p>
+<p>The <code class="prettyprint">oraclize_newRandomDSQuery</code> can be used for different kind of interactions, but the security can be incresed further by additing additional commitment data to the request. For example, for two party interactions, the <code class="prettyprint">oraclize_newRandomDSQuery</code> can be modified as showon the side to include the sender address and the value send along as commitment data. This more strongly commitment the request for random bytes to current party, which are assumed to have a stake in the contract, making it impossible for miners to replay transactions on potential forks or reorg of the current chain.</p>
 
 <h4 id="multi-party-interactions">Multi-Party Interactions</h4>
 
-<p>In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn&rsquo;t put a stake. </p>
+<p>In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn&rsquo;t put a stake.</p>
 
 <h3 id="more-examples">More Examples</h3>
 
@@ -960,12 +960,12 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 
           <h1 id="9784-nbsp-rootstock">&#9784; &nbsp; Rootstock</h1>
 
-<p>When launched later this year, Rootstock will be the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, partecipants will be able to interact with smart contracts using a token called Smart Bitcoin.
-The peg between Bitcoin and Smart Bitcoins is mantained by a federation of distiguished players, among which Oraclize will proudly figure, and backed by merged mining. </p>
+<p>When launched later this year, Rootstock will be the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, participants will be able to interact with smart contracts using a token called Smart Bitcoin.
+The peg between Bitcoin and Smart Bitcoins is maintained by a federation of distinguished players, among which Oraclize will proudly figure, and backed by merged mining.</p>
 
-<p>The RSK team has recently launched the Ginger Testnet, which has full integration with Oraclize services. </p>
+<p>The RSK team has recently launched the Ginger Testnet, which has full integration with Oraclize services.</p>
 
-<p>Smart contracts on Rootstock are executed by an upgraded, but backward compatible version, of the Ethereum Virtual Machine. The Oraclize Rootstock integration is in fact completly compatible with the Ethereum one, since Ethereum smart contract can be compiled and execute on Rootstock natively. </p>
+<p>Smart contracts on Rootstock are executed by an upgraded, but backward compatible version, of the Ethereum Virtual Machine. The Oraclize Rootstock integration is in fact completely compatible with the Ethereum one, since Ethereum smart contract can be compiled and execute on Rootstock natively.</p>
 
           <h1 id="3647-nbsp-bitcoin">&#3647; &nbsp; Bitcoin</h1>
 
@@ -991,17 +991,17 @@ The peg between Bitcoin and Smart Bitcoins is mantained by a federation of disti
 
 <h2 id="oraclize-ethereum-ide">Oraclize Ethereum IDE</h2>
 
-<p>Oraclize is hosting a patched version of the <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Remix IDE</a>. The patch adds a plugin enabling testing of Ethereum Oraclize-based contracts directly from the browser: the contract can be deployed in memoryand the request is resolved automatically via the Oraclize HTTP API. </p>
+<p>Oraclize is hosting a patched version of the <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Remix IDE</a>. The patch adds a plugin enabling testing of Ethereum Oraclize-based contracts directly from the browser: the contract can be deployed in memory and the request is resolved automatically via the Oraclize HTTP API.</p>
 
 <h2 id="unit-testing">Unit Testing</h2>
 
 <p>An important step in smart contract development, before moving to an official testnet or production use, is unit testing. The Ethereum community has developed multiple frameworks for unit testing, such as Truffle and Embark, which can test contracts on a private instance of Ethereum. A common combination is to run Truffle tests in an ethereumjs-testrpc environments, which is a simulated Ethereum blockchain instance running in memory.
-In order for Oraclize to interact with the smart contract deployed by Truffle or Embark in the test-rpc blockchain instance, a tool called Ethereum-Bridge need to be installed. This is a nodejs module which deploys in the instance the <a href="#oraclize_smart_contracts_infrastructure">Oraclize smart contracts infrastructure</a>, which it is then monitored to see the requests. The tool translates the requests to HTTP API calls to the Oraclize Engine and then return the result by broadcasting the callback transaction. The Ethereum-Bridge and instructions on its deployment can be found <a href="https://github.com/oraclize/ethereum-bridge">here</a>.</p>
+In order for Oraclize to interact with the smart contract deployed by Truffle or Embark in the test-rpc blockchain instance, a tool called Ethereum-Bridge need to be installed. This is a nodejs module which deploys in the instance the Oraclize smart contracts infrastructure which it is then monitored to see the requests. The tool translates the requests to HTTP API calls to the Oraclize Engine and then return the result by broadcasting the callback transaction. The Ethereum-Bridge and instructions on its deployment can be found <a href="https://github.com/oraclize/ethereum-bridge">here</a>.</p>
 
 <h2 id="eth-pm">Eth-pm</h2>
 
-<p>The <a href="https://www.ethpm.com/">Ethereum Package Management</a> is a project which aims to standardize, build and mantain a common registry of smart contracts-based packages, to help smart contract developers.
-Oraclize has published and maintains the Ethereum oraclizeAPI under the &lsquo;oraclize&rsquo; package. To install it: `truffle install oraclize&rsquo;. </p>
+<p>The <a href="https://www.ethpm.com/">Ethereum Package Management</a> is a project which aims to standardize, build and maintain a common registry of smart contracts-based packages, to help smart contract developers.
+Oraclize has published and maintains the Ethereum oraclizeAPI under the &lsquo;oraclize&rsquo; package. To install it: `truffle install oraclize&rsquo;.</p>
 
 <h2 id="future">Future</h2>
 
@@ -1011,19 +1011,19 @@ Oraclize has published and maintains the Ethereum oraclizeAPI under the &lsquo;o
 
 <h3 id="stargate">Stargate</h3>
 
-<p>The Oraclize team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Oraclize. 
+<p>The Oraclize team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Oraclize.
 Additional information will be available later this year. Parties interested in trying this experimental feature, can get in touch at &#39;info@oraclize.it&rsquo;</p>
 
           <h1 id="security-deep-dive">Security Deep Dive</h1>
 
-<p>As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source. </p>
+<p>As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source.</p>
 
 <p>In the context of web technologies, <em>authentication</em> is provided by the HTTPS protocol, an extension of the HTTP protocol which create an encrypted and authenticated channel between the client and the web-server containing the data.</p>
 
-<p>When dealing with data which could be used to determine different financial transactions, authentication becomes of fundamental importance. Unfortunately, the most used and available blockchain protocols have no direct way of interacting with HTTPS and therefore digesting authenticated data. It would seem then that there is a need for a trusted service which can provide this data or complete actions based on it; but that would in part defeat the point of having a decentralized protocol for exchanging value <em>without</em> trusted parties. </p>
+<p>When dealing with data which could be used to determine different financial transactions, authentication becomes of fundamental importance. Unfortunately, the most used and available blockchain protocols have no direct way of interacting with HTTPS and therefore digesting authenticated data. It would seem then that there is a need for a trusted service which can provide this data or complete actions based on it; but that would in part defeat the point of having a decentralized protocol for exchanging value <em>without</em> trusted parties.</p>
 
-<p>This is the reason why Oraclize has been designing systems for authenticating data and made it part of its core business. These systems are called <em>authenticity proofs</em>, which enable auditability of the oracle&rsquo;s service record in delivering untampered data. 
-The authenticity proofs leverage different attestation technologies: some are software-based and some rely on trusted hardware technologies. </p>
+<p>This is the reason why Oraclize has been designing systems for authenticating data and made it part of its core business. These systems are called <em>authenticity proofs</em>, which enable auditability of the oracle&rsquo;s service record in delivering untampered data.
+The authenticity proofs leverage different attestation technologies: some are software-based and some rely on trusted hardware technologies.</p>
 
 <h2 id="authenticity-proofs-types">Authenticity Proofs Types</h2>
 
@@ -1033,14 +1033,14 @@ The authenticity proofs leverage different attestation technologies: some are so
 
 <h3 id="android-proof">Android Proof</h3>
 
-<p>The Android Proof is a result of some of Oraclize&rsquo;s internal R&amp;D work. It leverages software remote attestation technology developed by Google, called SafetyNet, to validate that a given Android application is running on a safe, non-rooted physical device, connected to Oraclize&rsquo;s infrastructure. It also remotely validates the application code hash, enabling authentication of the application running on the device. The application code is open-source, thereby enabling auditability and verification of the code hash. The Android Proof goes further, by using the newly introduced Android Hardware Attestion to prove that the physical device is updated to the latest available Android version, further ensuring integrity by having any potential exploits within the system patched. Furthermore, it verifies that the device&rsquo;s Root-of-Binding-Trust is valid. Both these technologies together effectively turn the physical Android device into a provably-secure environment in which an untampered HTTPS connection to a remote datasource can be initiated. For Oraclize or an external attacker with unauthorized gained access to the infrastructure to compromise the device and generate a false but valid proof, a zero-day exploit unbeknownst to Google must be discovered by said party, which either breaks the Android sandboxing model or is a kernel-level exploit, of the latest version of Android OS and its available security patches.
+<p>The Android Proof is a result of some of Oraclize&rsquo;s internal R&amp;D work. It leverages software remote attestation technology developed by Google, called SafetyNet, to validate that a given Android application is running on a safe, non-rooted physical device, connected to Oraclize&rsquo;s infrastructure. It also remotely validates the application code hash, enabling authentication of the application running on the device. The application code is open-source, thereby enabling auditability and verification of the code hash. The Android Proof goes further, by using the newly introduced Android Hardware Attestation to prove that the physical device is updated to the latest available Android version, further ensuring integrity by having any potential exploits within the system patched. Furthermore, it verifies that the device&rsquo;s Root-of-Binding-Trust is valid. Both these technologies together effectively turn the physical Android device into a provably-secure environment in which an untampered HTTPS connection to a remote datasource can be initiated. For Oraclize or an external attacker with unauthorized gained access to the infrastructure to compromise the device and generate a false but valid proof, a zero-day exploit unbeknownst to Google must be discovered by said party, which either breaks the Android sandboxing model or is a kernel-level exploit, of the latest version of Android OS and its available security patches.
 You can access more information about the Android Proof by reading the white paper on it and experiment with it on the Ethereum and Bitcoin testnets. The enabling of the Android Proof on mainnet is pending based on an update by Google, effectively enabling Android Nougat Hardware Attestation.</p>
 
 <h3 id="ledger-proof">Ledger Proof</h3>
 
-<p><a href="https://www.ledger.co">Ledger</a> is a French company, leader in the production of hardware-enforced cryptocurrency wallets. Their main products are the Ledger Nano S and the Ledger Blue. Both devices implement a common platform comprising a STMicroelectronics secure element, a controller anand an operative system called BOLOS. 
-The BOLOS SDK enables developer to build applications which can be installed on the secure hardware along with the cryptocurrency wallet, which are BOLOS application themselves. 
-BOLOS exposes a set of kernel-level API which can complete useful operations such as cryptographic ones or attestation. Attestion is in fact one of the most interesting aspect of the platform: any application can, by calling the appropriate API, ask the kernel to measure its binary and produce a signed hash. The signing is performed by a special attesting key, which is controlled by the kernel and it is out of reach of the application developers. The attesting key has full chain of trust which has the root in a Ledger-controlled master key, residing on an HSM controlled by Ledger. </p>
+<p><a href="https://www.ledger.co">Ledger</a> is a French company, leader in the production of hardware-enforced cryptocurrency wallets. Their main products are the Ledger Nano S and the Ledger Blue. Both devices implement a common platform comprising a STMicroelectronics secure element, a controller and an operative system called BOLOS.
+The BOLOS SDK enables developer to build applications which can be installed on the secure hardware along with the cryptocurrency wallet, which are BOLOS application themselves.
+BOLOS exposes a set of kernel-level API which can complete useful operations such as cryptographic ones or attestation. Attestation is in fact one of the most interesting aspect of the platform: any application can, by calling the appropriate API, ask the kernel to measure its binary and produce a signed hash. The signing is performed by a special attesting key, which is controlled by the kernel and it is out of reach of the application developers. The attesting key has full chain of trust which has the root in a Ledger-controlled master key, residing on an HSM controlled by Ledger.</p>
 
 <p>The Ledger Proof leverages both the code attesting and the device attesting features to attest to any third-party that the applications developed by Oraclize are running in a TEE of a true Ledger device. The Ledger Proof has the following format:</p>
 
@@ -1077,9 +1077,9 @@ BOLOS exposes a set of kernel-level API which can complete useful operations suc
 
 <h3 id="storage-and-delivery">Storage and Delivery</h3>
 
-<p>The authenticity proofs may be relatively large files, of up to a few kilobytes. Delivering such proofs directly within the result of the data payload in an Ethereum transaction can get quite expensive, in terms of EVM execution costs, and may even be impossible for larger data. </p>
+<p>The authenticity proofs may be relatively large files, of up to a few kilobytes. Delivering such proofs directly within the result of the data payload in an Ethereum transaction can get quite expensive, in terms of EVM execution costs, and may even be impossible for larger data.</p>
 
-<p>Moreover, Oraclize strives to be blockchain agnostic, enabling the proof to be used even on Bitcoin and other blockchains. Therefore the proof is uploaded and saved to IPFS, a decentralized and distributed storage system. In providing a pointer to the content, IPFS uses a custom hashing algorithm called multihash. The resulting address is Base64 encoded and it&rsquo;s a unique ID specific to the file which can be used to access it globally, and changes along with any edits to the file contained. </p>
+<p>Moreover, Oraclize strives to be blockchain agnostic, enabling the proof to be used even on Bitcoin and other blockchains. Therefore the proof is uploaded and saved to IPFS, a decentralized and distributed storage system. In providing a pointer to the content, IPFS uses a custom hashing algorithm called multihash. The resulting address is Base64 encoded and it&rsquo;s a unique ID specific to the file which can be used to access it globally, and changes along with any edits to the file contained.</p>
 
 <p>IPFS, by itself, doesn&rsquo;t provide any long-term guarantees of persistency, however as part of Oraclize&rsquo;s infrastructures it runs the <a href="https://github.com/oraclize/ipfs-persistence-consortium" target="_blank">IPFS persistence consortium</a>. Anyone can join Oraclize&rsquo;s consortium and help in keeping an independent copy of all the proofs by pointing a <a href="https://github.com/oraclize/ipfs-persistence-consortium" target="_blank">IPFS persistence consortium</a> node to the following aggregation peer: <code class="prettyprint">QmSsSSfJAJwj3jsNfzbSrxtLAjhpYPjbUEsCQT8mWVgBiL</code></p>
 
@@ -1091,11 +1091,11 @@ BOLOS exposes a set of kernel-level API which can complete useful operations suc
 
 <p>This section will shortly explain the rationale and the inner workings of the custom application.</p>
 
-<p>The main goals of the design were: </p>
+<p>The main goals of the design were:</p>
 
 <ol>
-<li>Oraclize can only ask once, for a specific request, a random number to the device. Subsequent requests should be denied or return the previously extracted number. </li>
-<li>The random number must be signed, to authenticate that has been generated by the device. </li>
+<li>Oraclize can only ask once, for a specific request, a random number to the device. Subsequent requests should be denied or return the previously extracted number.</li>
+<li>The random number must be signed, to authenticate that has been generated by the device.</li>
 <li>In blockchain applications, miners shouldn&rsquo;t be able to tamper with orders, validity and results of the bets</li>
 <li>The design should minimize use of state both on the device and on-chain.</li>
 </ol>
@@ -1105,9 +1105,9 @@ BOLOS exposes a set of kernel-level API which can complete useful operations suc
 <ol>
 <li>Enforcing the uniqueness of each request id. The device keeps a merkelized, append-only state where each request seen is appended.</li>
 <li>All data coming from the device is signed by an application session key, whose public key is present in the Oraclize connector. Requests can commit to receive the result by a precise session key.</li>
-<li>Commitment data is send along with the request, to anchor it to a specific blockchain history. Commitment data can be derived by the current block information such as timestamp, coinbase and previous block hash, and additionaly information related to the request (msg.sender, msg.value etc). </li>
+<li>Commitment data is send along with the request, to anchor it to a specific blockchain history. Commitment data can be derived by the current block information such as timestamp, coinbase and previous block hash, and additionally information related to the request (msg.sender, msg.value etc).</li>
 <li>The kernel has an event feature which it is used to increment an application internal timer. A request can and should specify a time, in seconds, which has to elapse before the request can be served by the device and the random number returned. The higher the specifier time, the stronger the security against miners, with or without Oraclize collaboration, tampering with the result.<br></li>
-<li>The random bytes are generated from the commitment data and the session private key using the ECDSA deterministic signing; this avoids costly recomputation of the tree to mark served query. </li>
+<li>The random bytes are generated from the commitment data and the session private key using the ECDSA deterministic signing; this avoids costly recomputation of the tree to mark served query.</li>
 </ol>
 
 <p>The validity of these operations is enforced by the Ledger Proof. Signatures and data related to the Random Data Source are in fact append to the Ledger Proof and returned with the result. The format of the appended data is the following one:
@@ -1165,19 +1165,19 @@ BOLOS exposes a set of kernel-level API which can complete useful operations suc
 
 <h3 id="first-free-request">First Free Request</h3>
 
-<p>To facilatate testing, the first call to Oraclize from any smart contract address, if used with standard setting, is free of charge. This includes the gas costs of the callback transaction.</p>
+<p>To facilitate testing, the first call to Oraclize from any smart contract address, if used with standard setting, is free of charge. This includes the gas costs of the callback transaction.</p>
 
 <h3 id="testnets-policy">Testnets Policy</h3>
 
-<p>To keep compatibility with the main-net deployed, smart contracts testing Oraclize on any of the testnets are expected to pay the same fee they would on the main-net. Since the payment expected is in testnet Ether, which holds no value, the calls to Oraclize are the facto free. 
-Oraclize reserve the rights to discontinue the service for abuse or excessive use. </p>
+<p>To keep compatibility with the main-net deployed, smart contracts testing Oraclize on any of the testnets are expected to pay the same fee they would on the main-net. Since the payment expected is in testnet Ether, which holds no value, the calls to Oraclize are the facto free.
+Oraclize reserve the rights to discontinue the service for abuse or excessive use.</p>
 
 <h3 id="call-fee">Call Fee</h3>
 
 <p>The <code class="prettyprint">oraclize_query</code> automatically recovers the fee at execution time. The fee consist of two parts:</p>
 
 <ul>
-<li>The amount of Wei which corrispond, using a recent exchange rate, to the USD price for the data source and the authenticity proof requested</li>
+<li>The amount of Wei which corresponds, using a recent exchange rate, to the USD price for the data source and the authenticity proof requested</li>
 <li>The amount of Wei which Oraclize will spend in gas for sending the callback transaction</li>
 </ul>
 
