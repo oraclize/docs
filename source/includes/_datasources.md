@@ -92,12 +92,12 @@ user@locahost:~$ zip -r archive.zip
 user@locahost:~$ ipfs add archive.zip
 added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
 ```
-The `computation` datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine. 
+The `computation` datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.
 
 The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes.
 
 The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
-The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application. 
+The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application.
 
 
 <aside class="notice">
@@ -106,13 +106,13 @@ Oraclize might use the email specified in the MAINTAINER field of the Dockerfile
 
 ## random
 
-The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Envirnment (TEE) and protects the user from a number of attack vectors.
+The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Environment (TEE) and protects the user from a number of attack vectors.
 
 The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don't pass the verification process.
 
 The random datasource is leveraging the Ledger proof to prove that the origin of the generated randomness is really a secure Ledger device.
 
-The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> whitepaper.
+The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> white paper.
 
 
 ## decrypt
@@ -123,7 +123,7 @@ Even though the `decrypt` datasource can be used as any other, it was specifical
 The result is the decrypted query string. **Please note that all the logic, limitations and tools provided by the `Encryption` feature apply here as well.**
 
 ## nested
-The `nested` datasource is a meta datasource, it does not provide access to additional services. It was designed to provide some simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and produce a single stringas a result.
+The `nested` datasource is a meta datasource, it does not provide access to additional services. It was designed to provide some simple aggregation logic, enabling a single query to leverage sub-queries based on any available datasource and produce a single string as a result.
 
 
 The `query` format is built in a way you that you can specify a sub-datasource and a sub-query as follows: `[datasource_name] query_content`.
@@ -134,4 +134,3 @@ Please mind the square brackets delimiting the datasource name and the whitespac
 You can optionally specify more than one sub-query, by using as delimitators the `${` special opener and the `}` special closer.
 
 Example: `[WolframAlpha] temperature in ${[IPFS] QmP2ZkdsJG7LTw7jBbizTTgY1ZBeen64PqMgCAWz2koJBL}`
-
