@@ -425,7 +425,7 @@ contract Random is usingOraclize {
     }
 
     function update() payable {
-        if (oraclize.getPrice("URL") > this.balance) {
+        if (oraclize.getPrice("computation") > this.balance) {
             newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
