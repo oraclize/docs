@@ -337,6 +337,10 @@ More information can be found in the <a href="#ethereum-advanced-topics-encrypte
 If only one parameters is specified in the query, the service will default to perform an HTTP GET request. If a second parameter is specified, then the service will perform an HTTP POST request, posting the second parameter as data. Note that if the second parameter is valid JSON, then it will be posted as such. The <code class="prettyprint">URL</code> data source type supports TLSNotary Proofs and Android Proofs.
 More advanced HTTP capabilities, such as Basic Authentication or OAuth, can be build by leveraging the <code class="prettyprint">computation</code> data source type.</p>
 
+<aside class="notice">
+As Oraclize is a remote service, it requires the `URL` datasource to also be remotely accessible. In case a developer may wish to use an API that is accessible only on their local network, they may use the `localtunnel` utility available via `npm` to expose their local port via a publicly accessible url (which is what is to be used as the query parameter, in place of localhost:8080 or 127.0.0.1). More information on this utility is available at: <a href="https://localtunnel.github.io/www/" target="_blank">https://localtunnel.github.io/www/</a>
+</aside>
+
 <h2 id="wolframalpha">WolframAlpha</h2>
 
 <p>The <code class="prettyprint">WolframAlpha</code> data source type enables direct access to the WolframAlpha Knowledge Engine API. This datasource expects as sole parameter the string which should be passed to WolframAlpha. It will returns the result as a string.</p>
@@ -853,7 +857,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
