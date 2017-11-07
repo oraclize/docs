@@ -55,6 +55,10 @@ The `URL` data source type enables access to any API or web page on the Internet
 If only one parameters is specified in the query, the service will default to perform an HTTP GET request. If a second parameter is specified, then the service will perform an HTTP POST request, posting the second parameter as data. Note that if the second parameter is valid JSON, then it will be posted as such. The `URL` data source type supports TLSNotary Proofs and Android Proofs.
 More advanced HTTP capabilities, such as Basic Authentication or OAuth, can be build by leveraging the `computation` data source type.
 
+<aside class="notice">
+As Oraclize is a remote service, it requires the `URL` datasource to also be remotely accessible. In case a developer may wish to use an API that is accessible only on their local network, they may use the `localtunnel` utility available via `npm` to expose their local port via a publicly accessible url (which is what is to be used as the query parameter, in place of localhost:8080 or 127.0.0.1). More information on this utility is available at: <a href="https://localtunnel.github.io/www/" target="_blank">https://localtunnel.github.io/www/</a>
+</aside>
+
 ## WolframAlpha
 
 The `WolframAlpha` data source type enables direct access to the WolframAlpha Knowledge Engine API. This datasource expects as sole parameter the string which should be passed to WolframAlpha. It will returns the result as a string.
