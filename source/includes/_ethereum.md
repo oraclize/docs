@@ -1,4 +1,4 @@
-# &diams; &nbsp; Ethereum
+# &#9830; &nbsp; Ethereum
 
 The following section is dedicated to the Ethereum and Oraclize integration.
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.

@@ -1,4 +1,4 @@
-# &#9784; &nbsp; Rootstock
+# &#9784; Rootstock
 
 When launched later this year, Rootstock will be the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, participants will be able to interact with smart contracts using a token called Smart Bitcoin.
 The peg between Bitcoin and Smart Bitcoins is maintained by a federation of distinguished players, among which Oraclize will proudly figure, and backed by merged mining.
