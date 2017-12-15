@@ -971,9 +971,172 @@ The peg between Bitcoin and Smart Bitcoins is maintained by a federation of dist
 
 <p>Smart contracts on Rootstock are executed by an upgraded, but backward compatible version, of the Ethereum Virtual Machine. The Oraclize Rootstock integration is in fact completely compatible with the Ethereum one, since Ethereum smart contract can be compiled and execute on Rootstock natively.</p>
 
-          <h1 id="267-nbsp-corda">&#267; &nbsp; Corda</h1>
+          <h1 id="c-8226-nbsp-corda">C&#8226; &nbsp; Corda</h1>
 
-<p>Coming (very) soon!</p>
+<p>Here we will cover the Oraclize&rsquo;s Corda integration. Before reading this section, you must be familiar with the Corda platform key concepts like flows, subflows, contracts, transactions, commands, oracles etc. So if things get blurred the <a href="https://docs.corda.net/">corda documentation</a> is your best friend.</p>
+
+<h2 id="quick-start">Quick Start</h2>
+
+<p>The Oraclize service quite resembles the Oracle model described in Corda, but instead of providing direct access to the <code class="prettyprint">query()</code> and <code class="prettyprint">sign()</code> methods, it implements a set of flows which can be called when requiring data from the outside world. Look at the following steps to see how this can be achieved.</p>
+
+<h3 id="query-oraclize">Query Oraclize</h3>
+<pre class="highlight java"><code><span class="n">val</span> <span class="n">answer</span> <span class="o">=</span> <span class="n">subFlow</span><span class="o">(</span><span class="n">OraclizeQueryAwaitFlow</span><span class="o">(</span>
+                <span class="n">datasource</span> <span class="o">=</span> <span class="s">"URL"</span><span class="o">,</span>
+                <span class="n">query</span> <span class="o">=</span> <span class="s">"json(https://min-api.cryptocompare.com/data/price?fsym=USD&amp;tsyms=GBP).GBP"</span><span class="o">,</span>
+                <span class="n">proofType</span> <span class="o">=</span> <span class="n">ProofType</span><span class="o">.</span><span class="na">TLSNOTARY</span>
+            <span class="o">))</span>
+
+</code></pre>
+<pre class="highlight java"><code><span class="n">val</span> <span class="n">proofVerificationTool</span> <span class="o">=</span> <span class="n">OraclizeUtils</span><span class="o">.</span><span class="na">ProofVerificationTool</span><span class="o">()</span>
+<span class="n">proofVerificationTool</span><span class="o">.</span><span class="na">verifyProof</span><span class="o">(</span><span class="n">answer</span><span class="o">.</span><span class="na">proof</span> <span class="n">as</span> <span class="n">ByteArray</span><span class="o">)</span>
+</code></pre>
+
+<p>The fastest way to query Oraclize is by using the <code class="prettyprint">OraclizeQueryAwaitFlow</code> which accepts the arguments defined in the previous sections (see the <a href="#general-concepts-oraclize-engine">Oraclize Engine</a> for additional details). 
+As shown on the code on the right, the flow fetches the last USD/GBP rate from the APIs specified, requiring a proof of type <em>TLSNotary</em>. Notice that the <code class="prettyprint">json(...)</code> parser will exctract exactly the result we are concern about.</p>
+
+<aside class="notice">
+    As the communication between flows is blocking, the current flow will remains idle until Oraclize will dispose back the answer. 
+</aside>
+
+<p>Once the answer is successfully returned, the proof can be easily verified by using the <code class="prettyprint">ProofVerificationTool</code> defined in <code class="prettyprint">OraclizeUtils</code>. </p>
+
+<aside class="notice">
+To safely check the authenticity of the data received it is customary to verify the proof included in an Oraclize&rsquo;s answer. Once the verifyProof
+method succeed (returning &lsquo;true&rsquo;), the user can be sure that nor Oraclize neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CordApp.
+
+Note that the ProofVerificationTool is a module included in the Oraclize&rsquo;s CordApp and performs the verification locally within the node.
+</aside>
+<pre class="highlight java"><code><span class="n">val</span> <span class="n">oracle</span> <span class="o">=</span> <span class="n">serviceHub</span><span class="o">.</span><span class="na">identityService</span>
+                <span class="o">.</span><span class="na">wellKnownPartyFromX500Name</span><span class="o">(</span><span class="n">OraclizeUtils</span><span class="o">.</span><span class="na">getNodeName</span><span class="o">())</span> <span class="n">as</span> <span class="n">Party</span>
+<span class="n">val</span> <span class="n">answerCommand</span> <span class="o">=</span> <span class="n">Command</span><span class="o">(</span><span class="n">answer</span><span class="o">,</span> <span class="n">oracle</span><span class="o">.</span><span class="na">owningKey</span><span class="o">)</span>
+</code></pre>
+
+<p>If you want to put the results in a transaction, it is necessary to wrap the answer in a <code class="prettyprint">Command</code> along with the Oraclize&rsquo;s node public key. Note that the Oraclize&rsquo;s node can be obtained by using the <code class="prettyprint">serviceHub.identityService</code>, identifying the node with <code class="prettyprint">OraclizeUtils.getNodeName()</code>. </p>
+
+<h3 id="building-the-transaction">Building the transaction</h3>
+
+<p>Now we have all the ingredients to build a transaction: check the code on the right to see how it is done.</p>
+<pre class="highlight java"><code><span class="n">val</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">TransactionBuilder</span><span class="o">(</span><span class="n">someNotary</span><span class="o">).</span><span class="na">withItems</span><span class="o">(</span>
+                    <span class="n">StateAndContract</span><span class="o">(</span><span class="n">someState</span><span class="o">,</span> <span class="n">SomeContract</span><span class="o">.</span><span class="na">TEST_CONTRACT_ID</span><span class="o">),</span>
+                    <span class="n">someCommand</span><span class="o">,</span> <span class="n">answerCommand</span><span class="o">)</span>
+
+<span class="n">tx</span><span class="o">.</span><span class="na">verify</span><span class="o">(</span><span class="n">serviceHub</span><span class="o">)</span>
+</code></pre>
+
+<p>Notice that:</p>
+
+<ul>
+<li><code class="prettyprint">someNotary</code> is a notary node of your choice, for example <code class="prettyprint">val someNotary = serviceHub.networkMapCache.notaryIdentities.first()</code> </li>
+<li><code class="prettyprint">someState</code> is an output state that usually live along with the oracle answer</li>
+<li><code class="prettyprint">someContract</code> is a valid Corda contract listing all the assertion on the I/O states, by means of a <code class="prettyprint">requireThat</code> closure (see below for more details about the contract)</li>
+<li><code class="prettyprint">someCommand</code> is a command which specify the operation being perfomed by the transaction including the issuer public key</li>
+</ul>
+
+<h3 id="sign-the-transaction">Sign the transaction</h3>
+<pre class="highlight java"><code><span class="c1">// Filter out non Oracles data</span>
+<span class="n">fun</span> <span class="nf">filtering</span><span class="p">(</span><span class="nl">elem:</span> <span class="n">Any</span><span class="o">):</span> <span class="n">Boolean</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">when</span> <span class="o">(</span><span class="n">elem</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">is</span> <span class="n">Command</span><span class="o">&lt;*&gt;</span> <span class="o">-&gt;</span> <span class="n">oracle</span><span class="o">.</span><span class="na">owningKey</span> <span class="n">in</span> <span class="n">elem</span><span class="o">.</span><span class="na">signers</span> <span class="o">&amp;&amp;</span> <span class="n">elem</span><span class="o">.</span><span class="na">value</span> <span class="n">is</span> <span class="n">Answer</span>
+        <span class="k">else</span> <span class="o">-&gt;</span> <span class="kc">false</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">val</span> <span class="n">ftx</span> <span class="o">=</span> <span class="n">txBuilder</span><span class="o">.</span><span class="na">toWireTransaction</span><span class="o">(</span><span class="n">serviceHub</span><span class="o">).</span><span class="na">buildFilteredTransaction</span><span class="o">(</span><span class="n">Predicate</span> <span class="o">{</span> <span class="n">filtering</span><span class="o">(</span><span class="n">it</span><span class="o">)</span> <span class="o">})</span>
+
+</code></pre>
+
+<p>Before sending the transaction to Oraclize for signing, it is customary to filter out all the non-Oraclize data as shown by the the function <code class="prettyprint">filtering</code> on the right. </p>
+<pre class="highlight java"><code><span class="n">val</span> <span class="n">signedTx</span> <span class="o">=</span> <span class="n">serviceHub</span><span class="o">.</span><span class="na">signInitialTransaction</span><span class="o">(</span><span class="n">tx</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">withAdditionalSignature</span><span class="o">(</span><span class="n">subFlow</span><span class="o">(</span><span class="n">OraclizeSignFlow</span><span class="o">(</span><span class="n">ftx</span><span class="o">)))</span>
+</code></pre>
+
+<p>Then the signature can be requested by using <code class="prettyprint">OraclizeSignFlow</code> which accepts the <code class="prettyprint">FilteredTransaction</code> defined before as argument. The flow will check that the query has actually been submitted in the past and then will return a <code class="prettyprint">TransactionSignature</code> containing the one from <code class="prettyprint">Oraclize</code>.</p>
+
+<h2 id="details">Details</h2>
+
+<h3 id="the-oraclize-39-s-answer">The Oraclize&rsquo;s Answer</h3>
+<pre class="highlight java"><code><span class="c1">// In the contract</span>
+<span class="n">override</span> <span class="n">fun</span> <span class="nf">verify</span><span class="p">(</span><span class="nl">tx:</span> <span class="n">LedgerTransaction</span><span class="o">)</span> <span class="o">{</span>
+    <span class="o">...</span>
+    <span class="n">val</span> <span class="n">answerCommand</span> <span class="o">=</span> <span class="n">tx</span><span class="o">.</span><span class="na">commands</span><span class="o">.</span><span class="na">requireSingleCommand</span><span class="o">&lt;</span><span class="n">Answer</span><span class="o">&gt;()</span>
+
+    <span class="n">requireThat</span> <span class="o">{</span>
+        <span class="o">...</span>
+
+        <span class="c1">// Check tha Oraclise's answer </span>
+        <span class="n">val</span> <span class="n">rate</span> <span class="o">=</span> <span class="n">answerCommand</span><span class="o">.</span><span class="na">value</span><span class="o">.</span><span class="na">rawValue</span> <span class="n">as</span> <span class="n">String</span>
+        <span class="s">"The rate USD/GBP must be over $USD_GBP_RATE_THRESH"</span> <span class="n">using</span> <span class="o">(</span><span class="n">rate</span><span class="o">.</span><span class="na">toDouble</span><span class="o">()</span> <span class="o">&gt;</span> <span class="n">USD_GBP_RATE_THRESH</span><span class="o">)</span>
+
+        <span class="c1">// You can use the proof verification tool in the contract as well</span>
+        <span class="n">val</span> <span class="n">proofVerificationTool</span> <span class="o">=</span> <span class="n">OraclizeUtils</span><span class="o">.</span><span class="na">ProofVerificationTool</span><span class="o">()</span>
+        <span class="s">"Oraclize's proof verification failed"</span> <span class="n">using</span>  <span class="o">(</span>
+                <span class="n">proofVerificationTool</span><span class="o">.</span><span class="na">verifyProof</span><span class="o">(</span><span class="n">answerCommand</span><span class="o">.</span><span class="na">value</span><span class="o">.</span><span class="na">proof</span> <span class="n">as</span> <span class="n">ByteArray</span><span class="o">))</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre>
+
+<p>The <code class="prettyprint">Answer</code> model defined by Oraclize permits the access to the following information:</p>
+
+<ul>
+<li><code class="prettyprint">queryId</code>: the query ID of the current answer</li>
+<li><code class="prettyprint">rawValue</code>: the actual result (could be a ByteArray or a String)</li>
+<li><code class="prettyprint">value</code>: the string representation of the result (an hex string if it is a ByteArray)</li>
+<li><code class="prettyprint">proof</code>: the proof as a ByteArray</li>
+<li><code class="prettyprint">type</code>: a string specifying the type of the <code class="prettyprint">rawValue</code> field
+
+<ul>
+<li><code class="prettyprint">&quot;str&quot;</code> if it is a String</li>
+<li><code class="prettyprint">&quot;hex&quot;</code> if it is a ByteArray</li>
+</ul></li>
+</ul>
+
+<h3 id="the-contract">The contract</h3>
+
+<p>As the answer is wrapped in a transaction by means of a command, you can easily access it inside a contract by using <code class="prettyprint">tx.commands.requireSingleCommand&lt;Answer&gt;()</code> and check that the answer satisfies all the requirements.</p>
+
+<p>On the right we verify that the value stored in the Answer is a constant above a certain threshold along with the verification of the proof requested.
+If one of the above assertions fails the contract is rejected and the flow is stopped.</p>
+
+<h3 id="rpc-calls">RPC calls</h3>
+<pre class="highlight plaintext"><code>&gt;&gt;&gt; start OraclizeQueryAwaitFlow  datasource: Wolfram, query: random number between 0 and 100, proofType: 0, delay: 0
+</code></pre>
+
+<p>It is also possible to call the <code class="prettyprint">OraclizeQueryAwaitFlow</code> by RPC using the CRash shell (<code class="prettyprint">&gt;&gt;&gt;</code>) as shown on the right.</p>
+
+<h3 id="example">Example</h3>
+<pre class="highlight plaintext"><code>&gt;&gt;&gt; start Example amount: 10
+&gt;&gt;&gt; run vaultQuery contractStateType: it.oraclize.cordapi.examples.states.CashOwningState
+</code></pre>
+
+<p>Inside the CordApp you can find a ready-to-use example which self Issue the specified amount of cash if the rate of USD/GBP is above a certain threshold. 
+Check the <a href="https://github.com/oraclize/corda-api">corda-api</a> repository for the full details of how it works.</p>
+
+<p>Then feel free to check the transaction by query the vault as shown on the right.</p>
+
+<h3 id="adding-the-cordapp-to-your-project">Adding the Cordapp to your project</h3>
+<pre class="highlight plaintext"><code>repositories {
+    maven { url 'https://jitpack.io' }
+}
+dependencies {
+    compile "com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT"
+}
+</code></pre>
+
+<p>If you want to use the Oraclize&rsquo;s CordApp in your project just put one of the  dependencies in your <code class="prettyprint">build.gradle</code> file:</p>
+
+<ul>
+<li><code class="prettyprint">compile &quot;com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT&quot;</code></li>
+<li><code class="prettyprint">compile &quot;com.github.oraclize:corda-api:win32_x86_64-SNAPSHOT&quot;</code></li>
+<li><code class="prettyprint">compile &quot;com.github.oraclize:corda-api:macosx_x86_64-SNAPSHOT&quot;</code></li>
+</ul>
+
+<p>&nbsp;<br></p>
+<pre class="highlight plaintext"><code>Exception: J2V8 native library not loaded
+</code></pre>
+
+<aside class="notice">
+To make the proof verification tool work correctly it is necessary that you put the right dependency corresponding to your node&rsquo;s architecture, otherwise the proof will fail raising an exception as the one displayed.
+</aside>
 
           <h1 id="3647-nbsp-bitcoin">&#3647; &nbsp; Bitcoin</h1>
 
