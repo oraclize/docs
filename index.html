@@ -962,7 +962,7 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
 
-          <h1 id="9784-rootstock">&#9784; Rootstock</h1>
+          <h1 id="9096-rootstock">&#9096; Rootstock</h1>
 
 <p>When launched later this year, Rootstock will be the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, participants will be able to interact with smart contracts using a token called Smart Bitcoin.
 The peg between Bitcoin and Smart Bitcoins is maintained by a federation of distinguished players, among which Oraclize will proudly figure, and backed by merged mining.</p>
@@ -1055,6 +1055,23 @@ Note that the ProofVerificationTool is a module included in the Oraclize&rsquo;s
 <h2 id="details">Details</h2>
 
 <h3 id="the-oraclize-39-s-answer">The Oraclize&rsquo;s Answer</h3>
+
+<p>The <code class="prettyprint">Answer</code> model defined by Oraclize permits the access to the following information:</p>
+
+<ul>
+<li><code class="prettyprint">queryId</code>: the query ID of the current answer</li>
+<li><code class="prettyprint">rawValue</code>: the actual result (could be a ByteArray or a String)</li>
+<li><code class="prettyprint">value</code>: the string representation of the result (an hex string if it is a ByteArray)</li>
+<li><code class="prettyprint">proof</code>: the proof as a ByteArray</li>
+<li><code class="prettyprint">type</code>: a string specifying the type of the <code class="prettyprint">rawValue</code> field
+
+<ul>
+<li><code class="prettyprint">&quot;str&quot;</code> if it is a String</li>
+<li><code class="prettyprint">&quot;hex&quot;</code> if it is a ByteArray</li>
+</ul></li>
+</ul>
+
+<h3 id="the-contract">The contract</h3>
 <pre class="highlight java"><code><span class="c1">// In the contract</span>
 <span class="n">override</span> <span class="n">fun</span> <span class="nf">verify</span><span class="p">(</span><span class="nl">tx:</span> <span class="n">LedgerTransaction</span><span class="o">)</span> <span class="o">{</span>
     <span class="o">...</span>
@@ -1074,23 +1091,6 @@ Note that the ProofVerificationTool is a module included in the Oraclize&rsquo;s
     <span class="o">}</span>
 <span class="o">}</span>
 </code></pre>
-
-<p>The <code class="prettyprint">Answer</code> model defined by Oraclize permits the access to the following information:</p>
-
-<ul>
-<li><code class="prettyprint">queryId</code>: the query ID of the current answer</li>
-<li><code class="prettyprint">rawValue</code>: the actual result (could be a ByteArray or a String)</li>
-<li><code class="prettyprint">value</code>: the string representation of the result (an hex string if it is a ByteArray)</li>
-<li><code class="prettyprint">proof</code>: the proof as a ByteArray</li>
-<li><code class="prettyprint">type</code>: a string specifying the type of the <code class="prettyprint">rawValue</code> field
-
-<ul>
-<li><code class="prettyprint">&quot;str&quot;</code> if it is a String</li>
-<li><code class="prettyprint">&quot;hex&quot;</code> if it is a ByteArray</li>
-</ul></li>
-</ul>
-
-<h3 id="the-contract">The contract</h3>
 
 <p>As the answer is wrapped in a transaction by means of a command, you can easily access it inside a contract by using <code class="prettyprint">tx.commands.requireSingleCommand&lt;Answer&gt;()</code> and check that the answer satisfies all the requirements.</p>
 
