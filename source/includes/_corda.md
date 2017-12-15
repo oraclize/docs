@@ -94,6 +94,19 @@ Then the signature can be requested by using `OraclizeSignFlow` which accepts th
 
 ### The Oraclize's Answer
 
+The `Answer` model defined by Oraclize permits the access to the following information:
+
+  * `queryId`: the query ID of the current answer
+  * `rawValue`: the actual result (could be a ByteArray or a String)
+  * `value`: the string representation of the result (an hex string if it is a ByteArray)
+  * `proof`: the proof as a ByteArray
+  * `type`: a string specifying the type of the `rawValue` field
+     + `"str"` if it is a String
+     + `"hex"` if it is a ByteArray
+
+
+### The contract
+
 ```java
 // In the contract
 override fun verify(tx: LedgerTransaction) {
@@ -114,19 +127,6 @@ override fun verify(tx: LedgerTransaction) {
     }
 }
 ```
-
-The `Answer` model defined by Oraclize permits the access to the following information:
-
-  * `queryId`: the query ID of the current answer
-  * `rawValue`: the actual result (could be a ByteArray or a String)
-  * `value`: the string representation of the result (an hex string if it is a ByteArray)
-  * `proof`: the proof as a ByteArray
-  * `type`: a string specifying the type of the `rawValue` field
-     + `"str"` if it is a String
-     + `"hex"` if it is a ByteArray
-
-
-### The contract
 
 As the answer is wrapped in a transaction by means of a command, you can easily access it inside a contract by using `tx.commands.requireSingleCommand<Answer>()` and check that the answer satisfies all the requirements.
 
