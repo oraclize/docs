@@ -520,5 +520,68 @@ The `oraclize_newRandomDSQuery` can be used for different kind of interactions, 
 In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn't put a stake.
 
 
+
+### ProofShield
+
+The Oraclize *ProofShield* is a concept first introduct at Devcon4, you can watch our presentation about "Scalable Onchain Verification for Authenticated Data Feeds and Offchain Computations" [here](https://www.youtube.com/watch?v=7uQdEBVu8Sk).
+
+<aside class="notice">
+The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet). A production-ready version will follow in the future.
+</aside>
+
+The ProofShield enables smart contracts to verify on-chain the authenticity proofs provided by Oraclize, this ensures that the authenticity of the data received is verified before going ahead and using the data.
+
+
+To enable the ProofShield it is enough to set it via the `oraclize_setProof` function like you see in the following code:
+
+
+```javascript
+
+    oraclize_setProof(proofType_Android_v2 | proofShield_Ledger); 
+
+````
+
+
+Once the ProofShield is enabled, the received proof will not be the raw Authenticity Proof, but the ProofShield proof instead: some functions are provided so that the ProofShield proof can be verified on-chain. In order to verify it, you need to call from within the `__callback` method the function `oraclize_proofShield_proofVerify__returnCode(queryId, result, proof)` and ensure that it returns 0.
+
+<aside class="notice">
+The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+</aside>
+
+A code example follows, note that the complete version of it is available [here](https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol):
+
+```javascript
+contract proofShieldExample is usingOraclize {
+
+    event newAuthenticatedResult(string);
+
+    function proofShieldExample() {
+        oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
+        sendQuery();
+    }
+
+    function __callback(bytes32 queryId, string result, bytes proof) {
+        if (msg.sender != oraclize_cbAddress()) throw;
+        
+        if (oraclize_proofShield_proofVerify__returnCode(queryId, result, proof) != 0) {
+            // the proof verification has failed, do we need to take any action here? (depends on the use case)
+        } else {
+            // the proof verification has passed
+            // now that we know that the random number was safely generated, let's use it..
+            
+            newAuthenticatedResult(result);
+        }
+    }
+
+    function sendQuery() payable {
+        string memory query = "json(https://www.bitstamp.net/api/v2/ticker/ethusd/).last";
+        bytes32 queryId = oraclize_query("URL", query);
+        
+        oraclize_proofShield_commitment[queryId] = keccak256(sha256(query), proofType_Android_v2);
+    }
+    
+}
+```
+
 ### More Examples
 More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
