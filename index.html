@@ -958,6 +958,61 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 
 <p>In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn&rsquo;t put a stake.</p>
 
+<h3 id="proofshield">ProofShield</h3>
+
+<p>The Oraclize <em>ProofShield</em> is a concept first introduct at Devcon4, you can watch our presentation about &ldquo;Scalable Onchain Verification for Authenticated Data Feeds and Offchain Computations&rdquo; <a href="https://www.youtube.com/watch?v=7uQdEBVu8Sk">here</a>.</p>
+
+<aside class="notice">
+The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet). A production-ready version will follow in the future.
+</aside>
+
+<p>The ProofShield enables smart contracts to verify on-chain the authenticity proofs provided by Oraclize, this ensures that the authenticity of the data received is verified before going ahead and using the data.</p>
+
+<p>To enable the ProofShield it is enough to set it via the <code class="prettyprint">oraclize_setProof</code> function like you see in the following code:</p>
+<pre class="highlight javascript"><code>
+    <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span> 
+
+</code></pre>
+
+<p>Once the ProofShield is enabled, the received proof will not be the raw Authenticity Proof, but the ProofShield proof instead: some functions are provided so that the ProofShield proof can be verified on-chain. In order to verify it, you need to call from within the <code class="prettyprint">__callback</code> method the function <code class="prettyprint">oraclize_proofShield_proofVerify__returnCode(queryId, result, proof)</code> and ensure that it returns 0.</p>
+
+<aside class="notice">
+The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+</aside>
+
+<p>A code example follows, note that the complete version of it is available <a href="https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol">here</a>:</p>
+<pre class="highlight javascript"><code><span class="nx">contract</span> <span class="nx">proofShieldExample</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+    <span class="nx">event</span> <span class="nx">newAuthenticatedResult</span><span class="p">(</span><span class="nx">string</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">proofShieldExample</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span>
+        <span class="nx">sendQuery</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">queryId</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_proofShield_proofVerify__returnCode</span><span class="p">(</span><span class="nx">queryId</span><span class="p">,</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">proof</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// the proof verification has failed, do we need to take any action here? (depends on the use case)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// the proof verification has passed</span>
+            <span class="c1">// now that we know that the random number was safely generated, let's use it..</span>
+
+            <span class="nx">newAuthenticatedResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">sendQuery</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">string</span> <span class="nx">memory</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">"json(https://www.bitstamp.net/api/v2/ticker/ethusd/).last"</span><span class="p">;</span>
+        <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="nx">query</span><span class="p">);</span>
+
+        <span class="nx">oraclize_proofShield_commitment</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="nx">keccak256</span><span class="p">(</span><span class="nx">sha256</span><span class="p">(</span><span class="nx">query</span><span class="p">),</span> <span class="nx">proofType_Android_v2</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre>
+
 <h3 id="more-examples">More Examples</h3>
 
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
