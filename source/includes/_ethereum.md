@@ -19,8 +19,8 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 contract ExampleContract is usingOraclize {
 
     string public EURGBP;
-	event updatedPrice(string price);
-	event newOraclizeQuery(string description);
+	event LogPriceUpdated(string price);
+	event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
         updatePrice();
@@ -29,14 +29,14 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) throw;
         EURGBP = result;
-		updatedPrice(result);
+		LogPriceUpdated(result);
     }
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         	oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
         }
     }
@@ -108,8 +108,8 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 contract ExampleContract is usingOraclize {
 
     string public EURGBP;
-	event updatedPrice(string price);
-	event newOraclizeQuery(string description);
+	event LogPriceUpdated(string price);
+	event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
         updatePrice();
@@ -118,15 +118,15 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) throw;
         EURGBP = result;
-		updatedPrice(result);
+		LogPriceUpdated(result);
 		updatePrice();
     }
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         	oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
         }
     }
@@ -146,8 +146,8 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
-	event updatedPrice(string price);
-    event newOraclizeQuery(string description);
+	event LogPriceUpdated(string price);
+    event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
         updatePrice();
@@ -157,16 +157,16 @@ contract ExampleContract is usingOraclize {
         if (!validIds[myid]) throw;
 		if (msg.sender != oraclize_cbAddress()) throw;
         EURGBP = result;
-		updatedPrice(result);
+		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
     }
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
 				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
 			validIds[queryId] = true;
@@ -191,8 +191,8 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
-	event updatedPrice(string price);
-	event newOraclizeQuery(string description);
+	event LogPriceUpdated(string price);
+	event LogNewOraclizeQuery(string description);
 
 	// This example requires funds to be send along with the contract deployment
 	// transaction
@@ -205,16 +205,16 @@ contract ExampleContract is usingOraclize {
         if (!validIds[myid]) throw;
 		if (msg.sender != oraclize_cbAddress()) throw;
         EURGBP = result;
-		updatedPrice(result);
+		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
     }
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
 				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
 			validIds[queryId] = true;
@@ -253,8 +253,8 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
-	event updatedPrice(string price);
-	event updatePrice(string description);
+	event LogPriceUpdated(string price);
+	event LogNewOraclizeQuery(string description);
 
 
 	// This example requires funds to be send along with the contract deployment
@@ -269,16 +269,16 @@ contract ExampleContract is usingOraclize {
         if (!validIds[myid]) throw;
 		if (msg.sender != oraclize_cbAddress()) throw;
         EURGBP = result;
-		updatedPrice(result);
+		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
     }
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
 				oraclize_query(60, "URL", "json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
 			validIds[queryId] = true;
@@ -322,7 +322,7 @@ Supported proofs can be verified. The following tools can be used: <a href="#dev
 Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
 The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  
 
-Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9.
+Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
 Only Oraclize will then be able to decrypt the request using its paired private key.
 
 To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,  
@@ -410,8 +410,8 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract Random is usingOraclize {
 
-    event newOraclizeQuery(string description);
-    event newRandomNumber(uint number);
+    event LogNewOraclizeQuery(string description);
+    event LogNewRandomNumber(uint number);
 
 
     function Random() {
@@ -421,14 +421,14 @@ contract Random is usingOraclize {
 
     function __callback(bytes32 myid, string result, bytes proof) {
         if (msg.sender != oraclize_cbAddress()) throw;
-        newRandomNumber(parseInt(result));
+        LogNewRandomNumber(parseInt(result));
     }
 
     function update() payable {
         if (oraclize.getPrice("computation") > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
             oraclize_query("computation",["QmR6qXv65K2EjKj5H9tFfzU6GDd9STYYvJMXFRRAskm3uF", "2"]);
         }
     }
@@ -455,8 +455,8 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 contract ComputationTest is usingOraclize {
 
 
-    event newOraclizeQuery(string description);
-    event newResult(string result);
+    event LogNewOraclizeQuery(string description);
+    event LogNewResult(string result);
 
     function ComputationTest() {
         update(); // first check at contract creation
@@ -464,12 +464,12 @@ contract ComputationTest is usingOraclize {
 
     function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) throw;
-        newResult(result);
+        LogNewResult(result);
 
     }
 
     function update() payable {
-        newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
         oraclize_query("nested", "[computation] ['QmaqMYPnmSHEgoWRMP3WSrUYsPWKjT85C81PgJa2SXBs8u', \
 'Example of decrypted string', '${[decrypt] BOYnQstP700X10I+WWNUVVNZEmal+rZ0GD1CgcW5P5wUSFKr2QoIwHLvkHfQR5e4Bfakq0CIviJnjkfKFD+ZJzzxcaFUQITDZJxsRLtKuxvAuh6IccUJ+jDF/znTH+8x8EE1Tt9SY7RvqtVao2vxm4CxIWq1vk4=}', 'Hello there!']");
     }
@@ -537,7 +537,7 @@ To enable the ProofShield it is enough to set it via the `oraclize_setProof` fun
 
 ```javascript
 
-    oraclize_setProof(proofType_Android_v2 | proofShield_Ledger); 
+    oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
 
 ````
 
@@ -553,7 +553,7 @@ A code example follows, note that the complete version of it is available [here]
 ```javascript
 contract proofShieldExample is usingOraclize {
 
-    event newAuthenticatedResult(string);
+    event LogNewAuthenticatedResult(string);
 
     function proofShieldExample() {
         oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
@@ -562,24 +562,24 @@ contract proofShieldExample is usingOraclize {
 
     function __callback(bytes32 queryId, string result, bytes proof) {
         if (msg.sender != oraclize_cbAddress()) throw;
-        
+
         if (oraclize_proofShield_proofVerify__returnCode(queryId, result, proof) != 0) {
             // the proof verification has failed, do we need to take any action here? (depends on the use case)
         } else {
             // the proof verification has passed
             // now that we know that the random number was safely generated, let's use it..
-            
-            newAuthenticatedResult(result);
+
+            LogNewAuthenticatedResult(result);
         }
     }
 
     function sendQuery() payable {
         string memory query = "json(https://www.bitstamp.net/api/v2/ticker/ethusd/).last";
         bytes32 queryId = oraclize_query("URL", query);
-        
+
         oraclize_proofShield_commitment[queryId] = keccak256(sha256(query), proofType_Android_v2);
     }
-    
+
 }
 ```
 
