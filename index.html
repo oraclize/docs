@@ -457,8 +457,8 @@ To better profit from this section of the documentation, previous knowledge of S
 <span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -467,14 +467,14 @@ To better profit from this section of the documentation, previous knowledge of S
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -548,8 +548,8 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 <span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -558,15 +558,15 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -586,8 +586,8 @@ This can be useful for implementing periodic updates of some on-chain reference 
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
@@ -597,16 +597,16 @@ This can be useful for implementing periodic updates of some on-chain reference 
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
@@ -630,8 +630,8 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="c1">// This example requires funds to be send along with the contract deployment</span>
     <span class="c1">// transaction</span>
@@ -644,16 +644,16 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
@@ -687,8 +687,8 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 
     <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
     <span class="nx">mapping</span><span class="p">(</span><span class="nx">bytes32</span><span class="o">=&gt;</span><span class="nx">bool</span><span class="p">)</span> <span class="nx">validIds</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">updatePrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
 
     <span class="c1">// This example requires funds to be send along with the contract deployment</span>
@@ -703,16 +703,16 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">])</span> <span class="k">throw</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
         <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">updatedPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="k">delete</span> <span class="nx">validIds</span><span class="p">[</span><span class="nx">myid</span><span class="p">];</span>
         <span class="nx">updatePrice</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
@@ -760,7 +760,7 @@ The following builds on our previous example:</p>
 <p>Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
 The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  </p>
 
-<p>Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize&rsquo;s public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9.
+<p>Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize&rsquo;s public key: <code class="prettyprint">044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9</code>
 Only Oraclize will then be able to decrypt the request using its paired private key.</p>
 
 <p>To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,<br>
@@ -842,8 +842,8 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
 <span class="nx">contract</span> <span class="nx">Random</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newRandomNumber</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">number</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewRandomNumber</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">number</span><span class="p">);</span>
 
 
     <span class="kd">function</span> <span class="nx">Random</span><span class="p">()</span> <span class="p">{</span>
@@ -853,14 +853,14 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="nx">newRandomNumber</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+        <span class="nx">LogNewRandomNumber</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,[</span><span class="s2">"QmR6qXv65K2EjKj5H9tFfzU6GDd9STYYvJMXFRRAskm3uF"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">]);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -885,8 +885,8 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 <span class="nx">contract</span> <span class="nx">ComputationTest</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
 
-    <span class="nx">event</span> <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">newResult</span><span class="p">(</span><span class="nx">string</span> <span class="nx">result</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewResult</span><span class="p">(</span><span class="nx">string</span> <span class="nx">result</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ComputationTest</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">update</span><span class="p">();</span> <span class="c1">// first check at contract creation</span>
@@ -894,12 +894,12 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="k">throw</span><span class="p">;</span>
-        <span class="nx">newResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">LogNewResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
 
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"nested"</span><span class="p">,</span> <span class="s2">"[computation] ['QmaqMYPnmSHEgoWRMP3WSrUYsPWKjT85C81PgJa2SXBs8u', \
 'Example of decrypted string', '${[decrypt] BOYnQstP700X10I+WWNUVVNZEmal+rZ0GD1CgcW5P5wUSFKr2QoIwHLvkHfQR5e4Bfakq0CIviJnjkfKFD+ZJzzxcaFUQITDZJxsRLtKuxvAuh6IccUJ+jDF/znTH+8x8EE1Tt9SY7RvqtVao2vxm4CxIWq1vk4=}', 'Hello there!']"</span><span class="p">);</span>
     <span class="p">}</span>
@@ -970,7 +970,7 @@ The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet).
 
 <p>To enable the ProofShield it is enough to set it via the <code class="prettyprint">oraclize_setProof</code> function like you see in the following code:</p>
 <pre class="highlight javascript"><code>
-    <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span> 
+    <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span>
 
 </code></pre>
 
@@ -983,7 +983,7 @@ The ProofShield is currently available on all Ethereum public testnets only (Rin
 <p>A code example follows, note that the complete version of it is available <a href="https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol">here</a>:</p>
 <pre class="highlight javascript"><code><span class="nx">contract</span> <span class="nx">proofShieldExample</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="nx">event</span> <span class="nx">newAuthenticatedResult</span><span class="p">(</span><span class="nx">string</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">LogNewAuthenticatedResult</span><span class="p">(</span><span class="nx">string</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">proofShieldExample</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span>
@@ -999,7 +999,7 @@ The ProofShield is currently available on all Ethereum public testnets only (Rin
             <span class="c1">// the proof verification has passed</span>
             <span class="c1">// now that we know that the random number was safely generated, let's use it..</span>
 
-            <span class="nx">newAuthenticatedResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+            <span class="nx">LogNewAuthenticatedResult</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 
