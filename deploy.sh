@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -o errexit #abort if any command fails
 me=$(basename "$0")
+echo $(date +'%d/%m/%Y') > source/lastupdate.txt
 
 help_message="\
 Usage: $me [-c FILE] [<options>]
