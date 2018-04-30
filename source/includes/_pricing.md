@@ -6,7 +6,7 @@ The use of Oraclize requires the payment of a small fee, which depends from the 
 To facilitate testing, the first call to Oraclize from any smart contract address, if used with standard setting, is free of charge. This includes the gas costs of the callback transaction.
 
 ### Testnets Policy
-To keep compatibility with the main-net deployed, smart contracts testing Oraclize on any of the testnets are expected to pay the same fee they would on the main-net. Since the payment expected is in testnet Ether, which holds no value, the calls to Oraclize are the facto free.
+To keep compatibility with the main-net deployed, smart contracts testing Oraclize on any of the testnets are expected to pay the same fee they would on the main-net. Since the payment expected is in testnet Ether, which holds no value, the calls to Oraclize are de facto free.
 Oraclize reserve the rights to discontinue the service for abuse or excessive use.
 
 ### Call Fee

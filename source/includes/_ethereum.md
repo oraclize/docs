@@ -19,25 +19,26 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 contract ExampleContract is usingOraclize {
 
     string public EURGBP;
-	event LogPriceUpdated(string price);
-	event LogNewOraclizeQuery(string description);
+    event LogConstructorInitiated(string nextStep);
+    event LogPriceUpdated(string price);
+    event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
-        updatePrice();
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result) {
-        if (msg.sender != oraclize_cbAddress()) throw;
+        if (msg.sender != oraclize_cbAddress()) revert();
         EURGBP = result;
-		LogPriceUpdated(result);
+        LogPriceUpdated(result);
     }
 
- 	function updatePrice() payable {
+    function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-        	oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
         }
     }
 }
@@ -108,15 +109,16 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 contract ExampleContract is usingOraclize {
 
     string public EURGBP;
+	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
 	event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
-        updatePrice();
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result) {
-        if (msg.sender != oraclize_cbAddress()) throw;
+        if (msg.sender != oraclize_cbAddress()) revert();
         EURGBP = result;
 		LogPriceUpdated(result);
 		updatePrice();
@@ -137,6 +139,10 @@ This can be useful for implementing periodic updates of some on-chain reference 
 
 This modified version of the previous example will update the EUR/GBP exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.
 
+<aside class="notice">
+Use recursive queries cautiously. In general it is recommended to send queries purposefully.
+</aside>
+
 ### The Query ID
 ```javascript
 pragma solidity ^0.4.11;
@@ -146,16 +152,17 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
+	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
     event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
-        updatePrice();
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result) {
-        if (!validIds[myid]) throw;
-		if (msg.sender != oraclize_cbAddress()) throw;
+        if (!validIds[myid]) revert();
+		if (msg.sender != oraclize_cbAddress()) revert();
         EURGBP = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
@@ -191,19 +198,20 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
+	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
 	event LogNewOraclizeQuery(string description);
 
 	// This example requires funds to be send along with the contract deployment
 	// transaction
     function ExampleContract() payable {
-        oraclize_setCustomGasPrice(4000000000 wei);
-		updatePrice();
+        oraclize_setCustomGasPrice(4000000000);
+		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result) {
-        if (!validIds[myid]) throw;
-		if (msg.sender != oraclize_cbAddress()) throw;
+        if (!validIds[myid]) revert();
+		if (msg.sender != oraclize_cbAddress()) revert();
         EURGBP = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
@@ -242,6 +250,10 @@ The gas price of the callback transaction can be set by calling the `oraclize_se
 
 Smart contract developers should estimate correctly and minimize the cost of their `__callback` method, as any unspent gas will be returned to Oraclize and no refund is available.
 
+<aside class="notice">
+When calling `oraclize_setCustomGasPrice` the parameter type is uint and represents the amount of wei. However, there is no need to put `wei` keyword in the parameter.
+</aside>
+
 
 ### Authenticity Proofs
 
@@ -253,6 +265,7 @@ contract ExampleContract is usingOraclize {
 
     string public EURGBP;
 	mapping(bytes32=>bool) validIds;
+	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
 	event LogNewOraclizeQuery(string description);
 
@@ -260,14 +273,14 @@ contract ExampleContract is usingOraclize {
 	// This example requires funds to be send along with the contract deployment
 	// transaction
 	function ExampleContract() payable {
-        oraclize_setCustomGasPrice(4000000000 wei);
+        oraclize_setCustomGasPrice(4000000000);
 		oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-		updatePrice();
+		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
-        if (!validIds[myid]) throw;
-		if (msg.sender != oraclize_cbAddress()) throw;
+        if (!validIds[myid]) revert();
+		if (msg.sender != oraclize_cbAddress()) revert();
         EURGBP = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
@@ -314,6 +327,92 @@ The following builds on our previous example:
 ### Verifiability
 
 Supported proofs can be verified. The following tools can be used: <a href="#development-tools-network-monitor">Verification Tools</a>
+
+
+## Best Practices
+
+### Precalculating the Query Price
+
+```javascript
+pragma solidity ^0.4.0;
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+
+contract KrakenPriceTicker is usingOraclize {
+
+    string public ETHXBT;
+    uint constant CUSTOM_GASLIMIT = 150000;
+
+    event LogConstructorInitiated(string nextStep);
+    event newOraclizeQuery(string description);
+    event newKrakenPriceTicker(string price);
+
+
+    function KrakenPriceTicker() {
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
+    }
+
+    function __callback(bytes32 myid, string result, bytes proof) {
+        if (msg.sender != oraclize_cbAddress()) revert();
+        ETHXBT = result;
+        newKrakenPriceTicker(ETHXBT);
+    }
+
+    function update() payable {
+        if (oraclize_getPrice("URL", CUSTOM_GASLIMIT) > this.balance) {
+            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+            newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0", CUSTOM_GASLIMIT);
+        }
+    }
+}
+
+```
+
+You have to consider that your account will be debited for most of your Oraclize calls. If your contract is not covered with enough ETH, the query will fail. Depending on your contract logic you may want to check the price for your next query before it gets send. You can do this by calling `oraclize_getPrice` and check if it is higher than your current contract balance. If that's the case the `oraclize_query` will fail and you may want to handle it gracefully. You can also add a gaslimit parameter to the `oraclize_getPrice` function: `oraclize_getPrice(string datasource, uint gaslimit)`. Make sure that the custom gaslimit for `oraclize_getPrice` matches with the one you will use for `oraclize_query`.
+
+
+### Mapping Query Ids
+
+```javascript
+pragma solidity ^0.4.11;
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+
+contract ExampleContract is usingOraclize {
+
+    string public EURGBP;
+    event LogConstructorInitiated(string nextStep);
+    event LogPriceUpdated(string price);
+    event LogNewOraclizeQuery(string description);
+
+    mapping (bytes32 => bool) public pendingQueries;
+
+    function ExampleContract() payable {
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+    }
+
+    function __callback(bytes32 myid, string result) {
+        if (msg.sender != oraclize_cbAddress()) revert();
+        require (pendingQueries[myid] == true);
+        EURGBP = result;
+        LogPriceUpdated(result);
+        delete pendingQueries[myid]; // This effectively marks the query id as processed.
+    }
+
+    function updatePrice() payable {
+        if (oraclize_getPrice("URL") > this.balance) {
+            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        } else {
+            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            bytes32 queryId = oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+            pendingQueries[queryId] = true;
+        }
+    }
+}
+```
+
+It might occur that a callback function of a sent query gets called more than once. Therefore it might be helpful to initiate a mapping that manages the query ids and their states. When the callback function of a query gets called, the require statement checks if the current query id needs to be processed. After one successful iteration the id gets deleted to prevent further callbacks for that particular id.
 
 
 ## Advanced Topics
@@ -410,17 +509,18 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract Random is usingOraclize {
 
+	event LogConstructorInitiated(string nextStep);
     event LogNewOraclizeQuery(string description);
     event LogNewRandomNumber(uint number);
 
 
-    function Random() {
+    function Random() payable {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        update();
+        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
-        if (msg.sender != oraclize_cbAddress()) throw;
+        if (msg.sender != oraclize_cbAddress()) revert();
         LogNewRandomNumber(parseInt(result));
     }
 
@@ -436,7 +536,7 @@ contract Random is usingOraclize {
 }
 
 ```
-Arguments can be passed to the package by adding parameters to the query array. They will be accesssible from within the Docker instances as environmental parameters.
+Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
 ```shell
 FROM ubuntu:14.04
@@ -454,16 +554,16 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ComputationTest is usingOraclize {
 
-
+	event LogConstructorInitiated(string nextStep);
     event LogNewOraclizeQuery(string description);
     event LogNewResult(string result);
 
-    function ComputationTest() {
-        update(); // first check at contract creation
+    function ComputationTest() payable {
+        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 myid, string result) {
-        if (msg.sender != oraclize_cbAddress()) throw;
+        if (msg.sender != oraclize_cbAddress()) revert();
         LogNewResult(result);
 
     }
@@ -494,7 +594,7 @@ For advance usage of Random Data Source, it is recommended to read the following
 #### Two Party Interactions
 ```javascript
     function oraclize_newRandomDSQuery(uint _delay, uint _nbytes, uint _customGasLimit) internal returns (bytes32){
-        if ((_nbytes == 0)||(_nbytes > 32)) throw;
+        if ((_nbytes == 0)||(_nbytes > 32)) revert();
         bytes memory nbytes = new bytes(1);
         nbytes[0] = byte(_nbytes);
         bytes memory unonce = new bytes(32);
@@ -553,15 +653,16 @@ A code example follows, note that the complete version of it is available [here]
 ```javascript
 contract proofShieldExample is usingOraclize {
 
+	event LogConstructorInitiated(string nextStep);
     event LogNewAuthenticatedResult(string);
 
-    function proofShieldExample() {
+    function proofShieldExample() payable {
         oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
-        sendQuery();
+        LogConstructorInitiated("Constructor was initiated. Call 'sendQuery()' to send the Oraclize Query.");
     }
 
     function __callback(bytes32 queryId, string result, bytes proof) {
-        if (msg.sender != oraclize_cbAddress()) throw;
+        if (msg.sender != oraclize_cbAddress()) revert();
 
         if (oraclize_proofShield_proofVerify__returnCode(queryId, result, proof) != 0) {
             // the proof verification has failed, do we need to take any action here? (depends on the use case)

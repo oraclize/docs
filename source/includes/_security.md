@@ -20,7 +20,7 @@ You can access more information about the Android Proof by reading the white pap
 
 ### Ledger Proof
 
-<a href="https://www.ledger.co">Ledger</a> is a French company, leader in the production of hardware-enforced cryptocurrency wallets. Their main products are the Ledger Nano S and the Ledger Blue. Both devices implement a common platform comprising a STMicroelectronics secure element, a controller and an operative system called BOLOS.
+<a href="https://www.ledger.co">Ledger</a> is a French company, leader in the production of hardware-enforced cryptocurrency wallets. Their main products are the Ledger Nano S and the Ledger Blue. Both devices implement a common platform comprising a STMicroelectronics secure element, a controller and an operating system called BOLOS.
 The BOLOS SDK enables developer to build applications which can be installed on the secure hardware along with the cryptocurrency wallet, which are BOLOS application themselves.
 BOLOS exposes a set of kernel-level API which can complete useful operations such as cryptographic ones or attestation. Attestation is in fact one of the most interesting aspect of the platform: any application can, by calling the appropriate API, ask the kernel to measure its binary and produce a signed hash. The signing is performed by a special attesting key, which is controlled by the kernel and it is out of reach of the application developers. The attesting key has full chain of trust which has the root in a Ledger-controlled master key, residing on an HSM controlled by Ledger.
 
