@@ -54,6 +54,10 @@ The code in the example is working out of the box if Remix is used to compile an
 
 To ease development, Oraclize doesn't charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn't have enough funds in his balance, the request will fail and Oraclize won't return any data.
 
+<aside class="notice">
+Only the first query is free. Ensure that the contract has a sufficient ETH balance to pay the following queries. The contract gets automatically charged on the `oraclize_query` call but fails if the balance is insufficient.
+</aside>
+
 
 ### Simple Query
 ```javascript
@@ -84,7 +88,6 @@ A request for data is called **query**. The `oraclize_query` is a function, inhe
  * or an `IPFS` multihash
 
 The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.  
-
 
 
 ### Schedule a Query in the Future
@@ -495,6 +498,10 @@ In order to prevent other users from using your exact encrypted query ("replay a
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
 
+<aside class="notice">
+The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@oraclize.it.
+</aside>
+
 To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:
 
 * An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.
@@ -504,48 +511,145 @@ To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme
 
 #### Passing Arguments to the Package
 ```javascript
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.18;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
-contract Random is usingOraclize {
+contract Calculation is usingOraclize {
 
-	event LogConstructorInitiated(string nextStep);
+    string NUMBER_1 = "33";
+    string NUMBER_2 = "9";
+    string MULTIPLIER = "5";
+    string DIVISOR = "2";
+
     event LogNewOraclizeQuery(string description);
-    event LogNewRandomNumber(uint number);
+    event calculationResult(uint _result);
 
-
-    function Random() payable {
-        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
+    // General Calculation: ((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR
+    
+    function Calculation() {
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS); 
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
-        if (msg.sender != oraclize_cbAddress()) revert();
-        LogNewRandomNumber(parseInt(result));
+        require (msg.sender == oraclize_cbAddress());
+        calculationResult(parseInt(result));
     }
-
-    function update() payable {
+    
+    function testCalculation() payable {
+        sendCalculationQuery(NUMBER_1, NUMBER_2, MULTIPLIER, DIVISOR); // = 105
+    }
+    
+    function sendCalculationQuery(string _NUMBER1, string _NUMBER2, string _MULTIPLIER, string _DIVISOR) payable {
         if (oraclize.getPrice("computation") > this.balance) {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            oraclize_query("computation",["QmR6qXv65K2EjKj5H9tFfzU6GDd9STYYvJMXFRRAskm3uF", "2"]);
+            oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", 
+            _NUMBER1, 
+            _NUMBER2, 
+            _MULTIPLIER, 
+            _DIVISOR]);
         }
     }
-
 }
-
 ```
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
+Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+`oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", _firstOperand, _secondOperand, _thirdOperand, _fourthOperand]);`
+
 ```shell
-FROM ubuntu:14.04
-MAINTAINER Oraclize "marco@oraclize.it"
+# Content of the Dockerfile
 
-RUN apt-get update && apt-get -y install python-minimal
+FROM frolvlad/alpine-python3
+MAINTAINER Oraclize "info@oraclize.it"
 
-CMD /usr/bin/python -c "import os; print os.urandom(int(os.environ['ARG0'], 10))"
+COPY calculation.py /
+
+RUN pip3 install requests
+CMD python ./calculation.py
 ```
+
+```python
+# Content of the Python File
+
+import os
+import random
+
+result = ((int(os.environ['ARG0']) + int(os.environ['ARG1'])) * int(os.environ['ARG2'])) / int(os.environ['ARG3'])
+
+print(result)
+```
+
+#### Passing more than 5 Arguments
+
+```javascript
+pragma solidity ^0.4.18;
+import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
+
+contract Calculation is usingOraclize {
+ 
+  event calculationResult(uint _result);
+  event LogNewOraclizeQuery(string description);
+ 
+  function Calculation() payable {
+    oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
+
+    testCalculation("QmeSVrmYimykzzHq9gChwafjQj7DQTyqvkf6Sk92eY3pN3",
+    "33", "9", "5", "2", "12", "2");
+  }
+
+  // (((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR) + NUMBER_3 - NUMBER_4 = 115
+
+  function __callback(bytes32 myid, string result, bytes proof) {
+    require (msg.sender == oraclize_cbAddress());
+    calculationResult(parseInt(result));
+  }
+ 
+  function testCalculation(
+    string _hash,
+    string _number1,
+    string _number2,
+    string _multiplier,
+    string _divisor,
+    string _number3,
+    string _number4) public payable {
+       
+    string[] memory numbers = new string[](7);
+    numbers[0] = _hash;
+    numbers[1] = _number1;
+    numbers[2] = _number2;
+    numbers[3] = _multiplier;
+    numbers[4] = _divisor;
+    numbers[5] = _number3;
+    numbers[6] = _number4;
+       
+    sendCalculationQuery(numbers);
+  }
+ 
+  function sendCalculationQuery(string[] array) internal {
+    if (oraclize.getPrice("computation") > this.balance) {
+        LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+    } else {
+        LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        oraclize_query("computation", array);
+    }
+  }
+}
+```
+
+In case you need to pass more arguments, you will need to send a manually set dynamic string/bytes array, for example:
+
+`string[] memory myArgs = new string[](6);`
+
+`myArgs[0] = "MYIPFSHASH";`
+
+`...`
+
+`myArgs[5] = "LAST ARG";`
+
+The query would then look like this: `oraclize_query("computation", myArgs)`
+
 
 #### Passing Encrypted Arguments
 ```javascript
@@ -590,6 +694,10 @@ In the contract usingOraclize, which smart contracts should use to interface wit
 	* `matchBytes32Prefix`: verify that the result returned is the sha256 of the session key signature over the request data payload
 
 For advance usage of Random Data Source, it is recommended to read the following section.
+
+<aside class="notice">
+The random datasource is currently available on the Ethereum mainnet and on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+</aside>
 
 #### Two Party Interactions
 ```javascript

@@ -1,6 +1,6 @@
 # Background
 
-Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.
+Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests every day on Ethereum, Bitcoin and Rootstock.
 
 In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related information for peer-to-peer insurance; random number generation for gambling.
 

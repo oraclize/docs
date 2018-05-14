@@ -92,9 +92,23 @@ CMD python -c "import numpy; print int(numpy.linalg.det(numpy.array([[1,2,3],[7,
 
 ```shell
 # How to create the zip archive and upload it on IPFS
-user@locahost:~$ zip -r archive.zip
+
+user@locahost:~$ ipfs daemon
+# In a new terminal:
+user@locahost:~$ zip -r archive.zip *
 user@locahost:~$ ipfs add archive.zip
 added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
+
+# Alternative:
+
+user@locahost:~$ ipfs daemon
+# In a new terminal:
+user@locahost:~$ zip -r archive.zip *
+user@locahost:~$ curl -F "data=@./archive.zip" https://ipfs.infura.io:5001/api/v0/add
+{"Name":"archive.zip","Hash":"QmPz9JxrP8A8pZmtgHZtPwJuTKiaHqU92UzeUDzKDvEz9Q","Size":"548"}
+
+# Persistance of the file is not garanteed. To make sure it stays online you 
+# should run your IPFS node / IPFS daemon and keep the archive pinned (pin archive.zip) on your machine.
 ```
 The `computation` datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.
 
@@ -106,6 +120,10 @@ The query expects as first argument the IPFS multihash of that archive, while th
 
 <aside class="notice">
 Oraclize might use the email specified in the MAINTAINER field of the Dockerfile, as contact information in case any issue arises.
+</aside>
+
+<aside class="notice">
+The Dockerfile must be in the root of the archive.zip, not in a subfolder.
 </aside>
 
 ## random

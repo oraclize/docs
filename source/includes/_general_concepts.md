@@ -40,7 +40,7 @@ The intermediate result of a query may need to be parsed: for example, to extrac
 ## Parsing Helpers
 Oraclize offers XML, JSON, XHTML and a binary parser helpers. Examples:
 
-* **JSON Parsing**: To extract the last-price field from the Kraken API, the first parameter of the query `json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`
+* **JSON Parsing**: To extract the last-price field from the Kraken API, the fist parameter of the query `json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`
 * **XML Parser**:
 * **HTML Parser**: helper is useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of `xpath(..)`as shown in the example: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
 * **Binary Helper**: It can be useful to extract parts of a binary intermediate result by using the `slice(offset,length)` operator.

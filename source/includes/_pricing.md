@@ -1,5 +1,8 @@
 # Pricing
-The use of Oraclize requires the payment of a small fee, which depends from the data source type used and by the authenticity proof requested. The pricing listed below is valid for both Ethereum and Rootstock.
+The use of Oraclize requires the payment of a small fee, which depends from the data source type used and by the authenticity proof requested. The pricing listed below is valid for both Ethereum and Rootstock. There is a baseprice for the query itself. When the `oraclize_query` gets called the needed ETH has to be transfered to Oraclize to pay for sending the callback transaction back to the contract. 
+
+Since this cost depends on the code and preferences (gasprice), it can vary a lot depending on the two of them. To prevent unneccessary costs you should estimate and set the gasprice and the gas as precise as possible, so that you get reasonable confirmation times and so that your callback transaction works as expected (without running out of gas).
+
 
 ### First Free Request
 
@@ -76,5 +79,14 @@ The `oraclize_query` automatically recovers the fee at execution time. The fee c
   </tr>
 </table>
 
-### Offchain Payments
-Oraclize will soon start testing offchain payments, in different currencies, for both the Oraclize fee and the gas callback transactions costs. Interested parties should get in touch at info@oraclize.it
+
+
+### Onchain vs. Offchain Payments
+When paying onchain there is no reliable backward-compatible way for Oraclize to give back the gas "change". This is due to how Ethereum works: it is not possible to determine the exact amount of gas that will be used before the transaction gets confirmed, because it depends on the current state. Sending back the unspent gas afterwards would potentially create side effects.
+
+
+Oraclize is now supporting offchain payments too. When using that option you will get back the unused gas as the charge happens on a prepaid account outside of the blockchain. Interested parties should get in touch at info@oraclize.it
+
+
+### Nested Queries
+Currently nested queries are being priced as a single query. In the near future the pricing for the nested queries will be a sum of the datasources you decide to use. At the moment the pricing is reduced to one single datasource, however your smart contract should take into account that the full pricing will apply at some point.
