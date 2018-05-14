@@ -1284,9 +1284,13 @@ To make the proof verification tool work correctly it is necessary that you put 
 <h2 id='unit-testing'>Unit Testing</h2>
 <p>An important step in smart contract development, before moving to an official testnet or production use, is unit testing. The Ethereum community has developed multiple frameworks for unit testing, such as Truffle and Embark, which can test contracts on a private instance of Ethereum. A common combination is to run Truffle tests in an ethereumjs-testrpc environments, which is a simulated Ethereum blockchain instance running in memory.
 In order for Oraclize to interact with the smart contract deployed by Truffle or Embark in the test-rpc blockchain instance, a tool called Ethereum-Bridge need to be installed. This is a nodejs module which deploys in the instance the Oraclize smart contracts infrastructure which it is then monitored to see the requests. The tool translates the requests to HTTP API calls to the Oraclize Engine and then return the result by broadcasting the callback transaction. The Ethereum-Bridge and instructions on its deployment can be found <a href="https://github.com/oraclize/ethereum-bridge">here</a>.</p>
-<h2 id='eth-pm'>Eth-pm</h2>
+<h2 id='ethpm'>EthPM</h2>
 <p>The <a href="https://www.ethpm.com/">Ethereum Package Management</a> is a project which aims to standardize, build and maintain a common registry of smart contracts-based packages, to help smart contract developers.
-Oraclize has published and maintains the Ethereum oraclizeAPI under the &#39;oraclize&#39; package. To install it: `truffle install oraclize&#39;.</p>
+Oraclize has published and maintains the Ethereum oraclizeAPI under the &#39;oraclize-api&#39; package. To install it: `truffle install oraclize-api&#39;.</p>
+
+<aside class="notice">
+Please note that the correct package name is named `oraclize-api` and not `oraclize`.
+</aside>
 <h2 id='future'>Future</h2><h3 id='oraclize-lib'>Oraclize-lib</h3>
 <p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an experimental nodejs library that be used to build non-blockchain applications leveraging Oraclize. It can be considered a simple abstraction layer to the Oraclize HTTP API.</p>
 <h3 id='stargate'>Stargate</h3>
