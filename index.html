@@ -176,7 +176,7 @@
 </ul>
 
           <h1 id='background'>Background</h1>
-<p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests for day every day on Ethereum, Bitcoin and Rootstock.</p>
+<p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests every day on Ethereum, Bitcoin and Rootstock.</p>
 
 <p>In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related information for peer-to-peer insurance; random number generation for gambling.</p>
 
@@ -345,9 +345,23 @@ MAINTAINER Oraclize <span class="s2">"info@oraclize.it"</span>
 RUN apt-get update <span class="o">&amp;&amp;</span> apt-get install -y python-numpy
 CMD python -c <span class="s2">"import numpy; print int(numpy.linalg.det(numpy.array([[1,2,3],[7,2,3],[7,6,3]])))"</span>
 </code></pre><pre class="highlight shell tab-shell"><code><span class="c"># How to create the zip archive and upload it on IPFS</span>
-<span class="gp">user@locahost:~$ </span>zip -r archive.zip
+
+<span class="gp">user@locahost:~$ </span>ipfs daemon
+<span class="c"># In a new terminal:</span>
+<span class="gp">user@locahost:~$ </span>zip -r archive.zip <span class="k">*</span>
 <span class="gp">user@locahost:~$ </span>ipfs add archive.zip
 added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
+
+<span class="c"># Alternative:</span>
+
+<span class="gp">user@locahost:~$ </span>ipfs daemon
+<span class="c"># In a new terminal:</span>
+<span class="gp">user@locahost:~$ </span>zip -r archive.zip <span class="k">*</span>
+<span class="gp">user@locahost:~$ </span>curl -F <span class="s2">"data=@./archive.zip"</span> https://ipfs.infura.io:5001/api/v0/add
+<span class="o">{</span><span class="s2">"Name"</span>:<span class="s2">"archive.zip"</span>,<span class="s2">"Hash"</span>:<span class="s2">"QmPz9JxrP8A8pZmtgHZtPwJuTKiaHqU92UzeUDzKDvEz9Q"</span>,<span class="s2">"Size"</span>:<span class="s2">"548"</span><span class="o">}</span>
+
+<span class="c"># Persistance of the file is not garanteed. To make sure it stays online you </span>
+<span class="c"># should run your IPFS node / IPFS daemon and keep the archive pinned (pin archive.zip) on your machine.</span>
 </code></pre>
 <p>The <code>computation</code> datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.</p>
 
@@ -358,6 +372,10 @@ The query expects as first argument the IPFS multihash of that archive, while th
 
 <aside class="notice">
 Oraclize might use the email specified in the MAINTAINER field of the Dockerfile, as contact information in case any issue arises.
+</aside>
+
+<aside class="notice">
+The Dockerfile must be in the root of the archive.zip, not in a subfolder.
 </aside>
 <h2 id='random'>random</h2>
 <p>The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Environment (TEE) and protects the user from a number of attack vectors.</p>
@@ -446,6 +464,10 @@ This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The up
 <p>The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the oraclizeAPI.sol file since direct import from Github may not be supported.</p>
 
 <p>To ease development, Oraclize doesn&#39;t charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn&#39;t have enough funds in his balance, the request will fail and Oraclize won&#39;t return any data.</p>
+
+<aside class="notice">
+Only the first query is free. Ensure that the contract has a sufficient ETH balance to pay the following queries. The contract gets automatically charged on the `oraclize_query` call but fails if the balance is insufficient.
+</aside>
 <h3 id='simple-query'>Simple Query</h3><pre class="highlight javascript tab-javascript"><code><span class="c1">// This code example will ask Oraclize to send as soon as possible</span>
 <span class="c1">// a transaction with the primary result (as a string) of the given</span>
 <span class="c1">// formula ("random number between 0 and 100") fetched from the</span>
@@ -837,52 +859,144 @@ In order to prevent other users from using your exact encrypted query ("replay a
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
 
+<aside class="notice">
+The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@oraclize.it.
+</aside>
+
 <p>To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:</p>
 
 <ul>
 <li>An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.</li>
 <li>The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be &#39;000000000000&#39; (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.</li>
 </ul>
-<h3 id='computation-data-source'>Computation Data Source</h3><h4 id='passing-arguments-to-the-package'>Passing Arguments to the Package</h4><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<h3 id='computation-data-source'>Computation Data Source</h3><h4 id='passing-arguments-to-the-package'>Passing Arguments to the Package</h4><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">18</span><span class="p">;</span>
 <span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<span class="nx">contract</span> <span class="nx">Random</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+<span class="nx">contract</span> <span class="nx">Calculation</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="nx">event</span> <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">nextStep</span><span class="p">);</span>
+    <span class="nx">string</span> <span class="nx">NUMBER_1</span> <span class="o">=</span> <span class="s2">"33"</span><span class="p">;</span>
+    <span class="nx">string</span> <span class="nx">NUMBER_2</span> <span class="o">=</span> <span class="s2">"9"</span><span class="p">;</span>
+    <span class="nx">string</span> <span class="nx">MULTIPLIER</span> <span class="o">=</span> <span class="s2">"5"</span><span class="p">;</span>
+    <span class="nx">string</span> <span class="nx">DIVISOR</span> <span class="o">=</span> <span class="s2">"2"</span><span class="p">;</span>
+
     <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">LogNewRandomNumber</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">number</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">calculationResult</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">_result</span><span class="p">);</span>
 
+    <span class="c1">// General Calculation: ((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR</span>
 
-    <span class="kd">function</span> <span class="nx">Random</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'update()' to send the Oraclize Query."</span><span class="p">);</span>
+    <span class="kd">function</span> <span class="nx">Calculation</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span> 
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="nx">revert</span><span class="p">();</span>
-        <span class="nx">LogNewRandomNumber</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+        <span class="nx">require</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">==</span> <span class="nx">oraclize_cbAddress</span><span class="p">());</span>
+        <span class="nx">calculationResult</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
     <span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">testCalculation</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">NUMBER_1</span><span class="p">,</span> <span class="nx">NUMBER_2</span><span class="p">,</span> <span class="nx">MULTIPLIER</span><span class="p">,</span> <span class="nx">DIVISOR</span><span class="p">);</span> <span class="c1">// = 105</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">_NUMBER1</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_NUMBER2</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_MULTIPLIER</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_DIVISOR</span><span class="p">)</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,[</span><span class="s2">"QmR6qXv65K2EjKj5H9tFfzU6GDd9STYYvJMXFRRAskm3uF"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">]);</span>
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,[</span><span class="s2">"QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR"</span><span class="p">,</span> 
+            <span class="nx">_NUMBER1</span><span class="p">,</span> 
+            <span class="nx">_NUMBER2</span><span class="p">,</span> 
+            <span class="nx">_MULTIPLIER</span><span class="p">,</span> 
+            <span class="nx">_DIVISOR</span><span class="p">]);</span>
         <span class="p">}</span>
     <span class="p">}</span>
-
 <span class="p">}</span>
-
 </code></pre>
 <p>Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.</p>
-<pre class="highlight shell tab-shell"><code>FROM ubuntu:14.04
-MAINTAINER Oraclize <span class="s2">"marco@oraclize.it"</span>
 
-RUN apt-get update <span class="o">&amp;&amp;</span> apt-get -y install python-minimal
+<p>Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+<code>oraclize_query(&quot;computation&quot;,[&quot;QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR&quot;, _firstOperand, _secondOperand, _thirdOperand, _fourthOperand]);</code></p>
+<pre class="highlight shell tab-shell"><code><span class="c"># Content of the Dockerfile</span>
 
-CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.environ['ARG0'], 10))"</span>
-</code></pre><h4 id='passing-encrypted-arguments'>Passing Encrypted Arguments</h4><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+FROM frolvlad/alpine-python3
+MAINTAINER Oraclize <span class="s2">"info@oraclize.it"</span>
+
+COPY calculation.py /
+
+RUN pip3 install requests
+CMD python ./calculation.py
+</code></pre><pre class="highlight python tab-python"><code><span class="c"># Content of the Python File</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'ARG0'</span><span class="p">])</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'ARG1'</span><span class="p">]))</span> <span class="o">*</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'ARG2'</span><span class="p">]))</span> <span class="o">/</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">'ARG3'</span><span class="p">])</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</code></pre><h4 id='passing-more-than-5-arguments'>Passing more than 5 Arguments</h4><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">18</span><span class="p">;</span>
+<span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
+
+<span class="nx">contract</span> <span class="nx">Calculation</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+
+  <span class="nx">event</span> <span class="nx">calculationResult</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">_result</span><span class="p">);</span>
+  <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+
+  <span class="kd">function</span> <span class="nx">Calculation</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
+    <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
+
+    <span class="nx">testCalculation</span><span class="p">(</span><span class="s2">"QmeSVrmYimykzzHq9gChwafjQj7DQTyqvkf6Sk92eY3pN3"</span><span class="p">,</span>
+    <span class="s2">"33"</span><span class="p">,</span> <span class="s2">"9"</span><span class="p">,</span> <span class="s2">"5"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">,</span> <span class="s2">"12"</span><span class="p">,</span> <span class="s2">"2"</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// (((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR) + NUMBER_3 - NUMBER_4 = 115</span>
+
+  <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">require</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">==</span> <span class="nx">oraclize_cbAddress</span><span class="p">());</span>
+    <span class="nx">calculationResult</span><span class="p">(</span><span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">));</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">testCalculation</span><span class="p">(</span>
+    <span class="nx">string</span> <span class="nx">_hash</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_number1</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_number2</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_multiplier</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_divisor</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_number3</span><span class="p">,</span>
+    <span class="nx">string</span> <span class="nx">_number4</span><span class="p">)</span> <span class="kr">public</span> <span class="nx">payable</span> <span class="p">{</span>
+
+    <span class="nx">string</span><span class="p">[]</span> <span class="nx">memory</span> <span class="nx">numbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">string</span><span class="p">[](</span><span class="mi">7</span><span class="p">);</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_hash</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_number1</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_number2</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_multiplier</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_divisor</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_number3</span><span class="p">;</span>
+    <span class="nx">numbers</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_number4</span><span class="p">;</span>
+
+    <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">numbers</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">string</span><span class="p">[]</span> <span class="nx">array</span><span class="p">)</span> <span class="nx">internal</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,</span> <span class="nx">array</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre>
+<p>In case you need to pass more arguments, you will need to send a manually set dynamic string/bytes array, for example:</p>
+
+<p><code>string[] memory myArgs = new string[](6);</code></p>
+
+<p><code>myArgs[0] = &quot;MYIPFSHASH&quot;;</code></p>
+
+<p><code>...</code></p>
+
+<p><code>myArgs[5] = &quot;LAST ARG&quot;;</code></p>
+
+<p>The query would then look like this: <code>oraclize_query(&quot;computation&quot;, myArgs)</code></p>
+<h4 id='passing-encrypted-arguments'>Passing Encrypted Arguments</h4><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
 <span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
 <span class="nx">contract</span> <span class="nx">ComputationTest</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
@@ -929,6 +1043,10 @@ CMD /usr/bin/python -c <span class="s2">"import os; print os.urandom(int(os.envi
 </ul>
 
 <p>For advance usage of Random Data Source, it is recommended to read the following section.</p>
+
+<aside class="notice">
+The random datasource is currently available on the Ethereum mainnet and on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+</aside>
 <h4 id='two-party-interactions'>Two Party Interactions</h4><pre class="highlight javascript tab-javascript"><code>    <span class="kd">function</span> <span class="nx">oraclize_newRandomDSQuery</span><span class="p">(</span><span class="nx">uint</span> <span class="nx">_delay</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">_nbytes</span><span class="p">,</span> <span class="nx">uint</span> <span class="nx">_customGasLimit</span><span class="p">)</span> <span class="nx">internal</span> <span class="nx">returns</span> <span class="p">(</span><span class="nx">bytes32</span><span class="p">){</span>
         <span class="k">if</span> <span class="p">((</span><span class="nx">_nbytes</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">||</span><span class="p">(</span><span class="nx">_nbytes</span> <span class="o">&gt;</span> <span class="mi">32</span><span class="p">))</span> <span class="nx">revert</span><span class="p">();</span>
         <span class="nx">bytes</span> <span class="nx">memory</span> <span class="nx">nbytes</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">bytes</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
@@ -1308,7 +1426,9 @@ BOLOS exposes a set of kernel-level API which can complete useful operations suc
 <p>An in-depth explanation of the Random Data Source and an analysis of the attack scenarios can be consulted in the released paper.</p>
 
           <h1 id='pricing'>Pricing</h1>
-<p>The use of Oraclize requires the payment of a small fee, which depends from the data source type used and by the authenticity proof requested. The pricing listed below is valid for both Ethereum and Rootstock.</p>
+<p>The use of Oraclize requires the payment of a small fee, which depends from the data source type used and by the authenticity proof requested. The pricing listed below is valid for both Ethereum and Rootstock. There is a baseprice for the query itself. When the <code>oraclize_query</code> gets called the needed ETH has to be transfered to Oraclize to pay for sending the callback transaction back to the contract. </p>
+
+<p>Since this cost depends on the code and preferences (gasprice), it can vary a lot depending on the two of them. To prevent unneccessary costs you should estimate and set the gasprice and the gas as precise as possible, so that you get reasonable confirmation times and so that your callback transaction works as expected (without running out of gas).</p>
 <h3 id='first-free-request'>First Free Request</h3>
 <p>To facilitate testing, the first call to Oraclize from any smart contract address, if used with standard setting, is free of charge. This includes the gas costs of the callback transaction.</p>
 <h3 id='testnets-policy'>Testnets Policy</h3>
@@ -1382,8 +1502,12 @@ Oraclize reserve the rights to discontinue the service for abuse or excessive us
     <td>N/A</td>
   </tr>
 </table>
-<h3 id='offchain-payments'>Offchain Payments</h3>
-<p>Oraclize will soon start testing offchain payments, in different currencies, for both the Oraclize fee and the gas callback transactions costs. Interested parties should get in touch at info@oraclize.it</p>
+<h3 id='onchain-vs-offchain-payments'>Onchain vs. Offchain Payments</h3>
+<p>When paying onchain there is no reliable backward-compatible way for Oraclize to give back the gas &quot;change&quot;. This is due to how Ethereum works: it is not possible to determine the exact amount of gas that will be used before the transaction gets confirmed, because it depends on the current state. Sending back the unspent gas afterwards would potentially create side effects.</p>
+
+<p>Oraclize is now supporting offchain payments too. When using that option you will get back the unused gas as the charge happens on a prepaid account outside of the blockchain. Interested parties should get in touch at info@oraclize.it</p>
+<h3 id='nested-queries'>Nested Queries</h3>
+<p>Currently nested queries are being priced as a single query. In the near future the pricing for the nested queries will be a sum of the datasources you decide to use. At the moment the pricing is reduced to one single datasource, however your smart contract should take into account that the full pricing will apply at some point.</p>
 
       </div>
       <div class="dark-box">
