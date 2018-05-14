@@ -354,8 +354,6 @@ added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
 
 <span class="c"># Alternative:</span>
 
-<span class="gp">user@locahost:~$ </span>ipfs daemon
-<span class="c"># In a new terminal:</span>
 <span class="gp">user@locahost:~$ </span>zip -r archive.zip <span class="k">*</span>
 <span class="gp">user@locahost:~$ </span>curl -F <span class="s2">"data=@./archive.zip"</span> https://ipfs.infura.io:5001/api/v0/add
 <span class="o">{</span><span class="s2">"Name"</span>:<span class="s2">"archive.zip"</span>,<span class="s2">"Hash"</span>:<span class="s2">"QmPz9JxrP8A8pZmtgHZtPwJuTKiaHqU92UzeUDzKDvEz9Q"</span>,<span class="s2">"Size"</span>:<span class="s2">"548"</span><span class="o">}</span>
@@ -365,7 +363,7 @@ added QmRxtL9K2de7v7QBYCCrwcjZHjYmuKggZ8xaqZ6UUWvd1s archive.zip
 </code></pre>
 <p>The <code>computation</code> datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.</p>
 
-<p>The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes.</p>
+<p>The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes. (Current Docker version used for computation ds is 1.12.1)</p>
 
 <p>The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
 The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application.</p>
