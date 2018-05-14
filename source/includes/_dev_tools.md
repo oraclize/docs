@@ -23,9 +23,13 @@ Oraclize is hosting a patched version of the <a href="http://dapps.oraclize.it/b
 An important step in smart contract development, before moving to an official testnet or production use, is unit testing. The Ethereum community has developed multiple frameworks for unit testing, such as Truffle and Embark, which can test contracts on a private instance of Ethereum. A common combination is to run Truffle tests in an ethereumjs-testrpc environments, which is a simulated Ethereum blockchain instance running in memory.
 In order for Oraclize to interact with the smart contract deployed by Truffle or Embark in the test-rpc blockchain instance, a tool called Ethereum-Bridge need to be installed. This is a nodejs module which deploys in the instance the Oraclize smart contracts infrastructure which it is then monitored to see the requests. The tool translates the requests to HTTP API calls to the Oraclize Engine and then return the result by broadcasting the callback transaction. The Ethereum-Bridge and instructions on its deployment can be found <a href="https://github.com/oraclize/ethereum-bridge">here</a>.
 
-## Eth-pm
+## EthPM
 The <a href="https://www.ethpm.com/">Ethereum Package Management</a> is a project which aims to standardize, build and maintain a common registry of smart contracts-based packages, to help smart contract developers.
-Oraclize has published and maintains the Ethereum oraclizeAPI under the 'oraclize' package. To install it: `truffle install oraclize'.
+Oraclize has published and maintains the Ethereum oraclizeAPI under the 'oraclize-api' package. To install it: `truffle install oraclize-api'.
+
+<aside class="notice">
+Please note that the correct package name is named `oraclize-api` and not `oraclize`.
+</aside>
 
 ## Future
 
