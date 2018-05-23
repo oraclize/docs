@@ -57,6 +57,10 @@ Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH 
 Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the "[Security Deep Dive](##security-deep-dive)" section.
 
 <aside class="notice">
+Always use https:// calls when working with authenticity proofs, otherwise your request might get tampered with during the process (MITM attacks) and no detection of such attacks would be possible.
+</aside>
+
+<aside class="notice">
 If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
 </aside>
 

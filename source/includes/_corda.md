@@ -19,7 +19,7 @@ val answer = subFlow(OraclizeQueryAwaitFlow(
 
 ```java
 val proofVerificationTool = OraclizeUtils.ProofVerificationTool()
-proofVerificationTool.verifyProof(answer.proof as ByteArray)
+assert( proofVerificationTool.verifyProof(answer.proof as ByteArray) )
 ```
 
 The fastest way to query Oraclize is by using the `OraclizeQueryAwaitFlow` which accepts the arguments defined in the previous sections (see the [Oraclize Engine](#general-concepts-oraclize-engine) for additional details). 
