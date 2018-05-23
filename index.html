@@ -1157,9 +1157,9 @@ As shown on the code on the right, the flow fetches the last USD/GBP rate from t
 
 <aside class="notice">
 To safely check the authenticity of the data received it is customary to verify the proof included in an Oraclize's answer. Once the verifyProof
-method succeed (returning 'true'), the user can be sure that nor Oraclize neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CordApp.
+method succeed (returning 'true'), the user can be sure that nor Oraclize neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CorDapp.
 
-Note that the ProofVerificationTool is a module included in the Oraclize's CordApp and performs the verification locally within the node.
+Note that the ProofVerificationTool is a module included in the Oraclize's CorDapp and performs the verification locally within the node.
 </aside>
 <pre class="highlight java tab-java"><code><span class="n">val</span> <span class="n">oracle</span> <span class="o">=</span> <span class="n">serviceHub</span><span class="o">.</span><span class="na">identityService</span>
                 <span class="o">.</span><span class="na">wellKnownPartyFromX500Name</span><span class="o">(</span><span class="n">OraclizeUtils</span><span class="o">.</span><span class="na">getNodeName</span><span class="o">())</span> <span class="n">as</span> <span class="n">Party</span>
@@ -1242,18 +1242,18 @@ If one of the above assertions fails the contract is rejected and the flow is st
 <h3 id='example'>Example</h3><pre class="highlight plaintext"><code>&gt;&gt;&gt; start Example amount: 10
 &gt;&gt;&gt; run vaultQuery contractStateType: it.oraclize.cordapi.examples.states.CashOwningState
 </code></pre>
-<p>Inside the CordApp you can find a ready-to-use example which self Issue the specified amount of cash if the rate of USD/GBP is above a certain threshold. 
+<p>Inside the CorDapp you can find a ready-to-use example which self Issue the specified amount of cash if the rate of USD/GBP is above a certain threshold. 
 Check the <a href="https://github.com/oraclize/corda-api">corda-api</a> repository for the full details of how it works.</p>
 
 <p>Then feel free to check the transaction by query the vault as shown on the right.</p>
-<h3 id='adding-the-cordapp-to-your-project'>Adding the Cordapp to your project</h3><pre class="highlight gradle tab-gradle"><code><span class="k">repositories</span> <span class="o">{</span>
+<h3 id='adding-the-cordapp-to-your-project'>Adding the CorDapp to your project</h3><pre class="highlight gradle tab-gradle"><code><span class="k">repositories</span> <span class="o">{</span>
     <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'https://jitpack.io'</span> <span class="o">}</span>
 <span class="o">}</span>
 <span class="k">dependencies</span> <span class="o">{</span>
     <span class="n">compile</span> <span class="s2">"com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT"</span>
 <span class="o">}</span>
 </code></pre>
-<p>If you want to use the Oraclize&#39;s CordApp in your project just put one of the  dependencies in your <code>build.gradle</code> file:</p>
+<p>If you want to use the Oraclize&#39;s CorDapp in your project just put one of the  dependencies in your <code>build.gradle</code> file:</p>
 
 <ul>
 <li><code>compile &quot;com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT&quot;</code></li>
