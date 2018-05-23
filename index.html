@@ -261,6 +261,10 @@ Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH 
 <p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &quot;<a href="##security-deep-dive">Security Deep Dive</a>&quot; section.</p>
 
 <aside class="notice">
+Always use https:// calls when working with authenticity proofs, otherwise your request might get tampered with during the process (MITM attacks) and no detection of such attacks would be possible.
+</aside>
+
+<aside class="notice">
 If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
 </aside>
 <h2 id='data-privacy'>Data Privacy</h2>
@@ -1144,7 +1148,7 @@ For more technical details on how to use the Oraclize service from within Solidi
             <span class="o">))</span>
 
 </code></pre><pre class="highlight java tab-java"><code><span class="n">val</span> <span class="n">proofVerificationTool</span> <span class="o">=</span> <span class="n">OraclizeUtils</span><span class="o">.</span><span class="na">ProofVerificationTool</span><span class="o">()</span>
-<span class="n">proofVerificationTool</span><span class="o">.</span><span class="na">verifyProof</span><span class="o">(</span><span class="n">answer</span><span class="o">.</span><span class="na">proof</span> <span class="n">as</span> <span class="n">ByteArray</span><span class="o">)</span>
+<span class="k">assert</span><span class="o">(</span> <span class="n">proofVerificationTool</span><span class="o">.</span><span class="na">verifyProof</span><span class="o">(</span><span class="n">answer</span><span class="o">.</span><span class="na">proof</span> <span class="n">as</span> <span class="n">ByteArray</span><span class="o">)</span> <span class="o">)</span>
 </code></pre>
 <p>The fastest way to query Oraclize is by using the <code>OraclizeQueryAwaitFlow</code> which accepts the arguments defined in the previous sections (see the <a href="#general-concepts-oraclize-engine">Oraclize Engine</a> for additional details). 
 As shown on the code on the right, the flow fetches the last USD/GBP rate from the APIs specified, requiring a proof of type <em>TLSNotary</em>. Notice that the <code>json(...)</code> parser will exctract exactly the result we are concern about.</p>
