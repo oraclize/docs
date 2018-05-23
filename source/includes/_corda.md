@@ -34,9 +34,9 @@ Once the answer is successfully returned, the proof can be easily verified by us
 
 <aside class="notice">
 To safely check the authenticity of the data received it is customary to verify the proof included in an Oraclize's answer. Once the verifyProof
-method succeed (returning 'true'), the user can be sure that nor Oraclize neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CordApp.
+method succeed (returning 'true'), the user can be sure that nor Oraclize neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CorDapp.
 
-Note that the ProofVerificationTool is a module included in the Oraclize's CordApp and performs the verification locally within the node.
+Note that the ProofVerificationTool is a module included in the Oraclize's CorDapp and performs the verification locally within the node.
 </aside>
 
 ```java
@@ -148,12 +148,12 @@ It is also possible to call the `OraclizeQueryAwaitFlow` by RPC using the CRash 
 >>> run vaultQuery contractStateType: it.oraclize.cordapi.examples.states.CashOwningState
 ```
 
-Inside the CordApp you can find a ready-to-use example which self Issue the specified amount of cash if the rate of USD/GBP is above a certain threshold. 
+Inside the CorDapp you can find a ready-to-use example which self Issue the specified amount of cash if the rate of USD/GBP is above a certain threshold. 
 Check the [corda-api](https://github.com/oraclize/corda-api) repository for the full details of how it works.
 
 Then feel free to check the transaction by query the vault as shown on the right.
   
-### Adding the Cordapp to your project
+### Adding the CorDapp to your project
 
 ```gradle
 repositories {
@@ -164,7 +164,7 @@ dependencies {
 }
 ```
 
-If you want to use the Oraclize's CordApp in your project just put one of the  dependencies in your `build.gradle` file:
+If you want to use the Oraclize's CorDapp in your project just put one of the  dependencies in your `build.gradle` file:
 
   * `compile "com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT"`
   * `compile "com.github.oraclize:corda-api:win32_x86_64-SNAPSHOT"`
