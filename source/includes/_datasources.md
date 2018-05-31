@@ -12,35 +12,35 @@ Listed here are the data-sources you can choose from when using our oracle servi
     <td>Ledger</td>
   </tr>
   <tr>
-    <td><a href="#datasources-url">URL</a></td>
+    <td><a href="#data-sources-url">URL</a></td>
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-random">Random</a></td>
+    <td><a href="#data-sources-random">Random</a></td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>✓</td>
   </tr>
   <tr>
-    <td><a href="#datasources-wolframalpha">WolframAlpha</a></td>
+    <td><a href="#data-sources-wolframalpha">WolframAlpha</a></td>
     <td>✓</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-ipfs">IPFS</a><sup> 1</sup></td>
+    <td><a href="#data-sources-ipfs">IPFS</a><sup> 1</sup></td>
     <td>✓</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-computation">computation</a><sup> 1</sup></td>
+    <td><a href="#data-sources-computation">computation</a><sup> 1</sup></td>
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
@@ -137,7 +137,7 @@ The rationale behind this method of securely feeding off-chain randomness into t
 
 ## decrypt
 
-Even though the `decrypt` datasource can be used as any other, it was specifically designed to be used within the <a href="#datasources-nested">`nested`</a> datasource to enable partial query encryption.
+Even though the `decrypt` datasource can be used as any other, it was specifically designed to be used within the <a href="#data-sources-nested">`nested`</a> datasource to enable partial query encryption.
 
 
 The result is the decrypted query string. **Please note that all the logic, limitations and tools provided by the `Encryption` feature apply here as well.**
