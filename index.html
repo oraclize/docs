@@ -283,35 +283,35 @@ More information can be found in the <a href="#ethereum-advanced-topics-encrypte
     <td>Ledger</td>
   </tr>
   <tr>
-    <td><a href="#datasources-url">URL</a></td>
+    <td><a href="#data-sources-url">URL</a></td>
     <td>✓</td>
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-random">Random</a></td>
+    <td><a href="#data-sources-random">Random</a></td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>✓</td>
   </tr>
   <tr>
-    <td><a href="#datasources-wolframalpha">WolframAlpha</a></td>
+    <td><a href="#data-sources-wolframalpha">WolframAlpha</a></td>
     <td>✓</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-ipfs">IPFS</a><sup> 1</sup></td>
+    <td><a href="#data-sources-ipfs">IPFS</a><sup> 1</sup></td>
     <td>✓</td>
     <td>N/A</td>
     <td>N/A</td>
     <td>N/A</td>
   </tr>
   <tr>
-    <td><a href="#datasources-computation">computation</a><sup> 1</sup></td>
+    <td><a href="#data-sources-computation">computation</a><sup> 1</sup></td>
     <td>✓</td>
     <td>✓</td>
     <td>N/A</td>
@@ -388,7 +388,7 @@ The Dockerfile must be in the root of the archive.zip, not in a subfolder.
 
 <p>The rationale behind this method of securely feeding off-chain randomness into the blockchain is explained in the <a target="_blank" href="http://www.oraclize.it/papers/random_datasource-rev1.pdf">“A Scalable Architecture for On-Demand, Untrusted Delivery of Entropy”</a> white paper.</p>
 <h2 id='decrypt'>decrypt</h2>
-<p>Even though the <code>decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#datasources-nested"><code>nested</code></a> datasource to enable partial query encryption.</p>
+<p>Even though the <code>decrypt</code> datasource can be used as any other, it was specifically designed to be used within the <a href="#data-sources-nested"><code>nested</code></a> datasource to enable partial query encryption.</p>
 
 <p>The result is the decrypted query string. <strong>Please note that all the logic, limitations and tools provided by the <code>Encryption</code> feature apply here as well.</strong></p>
 <h2 id='nested'>nested</h2>
