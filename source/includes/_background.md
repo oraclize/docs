@@ -15,11 +15,11 @@ The solution developed by Oraclize is instead to demonstrate that the data fetch
 
 A more detailed overview of Oraclize authenticity proofs is provided in the [Authenticity Proofs](#ethereum-quick-start-authenticity-proofs) section of this documentation.
 
-This solutions elegantly solves the Oracle Problem:
+This solution elegantly solves the Oracle Problem:
 
 * Blockchain Application's developers and the users of such applications don't have to trust Oraclize; the security model is maintained.
 * Data providers don't have to modify their services in order to be compatible with blockchain protocols. Smart contracts can directly access data from Web sites or APIs.
 
 Oraclize engine can be easily integrated with both private and public instances of different blockchain protocols.
 
-While building the service, the Oraclize team has realized that the concept of authenticity proofs has much broader applicability that initially envisioned. For example, the Oraclize Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation
+While building the service, the Oraclize team has realized that the concept of authenticity proofs has much broader applicability than initially envisioned. For example, the Oraclize Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation

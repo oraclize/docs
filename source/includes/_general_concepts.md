@@ -31,7 +31,7 @@ Additionaly, there also some meta data source such as:
 
 
 ## Query
-A query is an array of parameters which needs to evaluated in order to complete a specific data source type request: `query: [ parameter_1, parameters_2, ...];`
+A query is an array of parameters which needs to be evaluated in order to complete a specific data source type request: `query: [ parameter_1, parameters_2, ...];`
 
 The first parameter is the main argument and it is usually mandatory. For example, in the case of the URL Data Source Type, the first argument is the expected URL where the resource resides. If only the first argument is present, then the URL Data Source assumes that an HTTP GET was requested. The second parameters, which it is optional, should contain the data payload of the HTTP POST request.
 
@@ -61,7 +61,7 @@ Always use https:// calls when working with authenticity proofs, otherwise your 
 </aside>
 
 <aside class="notice">
-If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discards the result and create a new query.
+If Oraclize is unable to generate an authenticity proof for technical reasons, it will return in most cases the result without the requested proof. It is up to the developer to decide how to handle this case in their application: Oraclize recommends to discard the result and create a new query.
 </aside>
 
 ## Data Privacy
