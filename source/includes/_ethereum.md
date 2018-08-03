@@ -13,36 +13,39 @@ As said in previous sections, one of the fundamental characteristics of Oraclize
 ## Quick Start
 
 ```javascript
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.11;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
-contract DieselPrice is usingOraclize {
+contract ExampleContract is usingOraclize {
 
-    uint public dieselPriceUSD;
+   string public ETHUSD;
+   event LogConstructorInitiated(string nextStep);
+   event LogPriceUpdated(string price);
+   event LogNewOraclizeQuery(string description);
 
-    event NewOraclizeQuery(string description);
-    event NewDieselPrice(string price);
+   function ExampleContract() payable {
+       LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+   }
 
-    function DieselPrice() public {
-        update();
-    }
+   function __callback(bytes32 myid, string result) {
+       if (msg.sender != oraclize_cbAddress()) revert();
+       ETHUSD = result;
+       LogPriceUpdated(result);
+   }
 
-    function __callback(bytes32 myid, string result) public {
-        if (msg.sender != oraclize_cbAddress()) revert();
-        NewDieselPrice(result);
-        dieselPriceUSD = parseInt(result, 2); // let's save it as $ cents
-        // do something with the USD Diesel price
-    }
-
-    function update() public payable {
-        NewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-        oraclize_query("URL", "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
-    }
+   function updatePrice() payable {
+       if (oraclize_getPrice("URL") > this.balance) {
+           LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+       } else {
+           LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
+       }
+   }
 }
 ```
 
 The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
-This contract uses Oraclize to fetch the last EUR/GBP from fixer.io APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:
+This contract uses Oraclize to fetch the last ETH/USD from gdax.com APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:
 
 * The contract should be a child of the contract usingOraclize
 * The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository.
@@ -108,7 +111,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ExampleContract is usingOraclize {
 
-    string public EURGBP;
+    string public ETHUSD;
 	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
 	event LogNewOraclizeQuery(string description);
@@ -119,7 +122,7 @@ contract ExampleContract is usingOraclize {
 
     function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) revert();
-        EURGBP = result;
+        ETHUSD = result;
 		LogPriceUpdated(result);
 		updatePrice();
     }
@@ -137,7 +140,7 @@ contract ExampleContract is usingOraclize {
 Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
-This modified version of the previous example will update the EUR/GBP exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.
+This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.
 
 <aside class="notice">
 Use recursive queries cautiously. In general it is recommended to send queries purposefully.
@@ -150,7 +153,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ExampleContract is usingOraclize {
 
-    string public EURGBP;
+    string public ETHUSD;
 	mapping(bytes32=>bool) validIds;
 	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
@@ -163,7 +166,7 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result) {
         if (!validIds[myid]) revert();
 		if (msg.sender != oraclize_cbAddress()) revert();
-        EURGBP = result;
+        ETHUSD = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
@@ -175,7 +178,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
 			validIds[queryId] = true;
         }
     }
@@ -196,7 +199,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ExampleContract is usingOraclize {
 
-    string public EURGBP;
+    string public ETHUSD;
 	mapping(bytes32=>bool) validIds;
 	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
@@ -212,7 +215,7 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result) {
         if (!validIds[myid]) revert();
 		if (msg.sender != oraclize_cbAddress()) revert();
-        EURGBP = result;
+        ETHUSD = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
@@ -224,7 +227,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
+				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 500000);
 			validIds[queryId] = true;
         }
     }
@@ -239,11 +242,11 @@ A different value for the Oraclize callback gas can be passed as the argument `_
 
 ```javascript
 // If the callback transaction requires little gas, the value can be lowered:
-oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 100000);
+oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 100000);
 
 // Callback methods may be expensive. The example requires the JSON parsing
 // a string in the smart contract. If that's the case, the gas should be increased:
-oraclize_query("URL", "https://api.fixer.io/latest?symbols=USD,GBP", 500000);
+oraclize_query("URL", "https://api.gdax.com/products/ETH-USD/ticker", 500000);
 ```
 
 The gas price of the callback transaction can be set by calling the `oraclize_setCustomGasPrice` function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.
@@ -263,7 +266,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ExampleContract is usingOraclize {
 
-    string public EURGBP;
+    string public ETHUSD;
 	mapping(bytes32=>bool) validIds;
 	event LogConstructorInitiated(string nextStep);
 	event LogPriceUpdated(string price);
@@ -281,7 +284,7 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result, bytes proof) {
         if (!validIds[myid]) revert();
 		if (msg.sender != oraclize_cbAddress()) revert();
-        EURGBP = result;
+        ETHUSD = result;
 		LogPriceUpdated(result);
 		delete validIds[myid];
 		updatePrice();
@@ -293,7 +296,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(https://api.fixer.io/latest?symbols=USD,GBP).rates.GBP", 500000);
+				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 500000);
 			validIds[queryId] = true;
         }
     }
@@ -381,7 +384,7 @@ import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract ExampleContract is usingOraclize {
 
-    string public EURGBP;
+    string public ETHUSD;
     event LogConstructorInitiated(string nextStep);
     event LogPriceUpdated(string price);
     event LogNewOraclizeQuery(string description);
@@ -395,7 +398,7 @@ contract ExampleContract is usingOraclize {
     function __callback(bytes32 myid, string result) {
         if (msg.sender != oraclize_cbAddress()) revert();
         require (pendingQueries[myid] == true);
-        EURGBP = result;
+        ETHUSD = result;
         LogPriceUpdated(result);
         delete pendingQueries[myid]; // This effectively marks the query id as processed.
     }
@@ -405,7 +408,7 @@ contract ExampleContract is usingOraclize {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            bytes32 queryId = oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+            bytes32 queryId = oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
             pendingQueries[queryId] = true;
         }
     }
