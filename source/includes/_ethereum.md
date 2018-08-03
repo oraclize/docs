@@ -129,7 +129,7 @@ contract ExampleContract is usingOraclize {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-        	oraclize_query(60, "URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
+        	oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
         }
     }
 
