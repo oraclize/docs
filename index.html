@@ -425,33 +425,30 @@ To better profit from this section of the documentation, previous knowledge of S
 </ul>
 
 <p>As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  </p>
-<h2 id='quick-start'>Quick Start</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">11</span><span class="p">;</span>
+<h2 id='quick-start'>Quick Start</h2><pre class="highlight javascript tab-javascript"><code><span class="nx">pragma</span> <span class="nx">solidity</span> <span class="o">^</span><span class="mf">0.4</span><span class="p">.</span><span class="mi">0</span><span class="p">;</span>
 <span class="kr">import</span> <span class="s2">"github.com/oraclize/ethereum-api/oraclizeAPI.sol"</span><span class="p">;</span>
 
-<span class="nx">contract</span> <span class="nx">ExampleContract</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
+<span class="nx">contract</span> <span class="nx">DieselPrice</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
-    <span class="nx">string</span> <span class="kr">public</span> <span class="nx">EURGBP</span><span class="p">;</span>
-    <span class="nx">event</span> <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">nextStep</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
-    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">uint</span> <span class="kr">public</span> <span class="nx">dieselPriceUSD</span><span class="p">;</span>
 
-    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">NewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
+    <span class="nx">event</span> <span class="nx">NewDieselPrice</span><span class="p">(</span><span class="nx">string</span> <span class="nx">price</span><span class="p">);</span>
+
+    <span class="kd">function</span> <span class="nx">DieselPrice</span><span class="p">()</span> <span class="kr">public</span> <span class="p">{</span>
+        <span class="nx">update</span><span class="p">();</span>
     <span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="kr">public</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">msg</span><span class="p">.</span><span class="nx">sender</span> <span class="o">!=</span> <span class="nx">oraclize_cbAddress</span><span class="p">())</span> <span class="nx">revert</span><span class="p">();</span>
-        <span class="nx">EURGBP</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
-        <span class="nx">LogPriceUpdated</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">NewDieselPrice</span><span class="p">(</span><span class="nx">result</span><span class="p">);</span>
+        <span class="nx">dieselPriceUSD</span> <span class="o">=</span> <span class="nb">parseInt</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// let's save it as $ cents</span>
+        <span class="c1">// do something with the USD Diesel price</span>
     <span class="p">}</span>
 
-    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
-        <span class="p">}</span>
+    <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="kr">public</span> <span class="nx">payable</span> <span class="p">{</span>
+        <span class="nx">NewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+        <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel"</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
@@ -538,7 +535,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP"</span><span class="p">);</span>
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 
