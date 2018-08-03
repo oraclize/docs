@@ -13,33 +13,30 @@ As said in previous sections, one of the fundamental characteristics of Oraclize
 ## Quick Start
 
 ```javascript
-pragma solidity ^0.4.11;
+pragma solidity ^0.4.0;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
-contract ExampleContract is usingOraclize {
+contract DieselPrice is usingOraclize {
 
-    string public EURGBP;
-    event LogConstructorInitiated(string nextStep);
-    event LogPriceUpdated(string price);
-    event LogNewOraclizeQuery(string description);
+    uint public dieselPriceUSD;
 
-    function ExampleContract() payable {
-        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+    event NewOraclizeQuery(string description);
+    event NewDieselPrice(string price);
+
+    function DieselPrice() public {
+        update();
     }
 
-    function __callback(bytes32 myid, string result) {
+    function __callback(bytes32 myid, string result) public {
         if (msg.sender != oraclize_cbAddress()) revert();
-        EURGBP = result;
-        LogPriceUpdated(result);
+        NewDieselPrice(result);
+        dieselPriceUSD = parseInt(result, 2); // let's save it as $ cents
+        // do something with the USD Diesel price
     }
 
-    function updatePrice() payable {
-        if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
-        } else {
-            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            oraclize_query("URL", "json(http://api.fixer.io/latest?symbols=USD,GBP).rates.GBP");
-        }
+    function update() public payable {
+        NewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        oraclize_query("URL", "xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel");
     }
 }
 ```
