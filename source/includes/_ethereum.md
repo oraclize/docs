@@ -1,11 +1,11 @@
-# &#9830; &nbsp; Ethereum
+# <a style="display:inline-block; min-width:20px">&#9830;</a> Ethereum
 
 The following section is dedicated to the Ethereum and Oraclize integration.
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.
 
 The interaction between Oraclize and an Ethereum smart contract is asynchronous. Any request for data is composed of two steps:
 
-* Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by an user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
+* Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by a user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
 * Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the `__callback` function which should be placed in the smart contract by its developer: for this reason, this transaction is referred in the documentation as the Oraclize callback transaction.
 
 As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  
@@ -137,7 +137,7 @@ contract ExampleContract is usingOraclize {
     }
 
 ```
-Smart contract using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method.
+Smart contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
 This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.

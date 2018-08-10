@@ -1,4 +1,4 @@
-# C&#8226; &nbsp; Corda
+# <a style="display:inline-block; min-width:20px">C&#8226;</a> Corda
 
 Here we will cover the Oraclize's Corda integration. Before reading this section, you must be familiar with the Corda platform key concepts like flows, subflows, contracts, transactions, commands, oracles etc. So if things get blurred the [corda documentation](https://docs.corda.net/) is your best friend.
 

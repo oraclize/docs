@@ -1,4 +1,4 @@
-# &#9096; Rootstock
+# <a style="display:inline-block; min-width:20px">&#9096;</a> Rootstock
 
 Rootstock is the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, participants are able to interact with smart contracts using a token called Smart Bitcoin. The peg between Bitcoin and Smart Bitcoins is maintained by a federation of distinguished players and backed by merged mining.
 

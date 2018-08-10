@@ -19,8 +19,8 @@ includes:
   - integrations
   - ethereum
   - rootstock
+  - eos
   - corda
-  - bitcoin
   - dev_tools
   - security
   - pricing 
