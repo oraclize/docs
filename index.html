@@ -176,7 +176,7 @@
 </ul>
 
           <h1 id='background'>Background</h1>
-<p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests every day on platforms like <a href="#ethereum">Ethereum</a>, <a href="#rootstock">Rootstock</a>, <a href="#corda">R3 Corda</a> and <a href="#eos">EOS</a>.</p>
+<p>Oraclize is the leading oracle service for smart contracts and blockchain applications, serving thousands of requests every day on platforms like <a href="#ethereum">Ethereum</a>, <a href="#rootstock">Rootstock</a>, <a href="#corda">R3 Corda</a>, <a href="#fabric">Hyperledger Fabric</a> and <a href="#eos">EOS</a>.</p>
 
 <p>In the blockchain space, an oracle is a party which provides data. The need for such figure arise from the fact that blockchain applications, such as Bitcoin scripts and smart contracts cannot access and fetch directly the data they require: price feeds for assets and financial applications; weather-related information for peer-to-peer insurance; random number generation for gambling.</p>
 
@@ -409,7 +409,7 @@ The Dockerfile must be in the root of the archive.zip, not in a subfolder.
 <h2 id='private-ethereum-based-chains'>Private Ethereum-based Chains</h2>
 <p>Private, Ethereum-based chains can currently integrate with Oraclize by using the Ethereum-Bridge. Forks of Ethereum such as Monax included. More information on how to use the Ethereum-Bridge will become available in the <a href="#development-tools">development tools</a> section or refer to this <a href="https://ethereum.stackexchange.com/a/11389/5819">StackExchange answer</a> describing how to use it alongside testrpc.</p>
 <h2 id='alternative-private-chains'>Alternative Private Chains</h2>
-<p>The Oraclize team is currently investigating to create software for a native integration for alternative private distributed ledger protocols such as Corda, Chain and Hyperledger. Additional information are available on contacts.</p>
+<p>Oraclize can already be used in most private chains, in case you were interested in using it in a context where it is not integrated yet please <a href="mailto:info@oraclize.it">reach out to us</a>.</p>
 <h2 id='non-blockchain-applications'>Non-blockchain Applications</h2>
 <p>The <a href="https://github.com/oraclize/oraclize-lib">oraclize-lib</a> enables the use of the Oraclize engine capabilities also in a non-blockchain context, by providing an abstraction layer which resolves to Oraclize HTTP API. The oraclize-lib is currently in an experimental stage.</p>
 
@@ -1594,6 +1594,265 @@ Check the <a href="https://github.com/oraclize/corda-api">corda-api</a> reposito
 To make the proof verification tool work correctly it is necessary that you put the right dependency corresponding to your node's architecture, otherwise the proof will fail raising an exception as the one displayed.
 </aside>
 
+          <h1 id='num-fabric'><a style="display:inline-block; min-width:20px">&num;</a> Fabric</h1>
+<p>The following section is dedicated to the Oraclize integration with Hyperledger Fabric.</p>
+
+<p>The Hyperledger Fabric platform supports Go, Node and Java as main programming languages for chaincodes; however, the current Oraclize integration (while it internally uses a Node chaincode) is provided in the form of an API which is made accessible via a Go package - this means that you will be able to use Oraclize from your <strong>Go</strong> chaincode with ease, but in the future Node/Java could be easily supported as well.</p>
+
+<p>To better profit from this section of the documentation, previous knowledge of Go, Node, Docker and Hyperledger Fabric is required.</p>
+
+<p>As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a contract, a chaincode in the Fabric space, together with one or more proofs of authenticity backing the data. The generation of an authenticity proof is optional and it must be configured by the chaincode developer when the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.</p>
+<h2 id='quick-start'>Quick Start</h2>
+<p>The simplest way to introduce the Oraclize integration with Hyperledger Fabric, it is by showing a working example.</p>
+
+<p>This example uses Oraclize to fetch the last EUR/USD exchange rate from cryptocompare.com APIs. The update process is initiated every time the query is sent. The example shows two important components needed when using Oraclize, both of which can be fetched from the <a href="https://github.com/oraclize/fabric-api">dedicated fabric-api Oraclize repository on Github</a>:</p>
+
+<ul>
+<li>The Oraclize connector chaincode <a href="https://github.com/oraclize/fabric-api/blob/master/connector/oraclize-connector.js">connector/oraclize-connector.js</a>, which should be installed on the network peer;</li>
+<li>The Go package - <a href="https://github.com/oraclize/fabric-api/blob/master/oraclizeapi.go">oraclizeapi.go</a> - needed to use the Oraclize API from within a user-defined Go chaincode.</li>
+</ul>
+
+<aside class="notice">
+Oraclize can currently be used free of charge in any Hyperledger Fabric networks. This will change in the near future and the standard pricing will apply: for more details please check out the pricing section of the documentation. The payment will be taken outside of the Fabric network with a dedicated user account holding some prepaid credit.
+</aside>
+<h3 id='prerequisites'>Prerequisites</h3>
+<p>The Oraclize integration described in the document assumes the user to be familiar with at least one of the first tutorials provided by the Hyperledger Fabric documentation. The tutorial can be found at the following link: <a href="https://hyperledger-fabric.readthedocs.io/en/release-1.2/write_first_app.html">Writing Your First Application</a>.</p>
+<h3 id='architecture-overview'>Architecture Overview</h3>
+<p>In order to make the user approach the Hyperledger Fabric blockchain, several samples are provided through the official Hyperledger source. The folder containing these samples includes some basic network configurations really useful to have a clear and simple Oraclize integration. The folder <code>fabric-samples</code>, which includes the samples, can be downloaded executing the following command:</p>
+
+<p><code>curl -sSL http://bit.ly/2ysbOFE | bash -s 1.2.0</code></p>
+
+<p>That command downloads the <code>fabric-samples</code> folder; specifically the folder <code>fabric-samples/basic-network</code> is the <strong>network</strong> that we are going to use to showcase the Oraclize integration. The basic-network creates a network structure composed by the following entities:</p>
+
+<ul>
+<li>one application (cli);</li>
+<li>one peer;</li>
+<li>one orderer;</li>
+<li>one CA</li>
+</ul>
+
+<p>On the peer two chaincodes will be installed:</p>
+
+<ul>
+<li>the <code>oraclize-connector</code>, the chaincode provided by Oraclize, that is used internally by Oraclize to execute any query;</li>
+<li>the <code>user-chaincode</code>, the chaincode that the user wants to create in order to build a service in the Hyperledger Fabric blockchain.</li>
+</ul>
+
+<p>The <em>legend</em> concerning the living entities in this example of a Fabric network is shown in the following image:</p>
+
+<p><img src="images/fabric-entities.png" width="65%" height="65%"></p>
+
+<p>The <strong>network structure</strong> is displayed in architectural schema below:</p>
+
+<p><img src="images/basic-network.png" width="52%" height="52%"></p>
+<h3 id='transaction-flow'>Transaction Flow</h3>
+<p>In this section we will analyze the transaction flow of a query performed in the <code>basic-network</code> example integrating Oraclize.
+The 3 first steps of the transaction flow are displayed by the following figure:</p>
+
+<p><img src="images/transaction-flow.png" width="55%" height="55%"></p>
+
+<p>The flow can be divided in the process phases below:</p>
+
+<ol>
+<li>from the application A, the user starts a query directed to the peer P1, calling a function of the Go user chaincode S1, that calls an Oraclize query.</li>
+<li>the user chaincode S1, executes the function invoked by the user, and send the data for the Oraclize query to the Oraclize connector, the chaincode S2;</li>
+<li>the Oraclize chaincode S2, once the result is ready, sends it back to the user chaincode S1, along with the authenticity proof;</li>
+<li>the user chaincode S1 does something with the result (and authenticity proof) received back from Oraclize and eventually sends back a response to the application A.</li>
+</ol>
+<h3 id='network-building'>Network Building</h3>
+<p>This subsection goal is to build up the network described in the figure previously showed. First, access the <code>fabric-samples</code> folder and create a project folder for our Oraclize integration example. In this documentation, the name referring to it is <code>fabric-samples/oraclize-integration</code>.
+This folder is the container for all the operations which happens from the application-cli side.
+Inside the <code>oraclize-integration</code> folder, we will have the following files:</p>
+
+<ul>
+<li><code>enrollAdmin.js</code></li>
+<li><code>registerUser.js</code></li>
+<li><code>startFabric.sh</code></li>
+<li><code>user-application-query.js</code></li>
+</ul>
+
+<p>Both files <code>enrollAdmin.js</code> and <code>registerUser.js</code> can be copied from the folder <code>fabric-samples/fabcar</code>.
+The following commands can be launched from the folder <code>fabric-samples</code>:</p>
+
+<ul>
+<li><code>cp fabcar/enrollAdmin.js oraclize-integration</code></li>
+<li><code>cp fabcar/registerUser.js oraclize-integration</code></li>
+</ul>
+
+<p>Then, in the <code>oraclize-integration</code> folder, install the packages below:</p>
+
+<ul>
+<li><code>npm install fabric-client</code></li>
+<li><code>npm install fabric-ca-client</code></li>
+</ul>
+<pre class="highlight shell"><code><span class="c">#!/bin/bash</span>
+
+<span class="c"># Do not rewrite paths for Windows Git Bash users</span>
+<span class="nb">export </span><span class="nv">MSYS_NO_PATHCONV</span><span class="o">=</span>1
+<span class="nv">starttime</span><span class="o">=</span><span class="k">$(</span>date +%s<span class="k">)</span>
+<span class="nv">LANGUAGE</span><span class="o">=</span><span class="k">${</span><span class="nv">1</span><span class="k">:-</span><span class="s2">"golang"</span><span class="k">}</span>
+<span class="c"># CC_SRC_PATH refers to the docker cli container</span>
+<span class="nv">CC_SRC_PATH</span><span class="o">=</span>github.com/user-chaincode/go
+<span class="k">if</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$LANGUAGE</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"node"</span> -o <span class="s2">"</span><span class="nv">$LANGUAGE</span><span class="s2">"</span> <span class="o">=</span> <span class="s2">"NODE"</span> <span class="o">]</span>; <span class="k">then
+    </span><span class="nv">CC_SRC_PATH</span><span class="o">=</span>/opt/gopath/src/github.com/oraclize-connector/node
+<span class="k">fi</span>
+
+<span class="c"># Clean the keystore</span>
+rm -rf ./hfc-key-store
+<span class="c"># Remove all the previously generated containers, representing entities and chaincodes</span>
+docker stop <span class="k">$(</span>docker ps -aq<span class="k">)</span>
+docker rm <span class="k">$(</span>docker ps -aq<span class="k">)</span>
+docker rmi dev-peer0.org1.example.com-oraclize-connector-1.0-7765c3fb5c4224a4a2784d8a64a5488e570d39940695306f78f8e54009d89102
+docker rmi dev-peer0.org1.example.com-user-chaincode-1.0-58b4cc4747da6f30d7cb2cea6511560c9fdad78c58ba6881b33801a2d69aebae
+
+<span class="c"># Exit on first error</span>
+<span class="nb">set</span> -e
+<span class="c"># Go in the fabric-samples/basic-network folder to launch the network;</span>
+<span class="nb">cd</span> ../basic-network
+./start.sh
+
+<span class="c"># Now launch the CLI container in order to install, instantiate chaincodes</span>
+docker-compose -f ./docker-compose.yml up -d cli
+
+<span class="c"># Instantiating the user chaincode (user-chaincode)</span>
+docker <span class="nb">exec</span> -e <span class="s2">"CORE_PEER_LOCALMSPID=Org1MSP"</span> -e <span class="s2">"CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp"</span> cli peer chaincode install -n user-chaincode -v 1.0 -p <span class="s2">"</span><span class="nv">$CC_SRC_PATH</span><span class="s2">"</span> -l <span class="s2">"</span><span class="nv">$LANGUAGE</span><span class="s2">"</span>
+<span class="c"># Installing the user chaincode (user-chaincode)</span>
+docker <span class="nb">exec</span> -e <span class="s2">"CORE_PEER_LOCALMSPID=Org1MSP"</span> -e <span class="s2">"CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp"</span> cli peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n user-chaincode -l <span class="s2">"golang"</span> -v 1.0 -c <span class="s1">'{"Args":[""]}'</span> -P <span class="s2">"OR ('Org1MSP.member','Org2MSP.member')"</span>
+
+<span class="c"># Instantiating the Oraclize chaincode (oraclize-connector)</span>
+docker <span class="nb">exec</span> -e <span class="s2">"CORE_PEER_LOCALMSPID=Org1MSP"</span> -e <span class="s2">"CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp"</span> cli peer chaincode install -n oraclize-connector -v 1.0 -p <span class="s2">"/opt/gopath/src/github.com/oraclize-connector/node"</span> -l <span class="s2">"node"</span>
+<span class="c"># Installing the Oraclize chaincode (oraclize-connector)</span>
+docker <span class="nb">exec</span> -e <span class="s2">"CORE_PEER_LOCALMSPID=Org1MSP"</span> -e <span class="s2">"CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp"</span> cli peer chaincode instantiate -o orderer.example.com:7050 -C mychannel -n oraclize-connector -l <span class="s2">"node"</span> -v 1.0 -c <span class="s1">'{"Args":[""]}'</span> -P <span class="s2">"OR ('Org1MSP.member','Org2MSP.member')"</span>
+
+<span class="c"># Go back to the user application folder and install all the node_modules</span>
+<span class="nb">cd</span> ../oraclize-integration
+npm install
+
+<span class="c"># Enroll the admin</span>
+node enrollAdmin.js
+<span class="c"># Register the user</span>
+node registerUser.js
+</code></pre>
+<p>Download the file called <code>fabric-examples/eurusd-example/testing-utils/startFabric.sh</code> from the <a href="https://github.com/oraclize/fabric-examples">fabric-examples Oraclize repository on Github</a>. This script is shown in full in the code section on the right and it is the script used to execute the following operations in order:</p>
+
+<ol>
+<li>set the environment variables;</li>
+<li>clean the certificates and the keystore, deleting the <code>hfc-key-store</code> folder;</li>
+<li>stop and remove all the previous docker containers which represent the network entities;</li>
+<li>remove the chaincode containers;</li>
+<li>launch the network <code>fabric-samples/basic-network</code>, creating a docker container for:
+
+<ul>
+<li>the orderer;</li>
+<li>the CA;</li>
+<li>the peer;</li>
+<li>the cli;</li>
+<li>the couchdb;</li>
+</ul></li>
+<li>launch the <em>cli</em> to install and instantiate the <code>oraclize-connector</code> and the <code>user-chaincode</code> chaincodes, launching them as containers;</li>
+<li>install the node modules;</li>
+<li>enroll the admin calling <code>enrollAdmin.js</code>;</li>
+<li>register the user, calling <code>registerUser.js</code>.</li>
+</ol>
+
+<aside class="notice">
+Please note that Go must be installed, and that the Go environment variables must be correctly set.
+</aside>
+<h3 id='adding-the-oraclize-chaincode'>Adding the Oraclize Chaincode</h3><pre class="highlight json tab-json"><code><span class="p">{</span><span class="w">
+    </span><span class="s2">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"oraclize-connector"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"1.0.0"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"oraclize-connector chaincode implemented in node.js"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"engines"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"node"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&gt;=8.4.0"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"npm"</span><span class="p">:</span><span class="w"> </span><span class="s2">"&gt;=5.3.0"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"scripts"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"start"</span><span class="p">:</span><span class="w"> </span><span class="s2">"node oraclize-connector.js"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="s2">"engine-strict"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"license"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Apache-2.0"</span><span class="p">,</span><span class="w">
+    </span><span class="s2">"dependencies"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="s2">"cbor-sync"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^1.0.2"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"fabric-shim"</span><span class="p">:</span><span class="w"> </span><span class="s2">"unstable"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"node-pre-gyp"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^0.10.3"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"request"</span><span class="p">:</span><span class="w"> </span><span class="s2">"^2.87.0"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+<p>In the <code>startFabric.sh</code> script, the last two docker commands refer to the instance and install the Oraclize connector chaincode. This chaincode, referred in the documentation with the name of <code>oraclize-connector</code>, is instantiated on the network peer from the cli docker container.</p>
+
+<p>The cli container instantiate and install the oraclize chaincode from its local chaincodes set. However, the cli takes this chaincode set from the folder <code>fabric-samples/chaincode</code>; as a result, the <em>node.js</em> <code>oraclize-connector</code> and the <em>Go</em> <code>user-chaincode</code> have to be in the mentioned path.</p>
+
+<p>The <code>oraclize-connector.js</code> chaincode is provided by Oraclize at <a href="https://github.com/oraclize/fabric-api/">fabric-api/connector Oraclize repository on Github</a> and has to be put in the following path <code>fabric-samples/chaincode/oraclize-connector/node</code>, so that the final result will be: <code>fabric-samples/chaincode/oraclize-connector/node/oraclize-connector.js</code>.</p>
+
+<p>For correctly set the <code>oraclize-connector</code> chaincode, the files <code>oraclize-connector.js</code> and the <code>package.json</code> are needed. The <code>package.json</code> is required to install the specified dependencies, while the <code>oraclize-connector.js</code> is the node Oraclize chaincode itself.</p>
+
+<aside class="notice">
+Please, note that the paths and names mentioned have not be changed for a correct integration.
+</aside>
+<h3 id='adding-the-user-chaincode'>Adding the User Chaincode</h3><pre class="highlight javascript tab-javascript"><code><span class="nx">func</span> <span class="p">(</span><span class="nx">s</span> <span class="o">*</span><span class="nx">SmartContract</span><span class="p">)</span> <span class="nx">fetchEURUSDviaOraclize</span><span class="p">(</span><span class="nx">APIstub</span> <span class="nx">shim</span><span class="p">.</span><span class="nx">ChaincodeStubInterface</span><span class="p">)</span> <span class="nx">sc</span><span class="p">.</span><span class="nx">Response</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">datasource</span> <span class="o">=</span> <span class="s2">"URL"</span>
+    <span class="kd">var</span> <span class="nx">query</span> <span class="o">=</span> <span class="s2">"json(https://min-api.cryptocompare.com/data/price?fsym=EUR&amp;tsyms=USD).USD"</span>
+    <span class="nx">result</span><span class="p">,</span> <span class="nx">proof</span> <span class="p">:</span><span class="o">=</span> <span class="nx">oraclizeapi</span><span class="p">.</span><span class="nx">OraclizeQuery_sync</span><span class="p">(</span><span class="nx">APIstub</span><span class="p">,</span> <span class="nx">datasource</span><span class="p">,</span> <span class="nx">query</span><span class="p">,</span> <span class="nx">oraclizeapi</span><span class="p">.</span><span class="nx">TLSNOTARY</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nx">shim</span><span class="p">.</span><span class="nx">Success</span><span class="p">(</span><span class="nx">result</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+<p>Create a folder that will contain your chaincode in<code>fabric-samples/chaincode</code>, in this example <code>fabric-samples/chaincode/user-chaincode/go</code>. Create the Go chaincode, in this example the referred name is <code>user-chaincode.go</code>. Now, the Oraclize Go package has to be included, in order to perform an Oraclize query.
+On the <a href="https://github.com/oraclize/fabric-examples">fabric-examples/eurusd-example/chaincode/go/ Oraclize repository on Github</a> we provide a ready-to-use user chaincode. Inside the chaincode, all the dependencies needed are included, including the <code>oraclizeapi.go</code>.
+However, you need to install the dependencies locally, using the command:</p>
+
+<p><code>go get &quot;github.com/oraclize/fabric-api&quot;</code></p>
+
+<p>Please note that all the go packages, including the <code>oraclizeapi.go</code>, must be vendored in your chaincode folder <code>fabric-samples/chaincode/user-chaincode/go</code>. In general, vendoring the package with <a href="https://github.com/kardianos/govendor">govendor</a> can be a good solution to include a package in the user chaincode. The package must appear in the <code>vendor</code> folder at the following path: <code>fabric-samples/chaincode/user-chaincode/go/vendor</code>.</p>
+
+<p>The package allows to perform a request for data using an Oraclize query function, with the following code:
+<code>oraclizeapi.OraclizeQuery_sync(APIstub, dataset, url, proofType)</code></p>
+
+<p>The code of a function performing a call for the EUR/USD exchange rate data using an Oraclize query in the user chaincode is shown on the right. The proof required by the chaincode in the example is the TLSNOTARY proof.</p>
+<h3 id='oraclize-simple-query'>Oraclize Simple Query</h3>
+<p>A request for data is called <strong>query</strong>. The <code>OraclizeQuery_sync</code> is a function, implemented in the <code>oraclizeapi.go</code> Go package, which expects three arguments:</p>
+
+<ul>
+<li>A data-source such as <code>URL</code>, <code>WolframAlpha</code>, <code>IPFS</code>, <code>Swarm</code> and others listed here</li>
+<li><p>The argument for the given data-source; for examples:</p>
+
+<ul>
+<li>the full <code>URL</code>, which may include the use of JSON or XML parsing helpers as it can be seen in the previous example</li>
+<li>or a <code>WolframAlpha</code> formula</li>
+<li>or an <code>IPFS</code> multihash</li>
+</ul></li>
+<li><p>The proof type, that can be specified using the following values, imported from <code>oraclizeapi.go</code>:</p>
+
+<ul>
+<li>NONE</li>
+<li>TLSNOTARY</li>
+<li>ANDROID</li>
+<li>LEDGER</li>
+<li>NATIVE</li>
+</ul></li>
+</ul>
+
+<p>The number and type of supported arguments depends on the data-source in use.</p>
+<h3 id='sending-cli-queries'>Sending CLI Queries</h3><pre class="highlight javascript tab-javascript"><code><span class="kr">const</span> <span class="nx">request</span> <span class="o">=</span> <span class="p">{</span> <span class="na">chaincodeId</span><span class="p">:</span> <span class="s2">"user-chaincode"</span><span class="p">,</span> <span class="na">fcn</span><span class="p">:</span> <span class="s2">"fetchEURUSDviaOraclize"</span><span class="p">,</span> <span class="na">args</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span>
+</code></pre>
+<p>In order to test the example function <code>fetchEURUSDviaOraclize</code> which calls the Oraclize query from the <code>user-chaincode</code>, you need to start the network first.
+After launching the Docker daemon, you proceed by running the following command from the folder <code>fabric-samples/oraclize-integration</code>:</p>
+
+<p><code>./startFabric.sh</code></p>
+
+<p>Then, when the network is fully up, with all its 7 containers (4 entities, 2 chaincodes, 1 couchdb),
+run the application query file <code>user-application-query.js</code>, with the command:</p>
+
+<p><code>node user-application-query.js</code></p>
+
+<p>The EUR/USD exchange rate result is returned with the authenticity proof specified chaincode side.</p>
+
+<aside class="notice">
+For the full code the example file above please refer to the
+    <a href="https://github.com/oraclize/fabric-examples">fabric-examples Oraclize repository on Github</a>
+.
+</aside>
+
           <h1 id='development-tools'>Development Tools</h1>
 <p>In this section, developers will find some of tools which can assist them into integrating Oraclize in their product.</p>
 <h2 id='test-query'>Test Query</h2>
@@ -1620,7 +1879,7 @@ Please note that the correct package name is named `oraclize-api` and not `oracl
 <p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an experimental nodejs library that be used to build non-blockchain applications leveraging Oraclize. It can be considered a simple abstraction layer to the Oraclize HTTP API.</p>
 <h3 id='stargate'>Stargate</h3>
 <p>The Oraclize team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Oraclize.
-Additional information will be available later this year. Parties interested in trying this experimental feature, can get in touch at &#39;info@oraclize.it&#39;</p>
+Additional information will be available later this year. Parties interested in trying this experimental feature, can get <a href="mailto:info@oraclize.it">in touch with us</a>.</p>
 
           <h1 id='security-deep-dive'>Security Deep Dive</h1>
 <p>As digital technologies have reduced the barrier to entries for information creation and distribution, it has become extremely important to be able to authenticate a piece of information as originating from a known, trusted source.</p>
