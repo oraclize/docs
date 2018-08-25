@@ -40,4 +40,4 @@ Please note that the correct package name is named `oraclize-api` and not `oracl
 
 ### Stargate
 The Oraclize team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Oraclize.
-Additional information will be available later this year. Parties interested in trying this experimental feature, can get in touch at 'info@oraclize.it'
+Additional information will be available later this year. Parties interested in trying this experimental feature, can get [in touch with us](mailto:info@oraclize.it).

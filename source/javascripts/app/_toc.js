@@ -19,6 +19,7 @@
     while (jsname.indexOf("nbsp") > -1) jsname = jsname.replace("nbsp", "");
     while (jsname.indexOf("c--") > -1) jsname = jsname.replace("c--", "");
     while (jsname.indexOf("tritime") > -1) jsname = jsname.replace("tritime", "");
+    while (jsname.indexOf("num") > -1) jsname = jsname.replace("num", "");
     while (jsname[0] == "-") jsname = jsname.substr(1);
     return jsname;
   }

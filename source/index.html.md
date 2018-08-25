@@ -21,6 +21,7 @@ includes:
   - rootstock
   - eos
   - corda
+  - fabric
   - dev_tools
   - security
   - pricing 
