@@ -1,5 +1,5 @@
 ---
-title: Oraclize Documentation
+title: .Oraclize Documentation
 
 language_tabs:
   - javascript: 
