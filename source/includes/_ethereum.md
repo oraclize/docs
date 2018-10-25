@@ -38,14 +38,14 @@ contract ExampleContract is usingOraclize {
            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
        } else {
            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-           oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
+           oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
        }
    }
 }
 ```
 
 The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
-This contract uses Oraclize to fetch the last ETH/USD from gdax.com APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:
+This contract uses Oraclize to fetch the last ETH/USD from Coinbase Pro APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:
 
 * The contract should be a child of the contract usingOraclize
 * The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository.
@@ -132,7 +132,7 @@ contract ExampleContract is usingOraclize {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-        	oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
+        	oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
         }
     }
 
@@ -178,7 +178,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
+				oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
 			validIds[queryId] = true;
         }
     }
@@ -227,7 +227,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 500000);
+				oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price", 500000);
 			validIds[queryId] = true;
         }
     }
@@ -242,11 +242,11 @@ A different value for the Oraclize callback gas can be passed as the argument `_
 
 ```javascript
 // If the callback transaction requires little gas, the value can be lowered:
-oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 100000);
+oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price", 100000);
 
 // Callback methods may be expensive. The example requires the JSON parsing
 // a string in the smart contract. If that's the case, the gas should be increased:
-oraclize_query("URL", "https://api.gdax.com/products/ETH-USD/ticker", 500000);
+oraclize_query("URL", "https://api.pro.coinbase.com/products/ETH-USD/ticker", 500000);
 ```
 
 The gas price of the callback transaction can be set by calling the `oraclize_setCustomGasPrice` function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.
@@ -296,7 +296,7 @@ contract ExampleContract is usingOraclize {
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
-				oraclize_query(60, "URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price", 500000);
+				oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price", 500000);
 			validIds[queryId] = true;
         }
     }
@@ -408,7 +408,7 @@ contract ExampleContract is usingOraclize {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            bytes32 queryId = oraclize_query("URL", "json(https://api.gdax.com/products/ETH-USD/ticker).price");
+            bytes32 queryId = oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
             pendingQueries[queryId] = true;
         }
     }
