@@ -41,7 +41,7 @@ contract ExampleContract is usingOraclize {
            oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
        }
    }
-}
+} 
 ```
 
 The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
