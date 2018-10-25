@@ -460,13 +460,13 @@ To better profit from this section of the documentation, previous knowledge of S
            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-           <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
+           <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
        <span class="p">}</span>
    <span class="p">}</span>
 <span class="p">}</span>
 </code></pre>
 <p>The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
-This contract uses Oraclize to fetch the last ETH/USD from gdax.com APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:</p>
+This contract uses Oraclize to fetch the last ETH/USD from Coinbase Pro APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:</p>
 
 <ul>
 <li>The contract should be a child of the contract usingOraclize</li>
@@ -548,7 +548,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
+            <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
 
@@ -591,7 +591,7 @@ Use recursive queries cautiously. In general it is recommended to send queries p
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
-                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -636,7 +636,7 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
-                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -648,11 +648,11 @@ The queryId identifies a specific query done to Oraclize and it is returned to t
 
 <p>A different value for the Oraclize callback gas can be passed as the argument <code>_gasLimit</code> to the <code>oraclize_query</code> function as shown in the following examples.</p>
 <pre class="highlight javascript tab-javascript"><code><span class="c1">// If the callback transaction requires little gas, the value can be lowered:</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">100000</span><span class="p">);</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">100000</span><span class="p">);</span>
 
 <span class="c1">// Callback methods may be expensive. The example requires the JSON parsing</span>
 <span class="c1">// a string in the smart contract. If that's the case, the gas should be increased:</span>
-<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.gdax.com/products/ETH-USD/ticker"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+<span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"https://api.pro.coinbase.com/products/ETH-USD/ticker"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
 </code></pre>
 <p>The gas price of the callback transaction can be set by calling the <code>oraclize_setCustomGasPrice</code> function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.</p>
 
@@ -696,7 +696,7 @@ When calling `oraclize_setCustomGasPrice` the parameter type is uint and represe
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
-                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
+                <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -796,7 +796,7 @@ The following builds on our previous example:</p>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
-            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.gdax.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
+            <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
             <span class="nx">pendingQueries</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
