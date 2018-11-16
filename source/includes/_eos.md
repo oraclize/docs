@@ -527,4 +527,3 @@ More complete, complex examples are available on the dedicated Github repository
 ## Pricing
 
 The Oraclize integration with EOS is currently available on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)** only and Oraclize is currently charging no fee there. Our standard [pricing table](#pricing) will apply shortly (`EOS` tokens will be charged), before the launch on the EOSIO Mainnet. The same pricing logic will be applied on testnets too (regardless of their worthless nature), in order to facilitate the testing of EOS contracts in an environment which resembles the Mainnet behaviour.
-122
