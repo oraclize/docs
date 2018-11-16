@@ -32,9 +32,6 @@ $ git clone https://github.com/oraclize/eos-api.git oraclize
 Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Oraclize. The header file can be downloaded from the [`eos-api` github repository](https://github.com/oraclize/eos-api).
 It is highly recommended to always use the latest version.
 
-
-
-
 ```c++
 #include <eosiolib/eosio.hpp>                       
 #include <eosiolib/print.hpp>                       
@@ -436,7 +433,7 @@ public:
     request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
             "PUT",
             "http://httpbin.org/anything",
-            "{'json' : {'testing':'it works'}}"
+:wq            "{'json' : {'testing':'it works'}}"
            );
   }
     
@@ -519,9 +516,8 @@ public:
 EOSIO_ABI(randomsample, (getrandnum)(callback))
 ```
 
-
-
 ## More Examples
+
 More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a>
 
 ## Pricing
