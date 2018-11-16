@@ -452,15 +452,26 @@ EOSIO_ABI(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(c
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
 Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
-`oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", _firstOperand, _secondOperand, _thirdOperand, _fourthOperand]);`
+
+` 
+std::vector<std::vector<unsigned char>> myquery = { 
+      string_to_vector("QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR"),
+      string_to_vector("_firstOperand"),
+      string_to_vector("_secondOperand"),
+      string_to_vector("_thirdOperand"),
+      string_to_vector("_fourthOperand")
+    };
+`
+
+`oraclize_query("computation", myquery);`
 
 #### Passing more than 5 Arguments
 
 In case you need to pass more arguments, you will need to send a manually set dynamic string/bytes array, for example:
 
-`std::string myArgs[6] = { "MYIPFSHASH", ... }`
+`std::string myArgs[6] = { "MYIPFSHASH", ... };`
 
-The query would then look like this: `oraclize_query("computation", myArgs)`
+The query would then look like this: `oraclize_query("computation", myArgs);`
 
 ### Random Data Source
 
