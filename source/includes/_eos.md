@@ -433,7 +433,7 @@ public:
     request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
             "PUT",
             "http://httpbin.org/anything",
-:wq            "{'json' : {'testing':'it works'}}"
+            "{'json' : {'testing':'it works'}}"
            );
   }
     
