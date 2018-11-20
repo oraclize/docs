@@ -32,9 +32,6 @@ $ git clone https://github.com/oraclize/eos-api.git oraclize
 Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Oraclize. The header file can be downloaded from the [`eos-api` github repository](https://github.com/oraclize/eos-api).
 It is highly recommended to always use the latest version.
 
-
-
-
 ```c++
 #include <eosiolib/eosio.hpp>                       
 #include <eosiolib/print.hpp>                       
@@ -369,10 +366,167 @@ using namespace eosio;
 ...
 ```
 
+### Computation Data Source
+
+#### Passing Arguments to the Package
+
+```c++
+#include "oraclize/eos_api.hpp"
+
+using namespace eosio;
+
+
+class urlrequests : public eosio::contract
+{
+  private:
+    void request(std::string _query, std::string _method, std::string _url, std::string _kwargs) 
+    {    
+        std::vector<std::vector<uint8_t>> myquery = { string_to_vector(_query),
+                                                      string_to_vector(_method),
+                                                      string_to_vector(_url),
+                                                      string_to_vector(_kwargs)
+                                                    };
+        oraclize_query("computation", myquery); 
+    }
+  
+  public:
+    using contract::contract;
+
+    /// @abi action
+    void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof)
+    {
+        require_auth(oraclize_cbAddress());
+    
+        std::string result_str = vector_to_string(result);
+        print("Response: ", result_str);
+    }
+
+    /// @abi action        
+    void reqheadscust()
+    {
+        print("Sending query to Oraclize...");
+        request("json(QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE).headers",
+                "GET",
+      	        "http://httpbin.org/headers",
+      	        "{'headers': {'content-type': 'json'}}"
+               );
+    }
+
+    /// @abi action
+    void reqbasauth()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "GET",
+                "http://httpbin.org/basic-auth/myuser/secretpass",
+                "{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"
+               );  
+    }
+    
+    /// @abi action
+    void reqpost()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "POST",
+                "https://api.postcodes.io/postcodes",
+                "{'json': {'postcodes' : ['OX49 5NU']}}"
+               );   
+    }
+  
+    /// @abi action
+    void reqput()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "PUT",
+                "http://httpbin.org/anything",
+                "{'json' : {'testing':'it works'}}"
+               );
+    }
+    
+    /// @abi action
+    void reqcookies()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "GET",
+                "http://httpbin.org/cookies",
+                "{'cookies' : {'thiscookie':'should be saved and visible :)'}}"
+               );
+    }
+};
+
+EOSIO_ABI(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(callback))
+```
+Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
+
+Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+
+` 
+std::vector<std::vector<unsigned char>> myquery = { 
+      string_to_vector("QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR"),
+      string_to_vector("_firstOperand"),
+      string_to_vector("_secondOperand"),
+      string_to_vector("_thirdOperand"),
+      string_to_vector("_fourthOperand")
+    };
+`
+
+`oraclize_query("computation", myquery);`
+
+#### Passing more than 5 Arguments
+
+In case you need to pass more arguments, you will need to send a manually set dynamic string/bytes array, for example:
+
+`std::string myArgs[6] = { "MYIPFSHASH", ... };`
+
+The query would then look like this: `oraclize_query("computation", myArgs);`
+
+### Random Data Source
+
+Included with the Oraclize `eos_api.hpp`, which EOS contracts should use to interface with Oraclize,
+some specific functions related to the Oraclize Random Data Source have been added. In particular:
+
+* `oraclize_newRandomDSQuery`: helper to perform an Oraclize random DS query correctly
+* `oraclize_randomDS_proofVerify`: performs the verification of the proof returned with the callback transaction
+
+```c++
+#include "oraclize/eos_api.hpp"
+
+using namespace eosio;
+
+
+class randomsample : public eosio::contract
+{
+public:
+  using contract::contract;
+
+  /// @abi action
+  void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof) {
+    require_auth(oraclize_cbAddress());
+    if (oraclize_randomDS_proofVerify(queryId, result, proof, _self) != 0) {
+      // The proof verification has failed, manage this use case...
+      print("Proof not verified!");
+    } else {
+      uint8_t result_int = 0;
+      std::memcpy(&result_int, &result[0], result.size());
+      print("Number: ");
+      printi(result_int);
+    }
+  }
+
+  /// @abi action        
+  void getrandnum() {    
+    uint8_t N = 1; // Possible outputs: [0-255]
+    uint32_t delay = 10; 
+    oraclize_newRandomDSQuery(delay, N);
+  }
+};
+
+EOSIO_ABI(randomsample, (getrandnum)(callback))
+```
+
 ## More Examples
+
 More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a>
 
 ## Pricing
 
 The Oraclize integration with EOS is currently available on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)** only and Oraclize is currently charging no fee there. Our standard [pricing table](#pricing) will apply shortly (`EOS` tokens will be charged), before the launch on the EOSIO Mainnet. The same pricing logic will be applied on testnets too (regardless of their worthless nature), in order to facilitate the testing of EOS contracts in an environment which resembles the Mainnet behaviour.
-
