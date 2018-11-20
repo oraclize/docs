@@ -378,73 +378,79 @@ using namespace eosio;
 
 class urlrequests : public eosio::contract
 {
-
-private:
-  void request(std::string _query, std::string _method, std::string _url, std::string _kwargs) {    
-    std::vector<std::vector<unsigned char>> myquery = { 
-      string_to_vector(_query),
-      string_to_vector(_method),
-      string_to_vector(_url),
-      string_to_vector(_kwargs)
-    };
-    oraclize_query("computation", myquery); 
-  }
+  private:
+    void request(std::string _query, std::string _method, std::string _url, std::string _kwargs) 
+    {    
+        std::vector<std::vector<uint8_t>> myquery = { string_to_vector(_query),
+                                                      string_to_vector(_method),
+                                                      string_to_vector(_url),
+                                                      string_to_vector(_kwargs)
+                                                    };
+        oraclize_query("computation", myquery); 
+    }
   
-public:
-  using contract::contract;
+  public:
+    using contract::contract;
 
-  /// @abi action
-  void callback(checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof) {
-    require_auth(oraclize_cbAddress());
+    /// @abi action
+    void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof)
+    {
+        require_auth(oraclize_cbAddress());
     
-    std::string result_str = vector_to_string(result);
-    print("Balance: ", result_str);
-  }
+        std::string result_str = vector_to_string(result);
+        print("Response: ", result_str);
+    }
 
-  /// @abi action        
-  void reqheadscust() {
-    request("json(QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE).headers",
-            "GET",
-      	    "http://httpbin.org/headers",
-      	    "{'headers': {'content-type': 'json'}}"
-           );
-  }
+    /// @abi action        
+    void reqheadscust()
+    {
+        print("Sending query to Oraclize...");
+        request("json(QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE).headers",
+                "GET",
+      	        "http://httpbin.org/headers",
+      	        "{'headers': {'content-type': 'json'}}"
+               );
+    }
 
-  /// @abi action
-  void reqbasauth() {
-    request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
-            "GET",
-            "http://httpbin.org/basic-auth/myuser/secretpass",
-            "{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"
-           );  
-  }
+    /// @abi action
+    void reqbasauth()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "GET",
+                "http://httpbin.org/basic-auth/myuser/secretpass",
+                "{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"
+               );  
+    }
     
-  /// @abi action
-  void reqpost() {
-    request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
-            "POST",
-            "https://api.postcodes.io/postcodes",
-            "{'json': {'postcodes' : ['OX49 5NU']}}"
-           );   
-  }
+    /// @abi action
+    void reqpost()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "POST",
+                "https://api.postcodes.io/postcodes",
+                "{'json': {'postcodes' : ['OX49 5NU']}}"
+               );   
+    }
   
-  /// @abi action
-  void reqput() {
-    request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
-            "PUT",
-            "http://httpbin.org/anything",
-            "{'json' : {'testing':'it works'}}"
-           );
-  }
+    /// @abi action
+    void reqput()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "PUT",
+                "http://httpbin.org/anything",
+                "{'json' : {'testing':'it works'}}"
+               );
+    }
     
-  /// @abi action
-  void reqcookies() {
-    request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
-            "GET",
-            "http://httpbin.org/cookies",
-            "{'cookies' : {'thiscookie':'should be saved and visible :)'}}"
-           );
-  }
+    /// @abi action
+    void reqcookies()
+    {
+        request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
+                "GET",
+                "http://httpbin.org/cookies",
+                "{'cookies' : {'thiscookie':'should be saved and visible :)'}}"
+               );
+    }
 };
 
 EOSIO_ABI(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(callback))
@@ -479,17 +485,7 @@ Included with the Oraclize `eos_api.hpp`, which EOS contracts should use to inte
 some specific functions related to the Oraclize Random Data Source have been added. In particular:
 
 * `oraclize_newRandomDSQuery`: helper to perform an Oraclize random DS query correctly
-	* `oraclize_randomDS_setCommitment`: set in the smart contract storage the commitment for the current request
-	* `oraclize_randomDS_getSessionPubkeyHash`: recovers the hash of a session pub key presents in the connector
 * `oraclize_randomDS_proofVerify`: performs the verification of the proof returned with the callback transaction
-	* `verifySig`: verify that the session key chain of trust is valid and its root is a Ledger Root Key
-	* `matchBytes32Prefix`: verify that the result returned is the sha256 of the session key signature over the request data payload
-
-For advance usage of Random Data Source, it is recommended to read the following section.
-
-<aside class="notice">
-The random datasource is currently available on the EOS Jungle testnet.
-</aside>
 
 ```c++
 #include "oraclize/eos_api.hpp"
