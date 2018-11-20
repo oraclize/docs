@@ -1464,6 +1464,152 @@ In case you wanted to see more details, it is enough to use the <code>--console<
 </span>
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
 <span class="p">...</span>
+</code></pre><h3 id='computation-data-source'>Computation Data Source</h3><h4 id='passing-arguments-to-the-package'>Passing Arguments to the Package</h4><pre class="highlight cpp"><code><span class="cp">#include "oraclize/eos_api.hpp"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
+
+
+<span class="k">class</span> <span class="nc">urlrequests</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
+<span class="p">{</span>
+  <span class="k">private</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">request</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_query</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_method</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_url</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_kwargs</span><span class="p">)</span> 
+    <span class="p">{</span>    
+        <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;&gt;</span> <span class="n">myquery</span> <span class="o">=</span> <span class="p">{</span> <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_query</span><span class="p">),</span>
+                                                      <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_method</span><span class="p">),</span>
+                                                      <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_url</span><span class="p">),</span>
+                                                      <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_kwargs</span><span class="p">)</span>
+                                                    <span class="p">};</span>
+        <span class="n">oraclize_query</span><span class="p">(</span><span class="s">"computation"</span><span class="p">,</span> <span class="n">myquery</span><span class="p">);</span> 
+    <span class="p">}</span>
+
+  <span class="k">public</span><span class="o">:</span>
+    <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
+
+    <span class="c1">/// @abi action
+</span>    <span class="kt">void</span> <span class="nf">callback</span><span class="p">(</span><span class="n">checksum256</span> <span class="n">queryId</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">proof</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">require_auth</span><span class="p">(</span><span class="n">oraclize_cbAddress</span><span class="p">());</span>
+
+        <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">result_str</span> <span class="o">=</span> <span class="n">vector_to_string</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+        <span class="n">print</span><span class="p">(</span><span class="s">"Response: "</span><span class="p">,</span> <span class="n">result_str</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">/// @abi action        
+</span>    <span class="kt">void</span> <span class="nf">reqheadscust</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">print</span><span class="p">(</span><span class="s">"Sending query to Oraclize..."</span><span class="p">);</span>
+        <span class="n">request</span><span class="p">(</span><span class="s">"json(QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE).headers"</span><span class="p">,</span>
+                <span class="s">"GET"</span><span class="p">,</span>
+                <span class="s">"http://httpbin.org/headers"</span><span class="p">,</span>
+                <span class="s">"{'headers': {'content-type': 'json'}}"</span>
+               <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">/// @abi action
+</span>    <span class="kt">void</span> <span class="nf">reqbasauth</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">request</span><span class="p">(</span><span class="s">"QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE"</span><span class="p">,</span>
+                <span class="s">"GET"</span><span class="p">,</span>
+                <span class="s">"http://httpbin.org/basic-auth/myuser/secretpass"</span><span class="p">,</span>
+                <span class="s">"{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"</span>
+               <span class="p">);</span>  
+    <span class="p">}</span>
+
+    <span class="c1">/// @abi action
+</span>    <span class="kt">void</span> <span class="nf">reqpost</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">request</span><span class="p">(</span><span class="s">"QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE"</span><span class="p">,</span>
+                <span class="s">"POST"</span><span class="p">,</span>
+                <span class="s">"https://api.postcodes.io/postcodes"</span><span class="p">,</span>
+                <span class="s">"{'json': {'postcodes' : ['OX49 5NU']}}"</span>
+               <span class="p">);</span>   
+    <span class="p">}</span>
+
+    <span class="c1">/// @abi action
+</span>    <span class="kt">void</span> <span class="nf">reqput</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">request</span><span class="p">(</span><span class="s">"QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE"</span><span class="p">,</span>
+                <span class="s">"PUT"</span><span class="p">,</span>
+                <span class="s">"http://httpbin.org/anything"</span><span class="p">,</span>
+                <span class="s">"{'json' : {'testing':'it works'}}"</span>
+               <span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="c1">/// @abi action
+</span>    <span class="kt">void</span> <span class="nf">reqcookies</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">request</span><span class="p">(</span><span class="s">"QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE"</span><span class="p">,</span>
+                <span class="s">"GET"</span><span class="p">,</span>
+                <span class="s">"http://httpbin.org/cookies"</span><span class="p">,</span>
+                <span class="s">"{'cookies' : {'thiscookie':'should be saved and visible :)'}}"</span>
+               <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">EOSIO_ABI</span><span class="p">(</span><span class="n">urlrequests</span><span class="p">,</span> <span class="p">(</span><span class="n">reqheadscust</span><span class="p">)(</span><span class="n">reqbasauth</span><span class="p">)(</span><span class="n">reqpost</span><span class="p">)(</span><span class="n">reqput</span><span class="p">)(</span><span class="n">reqcookies</span><span class="p">)(</span><span class="n">callback</span><span class="p">))</span>
+</code></pre>
+<p>Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.</p>
+
+<p>Currenty the API supports up to 5 inline arguments, including the IPFS Hash: </p>
+
+<p><code>
+std::vector&lt;std::vector&lt;unsigned char&gt;&gt; myquery = { 
+      string_to_vector(&quot;QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR&quot;),
+      string_to_vector(&quot;_firstOperand&quot;),
+      string_to_vector(&quot;_secondOperand&quot;),
+      string_to_vector(&quot;_thirdOperand&quot;),
+      string_to_vector(&quot;_fourthOperand&quot;)
+    };
+</code></p>
+
+<p><code>oraclize_query(&quot;computation&quot;, myquery);</code></p>
+<h4 id='passing-more-than-5-arguments'>Passing more than 5 Arguments</h4>
+<p>In case you need to pass more arguments, you will need to send a manually set dynamic string/bytes array, for example:</p>
+
+<p><code>std::string myArgs[6] = { &quot;MYIPFSHASH&quot;, ... };</code></p>
+
+<p>The query would then look like this: <code>oraclize_query(&quot;computation&quot;, myArgs);</code></p>
+<h3 id='random-data-source'>Random Data Source</h3>
+<p>Included with the Oraclize <code>eos_api.hpp</code>, which EOS contracts should use to interface with Oraclize,
+some specific functions related to the Oraclize Random Data Source have been added. In particular:</p>
+
+<ul>
+<li><code>oraclize_newRandomDSQuery</code>: helper to perform an Oraclize random DS query correctly</li>
+<li><code>oraclize_randomDS_proofVerify</code>: performs the verification of the proof returned with the callback transaction</li>
+</ul>
+<pre class="highlight cpp"><code><span class="cp">#include "oraclize/eos_api.hpp"
+</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
+
+
+<span class="k">class</span> <span class="nc">randomsample</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+  <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
+
+  <span class="c1">/// @abi action
+</span>  <span class="kt">void</span> <span class="nf">callback</span><span class="p">(</span><span class="n">checksum256</span> <span class="n">queryId</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">proof</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">require_auth</span><span class="p">(</span><span class="n">oraclize_cbAddress</span><span class="p">());</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">oraclize_randomDS_proofVerify</span><span class="p">(</span><span class="n">queryId</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">proof</span><span class="p">,</span> <span class="n">_self</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// The proof verification has failed, manage this use case...
+</span>      <span class="n">print</span><span class="p">(</span><span class="s">"Proof not verified!"</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="kt">uint8_t</span> <span class="n">result_int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="n">std</span><span class="o">::</span><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">result_int</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+      <span class="n">print</span><span class="p">(</span><span class="s">"Number: "</span><span class="p">);</span>
+      <span class="n">printi</span><span class="p">(</span><span class="n">result_int</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="c1">/// @abi action        
+</span>  <span class="kt">void</span> <span class="nf">getrandnum</span><span class="p">()</span> <span class="p">{</span>    
+    <span class="kt">uint8_t</span> <span class="n">N</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// Possible outputs: [0-255]
+</span>    <span class="kt">uint32_t</span> <span class="n">delay</span> <span class="o">=</span> <span class="mi">10</span><span class="p">;</span> 
+    <span class="n">oraclize_newRandomDSQuery</span><span class="p">(</span><span class="n">delay</span><span class="p">,</span> <span class="n">N</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">EOSIO_ABI</span><span class="p">(</span><span class="n">randomsample</span><span class="p">,</span> <span class="p">(</span><span class="n">getrandnum</span><span class="p">)(</span><span class="n">callback</span><span class="p">))</span>
 </code></pre><h2 id='more-examples'>More Examples</h2>
 <p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a></p>
 <h2 id='pricing'>Pricing</h2>
