@@ -33,35 +33,35 @@ Before starting, it is necessary to include the `eos_api.hpp` header file. This 
 It is highly recommended to always use the latest version.
 
 ```c++
-#include <eosiolib/eosio.hpp>                       
-#include <eosiolib/print.hpp>                       
-
-#include "oraclize/eos_api.hpp"                  
+#include "oraclize/eos_api.hpp"
 
 using namespace eosio;
 
-
-class example1 : public eosio::contract {
+class eosusdprice : public eosio::contract 
+{
   public:
       using contract::contract;
 
-      /// @abi action
-      void getprice() {
-         oraclize_query("URL", "json(https://api.binance.com/api/v3/ticker/price?symbol=EOSUSDT).price");               
-         print("Oraclize query was sent, standing by for the answer..");                          
+      eosusdprice(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
+
+      [[eosio::action]]
+      void execquery() {
+          print("Sending query to Oraclize...");
+          oraclize_query("URL", "json(https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD).USD",\
+           (proofType_Android | proofStorage_IPFS));
       }
 
-      /// @abi action
-      void callback( checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof ) {
-         require_auth(oraclize_cbAddress());
-         
-         std::string result_str = vector_to_string(result);                                              
-         print("EOSUSD:", result_str);
-      }
+      [[eosio::action]]
+      void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof) {
+          require_auth(oraclize_cbAddress());
 
+          const std::string result_str = vector_to_string(result);
+          print("Result: ", result_str);
+          print(" Proof length: ", proof.size());
+      }
 };
 
-EOSIO_ABI(example1, (getprice)(callback))
+EOSIO_DISPATCH(eosusdprice, (execquery)(callback))
 ```
 
 The simplest way to introduce the EOS - Oraclize integration, it is by showing a working example, such as the EOS contract on the right.
@@ -116,39 +116,40 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 ### Recursive Queries
 
 ```c++
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
-
 #include "oraclize/eos_api.hpp"
 
 using namespace eosio;
 
 
-class example2 : public eosio::contract {
+class wolframrand : public eosio::contract 
+{
   public:
-      using contract::contract;
+    using contract::contract;
 
-      /// @abi action 
-      void getrandomnum() {
-         oraclize_query(10, "WolframAlpha", "random number between 1 and 6");
-         print("Oraclize query was sent, standing by for the answer..");  
-      }
+    wolframrand(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
 
-      /// @abi action
-      void callback( checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof ) {
-         require_auth(oraclize_cbAddress());
+    [[eosio::action]]
+    void getrandomnum() 
+    {
+        oraclize_query(10, "WolframAlpha", "random number between 1 and 6");
+        print(" Oraclize query was sent, standing by for the answer...");
+    }
 
-         std::string result_str = vector_to_string(result);
-         print("Result:", result_str); 
+    [[eosio::action]]
+    void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof) 
+    {
+        require_auth(oraclize_cbAddress());
 
-         if (result_str != "6") getrandomnum();
-      }
+        const std::string result_str = vector_to_string(result);
+        print("Result:", result_str);
 
+        if (result_str != "6") getrandomnum();
+    }
 };
 
-EOSIO_ABI(example2, (getrandomnum)(callback))
-
+EOSIO_DISPATCH(wolframrand, (getrandomnum)(callback))
 ```
+
 EOS contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their ` callback` action.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
@@ -161,72 +162,45 @@ Use recursive queries cautiously. In general it is recommended to send queries p
 ### The Query ID
 
 ```c++
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
-
 #include "oraclize/eos_api.hpp"
 
 using namespace eosio;
 
 
-// @abi table
-struct queryid
+class checkqueryid : public eosio::contract 
 {
-    uint64_t key;
-    checksum256 qid;
-    uint8_t active;
-
-    uint64_t primary_key() const { return key; }
-};
-
-typedef eosio::multi_index<N(queryid), queryid> ds_queryid;
-
-
-class example3 : public eosio::contract {
   public:
-      using contract::contract;
+    using contract::contract;
+    
+    checkqueryid(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
 
-      /// @abi action 
-      void testquery(std::string myDatasource, std::string myQuery, uint8_t myProoftype) {
-         checksum256 myQueryId = oraclize_query(myDatasource, myQuery, myProoftype);
+    [[eosio::action]] 
+    void checkquery() 
+    {
+        capi_checksum256 myQueryId = oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=EOSUSD).result.EOSUSD.l.0");
+        oraclize_queryId_localEmplace(myQueryId);
+        print("Oraclize query was sent & queryId saved in a tbl record, standing by for the answer...");
+    }
 
-         // let's save the queryid in a local table
-         ds_queryid queryids(_self, _self);
-         uint64_t myQueryId_short;
-         std::memcpy(&myQueryId_short, &myQueryId.hash, sizeof(myQueryId_short));
-         queryids.emplace( _self, [&]( auto& o ) {
-             o.key = myQueryId_short;
-             o.qid = myQueryId;
-             o.active = true;
-           });
-
-         print("Oraclize query was sent & queryId saved in a tbl record, standing by for the answer..");  
-      }
-
-      /// @abi action
-      void callback( checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof ) {
-         require_auth(oraclize_cbAddress());
-
-         ds_queryid queryids(_self, _self);
-         uint64_t myQueryId_short;
-         std::memcpy(&myQueryId_short, &queryId.hash, sizeof(myQueryId_short));
-         std::string queryId_str__expected = checksum256_to_string(queryids.find(myQueryId_short)->qid);
-
-         std::string queryId_str = checksum256_to_string(queryId);
-         if (queryId_str != queryId_str__expected){
-             print("UNEXPECTED QUERY ID - ", queryId_str, " != ", queryId_str__expected);
-         } else {
-             print("QueryId:", queryId_str);
-             
-             std::string result_str = vector_to_string(result);
-             print("Result:", result_str);
-         }
-      }
-
+    [[eosio::action]]
+    void callback(capi_checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof) 
+    {
+        require_auth(oraclize_cbAddress());
+      
+        if (!oraclize_queryId_match(queryId))
+        {
+            print("UNEXPECTED QUERY ID");
+        } 
+        else 
+        {      		
+            print("QueryId: ", checksum256_to_string(queryId));
+            const std::string result_str = vector_to_string(result);
+            print(" Result: ", result_str);
+        }
+    }
 };
 
-EOSIO_ABI(example3, (testquery)(callback))
-
+EOSIO_DISPATCH(checkqueryid, (checkquery)(callback))
 ```
 
 Every time the function `oraclize_query` is called, it returns a unique ID, hereby referred to as `queryId`, which is guaranteed to be unique in the given network execution context.
@@ -240,7 +214,7 @@ The `queryId` can be used as well to implement different behaviors into the `cal
 
 The `callback` action is called by an Oraclize-controlled account, which will be in charge of allocating the resources for the action execution.
 The following restrictions apply:
-* no RAM will be usable by the calling account, so the EOS contract developer should take care, when operations needing RAM are to be executed in the context of the `callback` function, to define an appropriate payer (i.e.: the contract iself, `_self`).
+* no RAM will be usable by the calling account, so the EOS contract developer should take care, when operations needing RAM are to be executed in the context of the `callback` function, to define an appropriate payer (i.e.: the contract itself, `_self`).
 * the max CPU usage is `100 ms`
 * the max NET usage is `100 kb`
 
@@ -254,34 +228,38 @@ The above-mentioned limits are experimental and could change before the launch o
 ### Authenticity Proofs
 
 ```c++
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
-
 #include "oraclize/eos_api.hpp"
 
 using namespace eosio;
 
 
-class example4 : public eosio::contract {
+class eosusdprice : public eosio::contract 
+{
   public:
       using contract::contract;
 
-      /// @abi action 
-      void execquery() {
-         oraclize_query("URL", "json(https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD).USD",\
-           (proofType_TLSNotary | proofStorage_IPFS));
+      eosusdprice(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
+
+      [[eosio::action]]
+      void execquery()
+      {
+          print("Sending query to Oraclize...");
+          oraclize_query("URL", "json(https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD).USD",\
+           (proofType_Android | proofStorage_IPFS));
       }
 
-      /// @abi action
-      void callback( checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof ) {
-         require_auth(oraclize_cbAddress());
+      [[eosio::action]]
+      void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof)
+      {
+          require_auth(oraclize_cbAddress());
 
-         print("Proof: ", proof.size());
+          const std::string result_str = vector_to_string(result);
+          print("Result: ", result_str);
+          print(" Proof length: ", proof.size());
       }
-
 };
 
-EOSIO_ABI(example4, (execquery)(callback))
+EOSIO_DISPATCH(eosusdprice, (execquery)(callback))
 ```
 
 Authenticity proofs are at the core of Oraclize's oracle model. EOS contracts can request authenticity proofs together with their data by specifying the proof they want in the last argument of the `oraclize_query` function. The authenticity proof can be either deliver directly to the EOS contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>.
@@ -355,9 +333,6 @@ The [test_query page](http://app.oraclize.it/home/test_query) is another useful 
 When using the `oraclize_query` function, an EOS action to the Oraclize `connector` contract is started. By default the permission for such action is given by the EOS contract account itself. This could be changed, for example to have the user of the contract paying for the action resources and for the Oraclize service fees (if any): it is enough to define a macro `ORACLIZE_PAYER` **before** including the `oraclize/eos_api.hpp` header file.
 
 ```c++
-#include <eosiolib/eosio.hpp>
-#include <eosiolib/print.hpp>
-
 #define ORACLIZE_PAYER N(mypayinguser)
 
 #include "oraclize/eos_api.hpp"
@@ -379,60 +354,54 @@ using namespace eosio;
 class urlrequests : public eosio::contract
 {
   private:
-    void request(std::string _query, std::string _method, std::string _url, std::string _kwargs) 
-    {    
-        std::vector<std::vector<uint8_t>> myquery = { string_to_vector(_query),
-                                                      string_to_vector(_method),
-                                                      string_to_vector(_url),
-                                                      string_to_vector(_kwargs)
-                                                    };
-        oraclize_query("computation", myquery); 
+    void request(const std::string _query, const std::string _method, const std::string _url, const std::string _kwargs) 
+    { 
+        std::vector<std::vector<unsigned char>> myquery = {
+            string_to_vector(_query),
+            string_to_vector(_method),
+            string_to_vector(_url),
+            string_to_vector(_kwargs)
+        };
+        oraclize_query("computation", myquery);
     }
-  
+ 
   public:
     using contract::contract;
 
-    /// @abi action
-    void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof)
-    {
-        require_auth(oraclize_cbAddress());
-    
-        std::string result_str = vector_to_string(result);
-        print("Response: ", result_str);
-    }
+    urlrequests(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
 
-    /// @abi action        
+    [[eosio::action]]
     void reqheadscust()
     {
         print("Sending query to Oraclize...");
         request("json(QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE).headers",
                 "GET",
-      	        "http://httpbin.org/headers",
-      	        "{'headers': {'content-type': 'json'}}"
+                "http://httpbin.org/headers",
+                "{'headers': {'content-type': 'json'}}"
                );
     }
 
-    /// @abi action
+    [[eosio::action]]
     void reqbasauth()
     {
         request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
                 "GET",
                 "http://httpbin.org/basic-auth/myuser/secretpass",
                 "{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"
-               );  
+               );
     }
-    
-    /// @abi action
+ 
+    [[eosio::action]]
     void reqpost()
     {
         request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
                 "POST",
                 "https://api.postcodes.io/postcodes",
-                "{'json': {'postcodes' : ['OX49 5NU']}}"
+                "{\"json\": {\"postcodes\" : [\"OX49 5NU\"]}}"
                );   
     }
-  
-    /// @abi action
+ 
+    [[eosio::action]]
     void reqput()
     {
         request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
@@ -441,8 +410,8 @@ class urlrequests : public eosio::contract
                 "{'json' : {'testing':'it works'}}"
                );
     }
-    
-    /// @abi action
+ 
+    [[eosio::action]]
     void reqcookies()
     {
         request("QmdKK319Veha83h6AYgQqhx9YRsJ9MJE7y33oCXyZ4MqHE",
@@ -451,13 +420,23 @@ class urlrequests : public eosio::contract
                 "{'cookies' : {'thiscookie':'should be saved and visible :)'}}"
                );
     }
+    
+    [[eosio::action]]
+    void callback(capi_checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof)
+    {
+        require_auth(oraclize_cbAddress());
+ 
+        const std::string result_str = vector_to_string(result);
+        print("Response: ", result_str);
+    }
 };
 
-EOSIO_ABI(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(callback))
+EOSIO_DISPATCH(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(callback))
 ```
+
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
-Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+Currently the API supports up to 5 inline arguments, including the IPFS Hash: 
 
 ` 
 std::vector<std::vector<unsigned char>> myquery = { 
@@ -487,46 +466,58 @@ some specific functions related to the Oraclize Random Data Source have been add
 * `oraclize_newRandomDSQuery`: helper to perform an Oraclize random DS query correctly
 * `oraclize_randomDS_proofVerify`: performs the verification of the proof returned with the callback transaction
 
+#### Specify The Network Context
+
+It is **mandatory** for the developer to define the _network context_ in which the smart contract, using the Random Data Source,
+will operate:
+
+* For the EOS testnet Jungle: `#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"` 
+* For the EOS mainnet `#define ORACLIZE_NETWORK_NAME "eosio_mainnet"`
+
 ```c++
+#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"
+
 #include "oraclize/eos_api.hpp"
 
 using namespace eosio;
 
-
 class randomsample : public eosio::contract
 {
-public:
-  using contract::contract;
+  public:
+    using contract::contract;
 
-  /// @abi action
-  void callback(checksum256 queryId, std::vector<uint8_t> result, std::vector<uint8_t> proof) {
-    require_auth(oraclize_cbAddress());
-    if (oraclize_randomDS_proofVerify(queryId, result, proof, _self) != 0) {
-      // The proof verification has failed, manage this use case...
-      print("Proof not verified!");
-    } else {
-      uint8_t result_int = 0;
-      std::memcpy(&result_int, &result[0], result.size());
-      print("Number: ");
-      printi(result_int);
+    randomsample(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
+
+    [[eosio::action]]
+    void getrandnum() {
+        print("Sending query to Oraclize...");
+        uint8_t N = 1; // Possible outputs: [0-255]
+        uint32_t delay = 10;
+        oraclize_newRandomDSQuery(delay, N);
     }
-  }
-
-  /// @abi action        
-  void getrandnum() {    
-    uint8_t N = 1; // Possible outputs: [0-255]
-    uint32_t delay = 10; 
-    oraclize_newRandomDSQuery(delay, N);
-  }
+    
+    [[eosio::action]]
+    void callback(capi_checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof) {
+        require_auth(oraclize_cbAddress());
+        if (oraclize_randomDS_proofVerify(queryId, result, proof, _self) != 0) {
+            // The proof verification has failed, manage this use case...
+            print("Proof not verified!");
+        } else {
+            uint8_t result_int = 0;
+            std::memcpy(&result_int, &result[0], result.size());
+            print("Number: ");
+            printi(result_int);
+        }
+    }
 };
 
-EOSIO_ABI(randomsample, (getrandnum)(callback))
+EOSIO_DISPATCH(randomsample, (getrandnum)(callback))
 ```
 
 ## More Examples
 
-More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a>
+More documented, complete and complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a>
 
 ## Pricing
 
-The Oraclize integration with EOS is currently available on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)** only and Oraclize is currently charging no fee there. Our standard [pricing table](#pricing) will apply shortly (`EOS` tokens will be charged), before the launch on the EOSIO Mainnet. The same pricing logic will be applied on testnets too (regardless of their worthless nature), in order to facilitate the testing of EOS contracts in an environment which resembles the Mainnet behaviour.
+The Oraclize integration with EOS is currently available on the EOS Mainnet and on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**; Oraclize is currently charging **no fee**. Our standard [pricing table](#pricing) may apply (`EOS` tokens will be charged), later on the EOSIO Mainnet. The same pricing logic will be applied on testnets too (regardless of their worthless nature), in order to facilitate the testing of EOS contracts in an environment which resembles the Mainnet behaviour.
