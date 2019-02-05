@@ -5,17 +5,15 @@ The following section is dedicated to the Oraclize integration with EOS. Before 
 The EOS platform supports both C and C++ as programming languages for contracts, however the current Oraclize integration currently supports **C++ only**.
 
 <aside class="notice">
-Oraclize is currently integrated with the EOSIO Public "Jungle" Testnet only. The integration with the EOSIO Mainnet and other networks will launch in the coming weeks.
+Oraclize is currently integrated with EOSIO Mainnet and Public "Jungle" Testnet.
 </aside>
-
-To know more about the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**, the first EOS network where Oraclize has launched, you can visit the [official website of the testnet](http://jungle.cryptolions.io/).
 
 ## Rationale
 
 The interaction between Oraclize and an EOS contract is asynchronous. Any request for data is composed of two steps:
 
 * Firstly, in the most common case, a transaction executing a given action of a contract is broadcasted by a user. That action contains a special instruction which instructs Oraclize to execute an offchain task (like the data fetching from a Web API or [potentially much more](#data-sources)).
-* Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute a `callback` action which should be placed in the contract by its developer: for this reason, this transaction is referred in the documentation as the Oraclize callback transaction.
+* Secondly, according to the parameters of said request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, this transaction will execute a `callback` action which should be placed in the contract by its developer: for this reason, the transaction is referred to in the documentation as the Oraclize callback transaction.
 
 As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a contract together with one or more proofs of authenticity backing the data. The generation of an authenticity proof is optional and it must be configured by the EOS contract developer when the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.
 
@@ -64,13 +62,13 @@ class eosusdprice : public eosio::contract
 EOSIO_DISPATCH(eosusdprice, (execquery)(callback))
 ```
 
-The simplest way to introduce the EOS - Oraclize integration, it is by showing a working example, such as the EOS contract on the right.
-This contract uses Oraclize to fetch the last EOS/USD from the API of the Binance exchange. The update process is initiated every time the action getprice() is called. The example shows two important components of using Oraclize:
+The simplest way to introduce the EOS <-> Oraclize integration, is by showing a working example, such as the EOS contract on the right.
+This contract uses Oraclize to fetch the last EOS/USD price from the API of the Binance exchange. The update process is initiated every time the action getprice() is called. The example shows two important components of using Oraclize:
 
 * The contract should include the Oraclize header file
 * the `oraclize_query` function and the `callback` action handle all the communication between our EOS contract and Oraclize
 
-The code in the example is working out of the box on any EOS network where Oraclize is integrated. Right now the Oraclize integration is live on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)** only.
+The code in the example is working out of the box on any EOS network where Oraclize is integrated.
 
 
 ### Simple Query
@@ -78,7 +76,7 @@ The code in the example is working out of the box on any EOS network where Oracl
 // This code example will ask Oraclize to send as soon as possible
 // a transaction with the primary result (as a string) of the given
 // formula ("random number between 0 and 100") fetched from the
-// data-source "WolframAlpha".
+// datasource "WolframAlpha".
 oraclize_query("WolframAlpha", "random number between 0 and 100");
 
 oraclize_query("URL", "https://api.kraken.com/0/public/Ticker?pair=ETHXBT")
@@ -88,15 +86,15 @@ oraclize_query("URL",
 
 oraclize_query("IPFS", "QmdEJwJG1T9rzHvBD8i69HHuJaRgXRKEQCP7Bh1BVttZbU")
 ```
-A request for data is called **query**. The `oraclize_query` is a function, implemented in the `oraclize/eos_api.hpp` header file, which expects at least two arguments:
+A request for data is referred to as a **query**. The `oraclize_query` is a function, implemented in the `oraclize/eos_api.hpp` header file, which expects at least two arguments:
 
-* A data-source such as `URL`, `WolframAlpha`, `IPFS`, 'Swarm' and others listed here
-* The argument for the given data-source. For examples:
- * the full `URL`, which may inclued the use of JSON or XML parsing helpers as it can be seen in the previous example
+* A datasource such as `URL`, `WolframAlpha`, `IPFS`, 'Swarm' and others listed here
+* The argument for the given datasource. For example:
+ * the full `URL`, which may include the use of JSON or XML parsing helpers as can be seen in the previous example
  * or a `WolframAlpha` formula
  * or an `IPFS` multihash
 
-The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.
+The number and type of supported arguments is dependent on the datasource being used. Additionally code examples will be provided to showcase this. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.
 
 
 ### Schedule a Query in the Future
@@ -110,8 +108,8 @@ oraclize_query(60, "URL",
 oraclize_query(scheduled_arrivaltime+3*3600,
   "WolframAlpha", strConcat("flight ", flight_number, " landed"));
 ```
-The execution of a query can be scheduled in a future date. The function `oraclize_query` accepts as a parameter the delay in seconds from the current time or the timestamp in the future as first argument.
-Please note that in order for the future timestamp to be accepted by Oraclize it must be within **60 days** of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than **60 days**.
+The execution of a query can be scheduled for a future date. The function `oraclize_query` accepts, as a parameter the, delay in seconds from the current time (relative time) or the unix timestamp of the future date and time (absolute time).
+Please note that in order for the future timestamp to be accepted by Oraclize it must be within **60 days** of the current UTC time in the case of the absolute timestamp choice, or in the case of relative time, the elapsed seconds must equate to no more than **60 days**.
 
 ### Recursive Queries
 
@@ -150,7 +148,7 @@ class wolframrand : public eosio::contract
 EOSIO_DISPATCH(wolframrand, (getrandomnum)(callback))
 ```
 
-EOS contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their ` callback` action.
+EOS contracts using Oraclize can be effectively autonomous by implementing a recurring query to Oraclize into their `callback` action.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
 This modified version of the previous example will get a random number from the WolframAlpha API instead of the EOS/USD price and it will keep retrying every 10 seconds, until the contract has received back the result "6".
@@ -204,13 +202,13 @@ EOSIO_DISPATCH(checkqueryid, (checkquery)(callback))
 ```
 
 Every time the function `oraclize_query` is called, it returns a unique ID, hereby referred to as `queryId`, which is guaranteed to be unique in the given network execution context.
-The queryId identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback action.
+The `queryId` identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback action.
 
-Oraclize recommends EOS contract developers to verify if the queryId sends by the callback action was generated by a valid call to the `oracize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the EOS contract logic.
+Oraclize recommends EOS contract developers to verify if the queryId sent by the callback action was generated by a valid call to the `oracize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the EOS contract logic.
 
 The `queryId` can be used as well to implement different behaviors into the `callback` function, in particular when there is more than one pending call from Oraclize.
 
-### Resources allocations
+### Resource allocations
 
 The `callback` action is called by an Oraclize-controlled account, which will be in charge of allocating the resources for the action execution.
 The following restrictions apply:
@@ -218,10 +216,10 @@ The following restrictions apply:
 * the max CPU usage is `100 ms`
 * the max NET usage is `100 kb`
 
-When additional resources are needed the EOS developer could either [reach out to Oraclize](mailto:info@oraclize.it) in order to discuss different arrangements or he could use EOS features to postpone the execution of resource demanding task with a different payer.
+When additional resources are needed the EOS developer could either [reach out to Oraclize](mailto:info@oraclize.it) in order to discuss different arrangements or they could use EOS features to postpone the execution of a resource demanding task with a different payer.
 
 <aside class="notice">
-The above-mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service. 
+The above mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service. 
 </aside>
 
 
@@ -262,9 +260,9 @@ class eosusdprice : public eosio::contract
 EOSIO_DISPATCH(eosusdprice, (execquery)(callback))
 ```
 
-Authenticity proofs are at the core of Oraclize's oracle model. EOS contracts can request authenticity proofs together with their data by specifying the proof they want in the last argument of the `oraclize_query` function. The authenticity proof can be either deliver directly to the EOS contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>.
+Authenticity proofs are at the core of Oraclize's oracle model. EOS contracts can request authenticity proofs together with their data by specifying the proof they want in the last argument of the `oraclize_query` function. The authenticity proof can be either delivered directly to the EOS contract or it can be uploaded and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>.
 
-When an EOS contract requests for an authenticity proof, it will receive the proof back when the `callback` action is called, in the form of the `std::vector<unsigned char> proof` argument.
+When an EOS contract requests an authenticity proof, it will receive the proof back when the `callback` action is called, in the form of the `std::vector<unsigned char> proof` argument.
 
 The `proof` argument of `oraclize_query` is designed to be used as follows: `oraclize_query(..., (proofType_ | proofStorage_))`
 
@@ -321,16 +319,16 @@ $ cleos get actions oraclizeex1a -1 -4 --console
 ?  698   2018-08-10T11:48:06.500    oraclizeex1a::callback => oraclizeex1a  bfdbf675... {"queryId":"ac77896e9560f36d96823ff14efce24e0a443110a8d518f1...
 >> Result:6 
 ```
-It is possible to monitor the interaction between a given EOS contract and Oraclize by using `cleos get actions`. This will show an high level view of the actions between the calling contract and the Oraclize `connector` contract.
-In case you wanted to see more details, it is enough to use the `--console` option (or `-j`): this will include any `console` output you may have generated from your calling and `callback` action.
+It is possible to monitor the interaction between a given EOS contract and Oraclize by using `cleos get actions`. This will show a high-level view of the actions between the calling contract and the Oraclize `connector` contract.
+In case you wanted to see more details, it is enough to use the `--console` option (or `-j`): this will include any `console` output you may have generated from your `query` and `callback` action.
 
-The [test_query page](http://app.oraclize.it/home/test_query) is another useful tool to monitor the processing of Oraclize queries (using the queryId returned by `oraclize_query` as an input).
+The [test_query page](http://app.oraclize.it/home/test_query) is another useful tool to monitor the processing of Oraclize queries (using the `queryId` returned by `oraclize_query` as an input).
 
 
 
 ### Delegating the resource allocation
 
-When using the `oraclize_query` function, an EOS action to the Oraclize `connector` contract is started. By default the permission for such action is given by the EOS contract account itself. This could be changed, for example to have the user of the contract paying for the action resources and for the Oraclize service fees (if any): it is enough to define a macro `ORACLIZE_PAYER` **before** including the `oraclize/eos_api.hpp` header file.
+When using the `oraclize_query` function, an EOS action to the Oraclize `connector` contract is started. By default the permission for this action is given by the EOS contract account itself. This could be changed, for example, to have the user of the contract paying for the action resources and for the Oraclize service fees (if any): it is enough to define a macro `ORACLIZE_PAYER` **before** including the `oraclize/eos_api.hpp` header file.
 
 ```c++
 #define ORACLIZE_PAYER N(mypayinguser)
@@ -434,7 +432,7 @@ class urlrequests : public eosio::contract
 EOSIO_DISPATCH(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcookies)(callback))
 ```
 
-Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
+Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instance as environmental parameters.
 
 Currently the API supports up to 5 inline arguments, including the IPFS Hash: 
 
@@ -520,4 +518,8 @@ More documented, complete and complex examples are available on the dedicated Gi
 
 ## Pricing
 
-The Oraclize integration with EOS is currently available on the EOS Mainnet and on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**; Oraclize is currently charging **no fee**. Our standard [pricing table](#pricing) may apply (`EOS` tokens will be charged), later on the EOSIO Mainnet. The same pricing logic will be applied on testnets too (regardless of their worthless nature), in order to facilitate the testing of EOS contracts in an environment which resembles the Mainnet behaviour.
+The Oraclize integration with EOS is currently available on the EOSIO Mainnet and on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**; 
+
+Oraclize is currently charging **no fee**. 
+
+Our standard [pricing table](#pricing) may eventually apply (equivalent USD value in `EOS` tokens charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the testnet, to simulate the functionality (it will cost worthless EOS test tokens). Contracts that have been deployed during the no fee period, will be considered legacy, and we will continue to provide our service as it was to them, however, their featureset will stay within the legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to be transferrable to these). 
