@@ -22,14 +22,14 @@ As said in previous sections, one of the fundamental characteristics of Oraclize
 
 ## Quick Start
 
-### Including the Oraclize API
-
 ```bash
-# let's get the "eos_api.hpp" header file
+# Let's get the "eos_api.hpp" header file
 $ git clone https://github.com/oraclize/eos-api.git oraclize
 ```
 
-Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Oraclize. The header file can be downloaded from the [`eos-api` github repository](https://github.com/oraclize/eos-api).
+### Including the Oraclize API
+
+Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Oraclize. The header file can be downloaded from the [eos-api github repository](https://github.com/oraclize/eos-api).
 It is highly recommended to always use the latest version.
 
 ```c++
@@ -47,8 +47,7 @@ class eosusdprice : public eosio::contract
       [[eosio::action]]
       void execquery() {
           print("Sending query to Oraclize...");
-          oraclize_query("URL", "json(https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD).USD",\
-           (proofType_Android | proofStorage_IPFS));
+          oraclize_query("URL", "json(https://min-api.cryptocompare.com/data/price?fsym=EOS&tsyms=USD).USD",\(proofType_Android | proofStorage_IPFS));
       }
 
       [[eosio::action]]
