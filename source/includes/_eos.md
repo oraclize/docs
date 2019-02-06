@@ -451,8 +451,7 @@ some specific functions related to the Oraclize Random Data Source have been add
 
 #### Specify The Network Context
 
-It is **mandatory** for the developer to define the _network context_ in which the smart contract, using the Random Data Source,
-will operate:
+It is **highly recommended** for the developer to define the _network context_ in which the smart contract will operate:
 
 * For the EOS testnet Jungle: `#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"` 
 * For the EOS mainnet `#define ORACLIZE_NETWORK_NAME "eosio_mainnet"`
