@@ -38,11 +38,11 @@ The first parameter is the main argument and it is usually mandatory. For exampl
 The intermediate result of a query may need to be parsed: for example, to extract a precise field in JSON API response. Therefore, the query can also specify parsing helpers to be applied.  
 
 ## Parsing Helpers
-Oraclize offers XML, JSON, XHTML and a binary parser helpers. Examples:
+Oraclize offers JSON, XML, XHTML and a binary parser helpers. Examples:
 
-* **JSON Parsing**: To extract the last-price field from the Kraken API, the fist parameter of the query `json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`
-* **XML Parser**:
-* **HTML Parser**: helper is useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of `xpath(..)`as shown in the example: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
+* **JSON Parsing**: To extract the value of a specific element from a JSON document, you may use our built-in JSON parser. An example usage case, for extracting the ETH/USD price field from the Kraken API, serving it as a JSON doc, is by surrounding the API endpoint in question with the helper as follows: `json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0`.
+* **XML Parser**: To extract the value of a specific element from an XML document, you may use our built-in XML parser. An example usage case, for extracting the diesel price from an API serving it as an XML doc, is by surrounding the API endpoint in question with the helper as follows: `xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel`.
+* **HTML Parser**: Useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of `xpath(..)`as shown in the example: `html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, 'tweet-text')]/text())`.
 * **Binary Helper**: It can be useful to extract parts of a binary intermediate result by using the `slice(offset,length)` operator.
 The first parameter is the expected to be the offset, while the second one is the length of the returned slice.
 For example, `binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)`returns the raw bytes of the first certificate of the linked certificate revocation list.  
@@ -53,8 +53,11 @@ Note:
 Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
 </aside>
 
+Please, note that the Oraclize Test Query Page tool, can be useful to test any Oraclize Query
+leveraging the Parsing Helpers. More details in the "[Development Tools Test Query](#development-tools-test-query)" section.
+
 ## Authenticity Proofs
-Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the "[Security Deep Dive](##security-deep-dive)" section.
+Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the "[Security Deep Dive](#security-deep-dive)" section.
 
 <aside class="notice">
 Always use https:// calls when working with authenticity proofs, otherwise your request might get tampered with during the process (MITM attacks) and no detection of such attacks would be possible.
