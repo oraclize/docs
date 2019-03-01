@@ -255,8 +255,8 @@ Both proofType and proofStorage are byte constants defined in the `oraclize/eos_
 
 Available parameters for proofTypes are:
 
-* `proofType_NONE`
-* `proofType_TLSNotary`
+* `proofType_NONE`: the default value of any smart contract
+* `proofType_TLSNotary`: available only on the *EOS Mainnet*
 * `proofType_Android`
 * `proofType_Native`
 * `proofType_Ledger`
