@@ -11,3 +11,4 @@ The documentation is divided in the following sections:
 * [Development Tools](#development-tools): a list of tools to aide development of Oraclize-integrated smart contracts
 * [Security Deep Dive](#security-deep-dive): how Oraclize's Authenticity proofs works
 * [Pricing](#pricing): information on our pricing model for production uses
+* [Tutorials](#tutorials): tutorials on our Oraclize integrations

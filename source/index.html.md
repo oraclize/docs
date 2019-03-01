@@ -25,4 +25,5 @@ includes:
   - dev_tools
   - security
   - pricing 
+  - tutorials 
 ---
