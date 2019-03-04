@@ -313,7 +313,7 @@ Both proofType and proofStorage are byte constants defined in usingOraclize:
 Available parameters for proofTypes are:
 
 * `proofType_NONE`: the default value of any smart contracts
-* `proofType_TLSNotary`
+* `proofType_TLSNotary`: available only on the *Ethereum Mainnet*
 * `proofType_Android`
 * `proofType_Native`
 * `proofType_Ledger`
