@@ -183,6 +183,7 @@
 <li><a href="#development-tools">Development Tools</a>: a list of tools to aide development of Oraclize-integrated smart contracts</li>
 <li><a href="#security-deep-dive">Security Deep Dive</a>: how Oraclize&#39;s Authenticity proofs works</li>
 <li><a href="#pricing">Pricing</a>: information on our pricing model for production uses</li>
+<li><a href="#tutorials">Tutorials</a>: tutorials on our Oraclize integrations</li>
 </ul>
 
           <h1 id='background'>Background</h1>
@@ -251,12 +252,12 @@
 
 <p>The intermediate result of a query may need to be parsed: for example, to extract a precise field in JSON API response. Therefore, the query can also specify parsing helpers to be applied.  </p>
 <h2 id='parsing-helpers'>Parsing Helpers</h2>
-<p>Oraclize offers XML, JSON, XHTML and a binary parser helpers. Examples:</p>
+<p>Oraclize offers JSON, XML, XHTML and a binary parser helpers. Examples:</p>
 
 <ul>
-<li><strong>JSON Parsing</strong>: To extract the last-price field from the Kraken API, the fist parameter of the query <code>json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code></li>
-<li><strong>XML Parser</strong>:</li>
-<li><strong>HTML Parser</strong>: helper is useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of <code>xpath(..)</code>as shown in the example: <code>html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
+<li><strong>JSON Parsing</strong>: To extract the value of a specific element from a JSON document, you may use our built-in JSON parser. An example usage case, for extracting the ETH/USD price field from the Kraken API, serving it as a JSON doc, is by surrounding the API endpoint in question with the helper as follows: <code>json(https://api.kraken.com/0/public/Ticker?pair=ETHUSD).result.XETHZUSD.c.0</code>.</li>
+<li><strong>XML Parser</strong>: To extract the value of a specific element from an XML document, you may use our built-in XML parser. An example usage case, for extracting the diesel price from an API serving it as an XML doc, is by surrounding the API endpoint in question with the helper as follows: <code>xml(https://www.fueleconomy.gov/ws/rest/fuelprices).fuelPrices.diesel</code>.</li>
+<li><strong>HTML Parser</strong>: Useful for HTML scraping. The desired <a href="https://en.wikipedia.org/wiki/XPath" target="_blank">XPATH</a> can be specified as argument of <code>xpath(..)</code>as shown in the example: <code>html(https://twitter.com/oraclizeit/status/671316655893561344).xpath(//*[contains(@class, &#39;tweet-text&#39;)]/text())</code>.</li>
 <li><strong>Binary Helper</strong>: It can be useful to extract parts of a binary intermediate result by using the <code>slice(offset,length)</code> operator.
 The first parameter is the expected to be the offset, while the second one is the length of the returned slice.
 For example, <code>binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,300)</code>returns the raw bytes of the first certificate of the linked certificate revocation list.<br>
@@ -267,8 +268,11 @@ For example, <code>binary(https://www.sk.ee/crls/esteid/esteid2015.crl).slice(0,
 Note:
 Oraclize `json()` and `xpath()` helpers support respectively JSONPATH and XPATH standards. The JSONPATH implementation is fully compatible with <a href="https://github.com/FlowCommunications/JSONPath#expression-syntax" target="_blank">FlowCommunications JSONPath 0.3.4</a>, which can be easily tested via <a href="https://jsonpath.curiousconcept.com/" target="_blank">this external website</a>. The XPATH implementation that we use is fully compatible with the <a href="https://www.w3.org/TR/xpath/" target="_blank">XPATH 1.0 standard</a>.
 </aside>
+
+<p>Please, note that the Oraclize Test Query Page tool, can be useful to test any Oraclize Query
+leveraging the Parsing Helpers. More details in the &quot;<a href="#development-tools-test-query">Development Tools Test Query</a>&quot; section.</p>
 <h2 id='authenticity-proofs'>Authenticity Proofs</h2>
-<p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &quot;<a href="##security-deep-dive">Security Deep Dive</a>&quot; section.</p>
+<p>Oraclize is designed to act as an untrusted intermediary. Optionally, a request to Oraclize can specify an authenticity proof. Not all proofs are compatible with all data source types. More details on the authenticity proofs can be found in the &quot;<a href="#security-deep-dive">Security Deep Dive</a>&quot; section.</p>
 
 <aside class="notice">
 Always use https:// calls when working with authenticity proofs, otherwise your request might get tampered with during the process (MITM attacks) and no detection of such attacks would be possible.
@@ -714,7 +718,7 @@ When calling `oraclize_setCustomGasPrice` the parameter type is uint and represe
 
 <ul>
 <li><code>proofType_NONE</code>: the default value of any smart contracts</li>
-<li><code>proofType_TLSNotary</code></li>
+<li><code>proofType_TLSNotary</code>: available only on the <em>Ethereum Mainnet</em></li>
 <li><code>proofType_Android</code></li>
 <li><code>proofType_Native</code></li>
 <li><code>proofType_Ledger</code></li>
@@ -1372,8 +1376,8 @@ The above mentioned limits are experimental and could change before the launch o
 <p>Available parameters for proofTypes are:</p>
 
 <ul>
-<li><code>proofType_NONE</code></li>
-<li><code>proofType_TLSNotary</code></li>
+<li><code>proofType_NONE</code>: the default value of any smart contract</li>
+<li><code>proofType_TLSNotary</code>: available only on the <em>EOS Mainnet</em></li>
 <li><code>proofType_Android</code></li>
 <li><code>proofType_Native</code></li>
 <li><code>proofType_Ledger</code></li>
@@ -2224,6 +2228,15 @@ Oraclize reserve the rights to discontinue the service for abuse or excessive us
 <p>Oraclize is now supporting offchain payments too. When using that option you will get back the unused gas as the charge happens on a prepaid account outside of the blockchain. Interested parties should get in touch at info@oraclize.it</p>
 <h3 id='nested-queries'>Nested Queries</h3>
 <p>Currently nested queries are being priced as a single query. In the near future the pricing for the nested queries will be a sum of the datasources you decide to use. At the moment the pricing is reduced to one single datasource, however your smart contract should take into account that the full pricing will apply at some point.</p>
+
+          <h1 id='tutorials'>Tutorials</h1>
+<p>On the Oraclize <a href="https://www.youtube.com/channel/UCjVjCheDbMel-x-JYeGazcQ/featured">Youtube channel</a> you can find some useful video to start using the Oraclize integration.</p>
+<h2 id='ethereum'>Ethereum</h2>
+<ul>
+<li><p><a href="https://www.youtube.com/watch?v=v2Skr_m0J2E&amp;t=31s">Getting Started on Ethereum</a></p></li>
+<li><p><a href="https://www.youtube.com/watch?v=GkkDXpOXn5c">Best Practices for using Oraclize on Ethereum</a></p></li>
+<li><p><a href="https://www.youtube.com/watch?v=J05DBPdkeAo&amp;t=167s">Retrieve a Random Number via Oraclize</a></p></li>
+</ul>
 
       </div>
       <div class="dark-box">
