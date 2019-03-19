@@ -510,4 +510,10 @@ The Oraclize integration with EOS is currently available on the EOSIO Mainnet an
 
 Oraclize is currently charging **no fee**.
 
-Our standard [pricing table](#pricing) may eventually apply (equivalent USD value in `EOS` tokens charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the testnet, to simulate the functionality (it will cost worthless EOS test tokens). Contracts that have been deployed during the no fee period, will be considered legacy, and we will continue to provide our service as it was to them, however, their featureset will stay within the legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to be transferrable to these).
+Our standard [pricing table](#pricing) may eventually apply (equivalent USD value in `EOS` tokens
+charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the
+testnet to simulate the functionality. This will be charged in testnet EOS, and so is free.
+Contracts that have been deployed during the no-fee period will be considered legacy, and we will
+continue to provide our service as it was to them, however, their featureset will stay within the
+legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to
+be transferrable to these).
