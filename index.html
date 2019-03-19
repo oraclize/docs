@@ -1157,7 +1157,11 @@ For more technical details on how to use the Oraclize service from within Solidi
 <p>The EOS platform supports both C and C++ as programming languages for contracts, however the current Oraclize integration currently supports <strong>C++ only</strong>.</p>
 
 <aside class="notice">
-Oraclize is currently integrated with EOSIO Mainnet and Public "Jungle" Testnet.
+Oraclize is currently integrated with the EOSIO Mainnet and public "Jungle" Testnet.
+</aside>
+
+<aside class="notice">
+The Oraclize EOS API is actually <b>compatible</b> only with the <b>CDT 1.4.x</b>. For now, both CDT 1.5.0 and 1.6.0-rc2 are not supported.
 </aside>
 <h2 id='rationale'>Rationale</h2>
 <p>The interaction between Oraclize and an EOS contract is asynchronous. Any request for data is composed of two steps:</p>
@@ -1177,7 +1181,7 @@ It is highly recommended to always use the latest version.</p>
 </span>
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
 
-<span class="k">class</span> <span class="nc">eosusdprice</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span> 
+<span class="k">class</span> <span class="nc">eosusdprice</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
 <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
@@ -1252,7 +1256,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 </span>
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
 
-<span class="k">class</span> <span class="nc">wolframrand</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span> 
+<span class="k">class</span> <span class="nc">wolframrand</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
 <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
     <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
@@ -1289,14 +1293,14 @@ Use recursive queries cautiously. In general it is recommended to send queries p
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
 
 
-<span class="k">class</span> <span class="nc">checkqueryid</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span> 
+<span class="k">class</span> <span class="nc">checkqueryid</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
 <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
     <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
 
     <span class="n">checkqueryid</span><span class="p">(</span><span class="n">name</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">name</span> <span class="n">code</span><span class="p">,</span> <span class="n">datastream</span><span class="o">&lt;</span><span class="k">const</span> <span class="kt">char</span><span class="o">*&gt;</span> <span class="n">ds</span><span class="p">)</span> <span class="o">:</span> <span class="n">contract</span><span class="p">(</span><span class="n">receiver</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">ds</span><span class="p">)</span> <span class="p">{}</span>
 
-    <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span> 
+    <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span>
     <span class="kt">void</span> <span class="n">checkquery</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">capi_checksum256</span> <span class="n">myQueryId</span> <span class="o">=</span> <span class="n">oraclize_query</span><span class="p">(</span><span class="s">"URL"</span><span class="p">,</span> <span class="s">"json(https://api.kraken.com/0/public/Ticker?pair=EOSUSD).result.EOSUSD.l.0"</span><span class="p">);</span>
         <span class="n">oraclize_queryId_localEmplace</span><span class="p">(</span><span class="n">myQueryId</span><span class="p">);</span>
@@ -1308,7 +1312,7 @@ Use recursive queries cautiously. In general it is recommended to send queries p
         <span class="n">require_auth</span><span class="p">(</span><span class="n">oraclize_cbAddress</span><span class="p">());</span>
         <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">oraclize_queryId_match</span><span class="p">(</span><span class="n">queryId</span><span class="p">))</span> <span class="p">{</span>
             <span class="n">print</span><span class="p">(</span><span class="s">"UNEXPECTED QUERY ID"</span><span class="p">);</span>
-        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>            
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="n">print</span><span class="p">(</span><span class="s">"QueryId: "</span><span class="p">,</span> <span class="n">checksum256_to_string</span><span class="p">(</span><span class="n">queryId</span><span class="p">));</span>
             <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">result_str</span> <span class="o">=</span> <span class="n">vector_to_string</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
             <span class="n">print</span><span class="p">(</span><span class="s">" Result: "</span><span class="p">,</span> <span class="n">result_str</span><span class="p">);</span>
@@ -1334,13 +1338,13 @@ The following restrictions apply:
 <p>When additional resources are needed the EOS developer could either <a href="mailto:info@oraclize.it">reach out to Oraclize</a> in order to discuss different arrangements or they could use EOS features to postpone the execution of a resource demanding task with a different payer.</p>
 
 <aside class="notice">
-The above mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service. 
+The above mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service.
 </aside>
 <h3 id='authenticity-proofs'>Authenticity Proofs</h3><pre class="highlight cpp"><code><span class="cp">#include "oraclize/eos_api.hpp"
 </span>
 <span class="k">using</span> <span class="k">namespace</span> <span class="n">eosio</span><span class="p">;</span>
 
-<span class="k">class</span> <span class="nc">eosusdprice</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span> 
+<span class="k">class</span> <span class="nc">eosusdprice</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
 <span class="p">{</span>
   <span class="k">public</span><span class="o">:</span>
       <span class="k">using</span> <span class="n">contract</span><span class="o">::</span><span class="n">contract</span><span class="p">;</span>
@@ -1371,7 +1375,7 @@ The above mentioned limits are experimental and could change before the launch o
 
 <p>The <code>proof</code> argument of <code>oraclize_query</code> is designed to be used as follows: <code>oraclize_query(..., (proofType_ | proofStorage_))</code></p>
 
-<p>Both proofType and proofStorage are byte constants defined in the <code>oraclize/eos_api.hpp</code> header file. </p>
+<p>Both proofType and proofStorage are byte constants defined in the <code>oraclize/eos_api.hpp</code> header file.</p>
 
 <p>Available parameters for proofTypes are:</p>
 
@@ -1401,16 +1405,16 @@ It is highly recommended to use authenticity proofs at all times, but they can p
 ?  685   2018-08-10T11:36:07.500       oraclizeconn::query <span class="o">=</span>&gt; oraclizeconn  eedc89c4... <span class="o">{</span><span class="s2">"sender"</span>:<span class="s2">"oraclizeex1a"</span>,<span class="s2">"sversion"</span>:1,<span class="s2">"timestamp"</span>:0,<span class="s2">"queryId...
 ?  686   2018-08-10T11:36:14.500    oraclizeex1a::callback =&gt; oraclizeex1a  85cea38a... {"</span>queryId<span class="s2">":"</span>ee512394267cbb9d68b4db24e90901feb0217b592fb20b7a...
 </code></pre><pre class="highlight shell"><code><span class="gp">$ </span>cleos get actions oraclizeex1a -1 -4 --console
-<span class="c">#  seq  when                              contract::action =&gt; receiver      trx id...   args                                                </span>
-<span class="o">================================================================================================================</span>                            
+<span class="c">#  seq  when                              contract::action =&gt; receiver      trx id...   args</span>
+<span class="o">================================================================================================================</span>
 ?  695   2018-08-10T11:48:00.000       oraclizeconn::query <span class="o">=</span>&gt; oraclizeconn  ed95b01a... <span class="o">{</span><span class="s2">"sender"</span>:<span class="s2">"oraclizeex1a"</span>,<span class="s2">"sversion"</span>:1,<span class="s2">"timestamp"</span>:10,<span class="s2">"queryI...
 &gt;&gt; {"</span>v<span class="s2">":[1,1],"</span>t<span class="s2">":10,"</span>o<span class="s2">":"</span>oraclizeex1a<span class="s2">","</span>d<span class="s2">":"</span>WolframAlpha<span class="s2">","</span>q<span class="s2">":"</span>random number between 1 and 6<span class="s2">","</span>p<span class="s2">":0,"</span>i<span class="s2">":"</span>81c347bf65790948c3edcac63e07139f62928d9674e661a8633e8f4464ebfd72<span class="s2">"}
 ?  696   2018-08-10T11:48:00.500    oraclizeex1a::callback =&gt; oraclizeex1a  00b77475... {"</span>queryId<span class="s2">":"</span>2ae5f6edb1b3656c25beb61d0a7ca148c339898e67ac3a6d...
-<span class="gp">&gt;&gt; </span>Result:2Oraclize query was sent, standing by <span class="k">for </span>the answer..      
+<span class="gp">&gt;&gt; </span>Result:2Oraclize query was sent, standing by <span class="k">for </span>the answer..
 ?  697   2018-08-10T11:48:00.500       oraclizeconn::query <span class="o">=</span>&gt; oraclizeconn  00b77475... <span class="o">{</span><span class="s2">"sender"</span>:<span class="s2">"oraclizeex1a"</span>,<span class="s2">"sversion"</span>:1,<span class="s2">"timestamp"</span>:10,<span class="s2">"queryI...
 &gt;&gt; {"</span>v<span class="s2">":[1,1],"</span>t<span class="s2">":10,"</span>o<span class="s2">":"</span>oraclizeex1a<span class="s2">","</span>d<span class="s2">":"</span>WolframAlpha<span class="s2">","</span>q<span class="s2">":"</span>random number between 1 and 6<span class="s2">","</span>p<span class="s2">":0,"</span>i<span class="s2">":"</span>ac77896e9560f36d96823ff14efce24e0a443110a8d518f1424f955e6e35a6ee<span class="s2">"}
 ?  698   2018-08-10T11:48:06.500    oraclizeex1a::callback =&gt; oraclizeex1a  bfdbf675... {"</span>queryId<span class="s2">":"</span>ac77896e9560f36d96823ff14efce24e0a443110a8d518f1...
-<span class="gp">&gt;&gt; </span>Result:6 
+<span class="gp">&gt;&gt; </span>Result:6
 </code></pre>
 <p>It is possible to monitor the interaction between a given EOS contract and Oraclize by using <code>cleos get actions</code>. This will show a high-level view of the actions between the calling contract and the Oraclize <code>connector</code> contract.
 In case you wanted to see more details, it is enough to use the <code>--console</code> option (or <code>-j</code>): this will include any <code>console</code> output you may have generated from your <code>query</code> and <code>callback</code> action.</p>
@@ -1432,8 +1436,8 @@ In case you wanted to see more details, it is enough to use the <code>--console<
 <span class="k">class</span> <span class="nc">urlrequests</span> <span class="o">:</span> <span class="k">public</span> <span class="n">eosio</span><span class="o">::</span><span class="n">contract</span>
 <span class="p">{</span>
   <span class="k">private</span><span class="o">:</span>
-    <span class="kt">void</span> <span class="n">request</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_query</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_method</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_url</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_kwargs</span><span class="p">)</span> 
-    <span class="p">{</span> 
+    <span class="kt">void</span> <span class="n">request</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_query</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_method</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_url</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">_kwargs</span><span class="p">)</span>
+    <span class="p">{</span>
         <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">&gt;&gt;</span> <span class="n">myquery</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_query</span><span class="p">),</span>
             <span class="n">string_to_vector</span><span class="p">(</span><span class="n">_method</span><span class="p">),</span>
@@ -1476,7 +1480,7 @@ In case you wanted to see more details, it is enough to use the <code>--console<
                 <span class="s">"POST"</span><span class="p">,</span>
                 <span class="s">"https://api.postcodes.io/postcodes"</span><span class="p">,</span>
                 <span class="s">"{</span><span class="se">\"</span><span class="s">json</span><span class="se">\"</span><span class="s">: {</span><span class="se">\"</span><span class="s">postcodes</span><span class="se">\"</span><span class="s"> : [</span><span class="se">\"</span><span class="s">OX49 5NU</span><span class="se">\"</span><span class="s">]}}"</span>
-               <span class="p">);</span>   
+               <span class="p">);</span>
     <span class="p">}</span>
 
     <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span>
@@ -1513,10 +1517,10 @@ In case you wanted to see more details, it is enough to use the <code>--console<
 </code></pre>
 <p>Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instance as environmental parameters.</p>
 
-<p>Currently the API supports up to 5 inline arguments, including the IPFS Hash: </p>
+<p>Currently the API supports up to 5 inline arguments, including the IPFS Hash:</p>
 
 <p><code>
-std::vector&lt;std::vector&lt;unsigned char&gt;&gt; myquery = { 
+std::vector&lt;std::vector&lt;unsigned char&gt;&gt; myquery = {
       string_to_vector(&quot;QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR&quot;),
       string_to_vector(&quot;_firstOperand&quot;),
       string_to_vector(&quot;_secondOperand&quot;),
@@ -1544,7 +1548,7 @@ some specific functions related to the Oraclize Random Data Source have been add
 <p>It is <strong>highly recommended</strong> for the developer to define the <em>network context</em> in which the smart contract will operate:</p>
 
 <ul>
-<li>For the EOS testnet Jungle: <code>#define ORACLIZE_NETWORK_NAME &quot;eosio_testnet_jungle&quot;</code> </li>
+<li>For the EOS testnet Jungle: <code>#define ORACLIZE_NETWORK_NAME &quot;eosio_testnet_jungle&quot;</code></li>
 <li>For the EOS mainnet <code>#define ORACLIZE_NETWORK_NAME &quot;eosio_mainnet&quot;</code></li>
 </ul>
 <pre class="highlight cpp"><code><span class="cp">#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"
@@ -1587,11 +1591,17 @@ some specific functions related to the Oraclize Random Data Source have been add
 </code></pre><h2 id='more-examples'>More Examples</h2>
 <p>More documented, complete and complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/eos-examples" target="_blank">https://github.com/oraclize/eos-examples</a></p>
 <h2 id='pricing'>Pricing</h2>
-<p>The Oraclize integration with EOS is currently available on the EOSIO Mainnet and on the <strong><a href="http://jungle.cryptolions.io/">EOSIO Public &quot;Jungle&quot; Testnet</a></strong>; </p>
+<p>The Oraclize integration with EOS is currently available on the EOSIO Mainnet and on the <strong><a href="http://jungle.cryptolions.io/">EOSIO Public &quot;Jungle&quot; Testnet</a></strong>;</p>
 
-<p>Oraclize is currently charging <strong>no fee</strong>. </p>
+<p>Oraclize is currently charging <strong>no fee</strong>.</p>
 
-<p>Our standard <a href="#pricing">pricing table</a> may eventually apply (equivalent USD value in <code>EOS</code> tokens charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the testnet, to simulate the functionality (it will cost worthless EOS test tokens). Contracts that have been deployed during the no fee period, will be considered legacy, and we will continue to provide our service as it was to them, however, their featureset will stay within the legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to be transferrable to these). </p>
+<p>Our standard <a href="#pricing">pricing table</a> may eventually apply (equivalent USD value in <code>EOS</code> tokens
+charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the
+testnet to simulate the functionality. This will be charged in testnet EOS, and so is free.
+Contracts that have been deployed during the no-fee period will be considered legacy, and we will
+continue to provide our service as it was to them, however, their featureset will stay within the
+legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to
+be transferrable to these).</p>
 
           <h1 id='c-8226-corda'><a style="display:inline-block; min-width:20px">C&#8226;</a> Corda</h1>
 <p>Here we will cover the Oraclize&#39;s Corda integration. Before reading this section, you must be familiar with the Corda platform key concepts like flows, subflows, contracts, transactions, commands, oracles etc. So if things get blurred the <a href="https://docs.corda.net/">corda documentation</a> is your best friend.</p>
