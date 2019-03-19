@@ -5,7 +5,11 @@ The following section is dedicated to the Oraclize integration with EOS. Before 
 The EOS platform supports both C and C++ as programming languages for contracts, however the current Oraclize integration currently supports **C++ only**.
 
 <aside class="notice">
-Oraclize is currently integrated with EOSIO Mainnet and Public "Jungle" Testnet.
+Oraclize is currently integrated with the EOSIO Mainnet and public "Jungle" Testnet.
+</aside>
+
+<aside class="notice">
+The Oraclize EOS API is actually <b>compatible</b> only with the <b>CDT 1.4.x</b>. For now, both CDT 1.5.0 and 1.6.0-rc2 are not supported.
 </aside>
 
 ## Rationale
@@ -35,7 +39,7 @@ It is highly recommended to always use the latest version.
 
 using namespace eosio;
 
-class eosusdprice : public eosio::contract 
+class eosusdprice : public eosio::contract
 {
   public:
       using contract::contract;
@@ -118,7 +122,7 @@ Please note that in order for the future timestamp to be accepted by Oraclize it
 
 using namespace eosio;
 
-class wolframrand : public eosio::contract 
+class wolframrand : public eosio::contract
 {
   public:
     using contract::contract;
@@ -160,14 +164,14 @@ Use recursive queries cautiously. In general it is recommended to send queries p
 using namespace eosio;
 
 
-class checkqueryid : public eosio::contract 
+class checkqueryid : public eosio::contract
 {
   public:
     using contract::contract;
-    
+
     checkqueryid(name receiver, name code, datastream<const char*> ds) : contract(receiver, code, ds) {}
 
-    [[eosio::action]] 
+    [[eosio::action]]
     void checkquery() {
         capi_checksum256 myQueryId = oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=EOSUSD).result.EOSUSD.l.0");
         oraclize_queryId_localEmplace(myQueryId);
@@ -179,7 +183,7 @@ class checkqueryid : public eosio::contract
         require_auth(oraclize_cbAddress());
         if (!oraclize_queryId_match(queryId)) {
             print("UNEXPECTED QUERY ID");
-        } else {      		
+        } else {
             print("QueryId: ", checksum256_to_string(queryId));
             const std::string result_str = vector_to_string(result);
             print(" Result: ", result_str);
@@ -208,7 +212,7 @@ The following restrictions apply:
 When additional resources are needed the EOS developer could either [reach out to Oraclize](mailto:info@oraclize.it) in order to discuss different arrangements or they could use EOS features to postpone the execution of a resource demanding task with a different payer.
 
 <aside class="notice">
-The above mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service. 
+The above mentioned limits are experimental and could change before the launch on the EOS mainnet. In case of abuses some accounts may be temporarily banned from the Oraclize service.
 </aside>
 
 
@@ -219,7 +223,7 @@ The above mentioned limits are experimental and could change before the launch o
 
 using namespace eosio;
 
-class eosusdprice : public eosio::contract 
+class eosusdprice : public eosio::contract
 {
   public:
       using contract::contract;
@@ -251,7 +255,7 @@ When an EOS contract requests an authenticity proof, it will receive the proof b
 
 The `proof` argument of `oraclize_query` is designed to be used as follows: `oraclize_query(..., (proofType_ | proofStorage_))`
 
-Both proofType and proofStorage are byte constants defined in the `oraclize/eos_api.hpp` header file. 
+Both proofType and proofStorage are byte constants defined in the `oraclize/eos_api.hpp` header file.
 
 Available parameters for proofTypes are:
 
@@ -293,16 +297,16 @@ $ cleos get actions oraclizeex1a -1 -4
 
 ```bash
 $ cleos get actions oraclizeex1a -1 -4 --console
-#  seq  when                              contract::action => receiver      trx id...   args                                                
-================================================================================================================                            
+#  seq  when                              contract::action => receiver      trx id...   args
+================================================================================================================
 ?  695   2018-08-10T11:48:00.000       oraclizeconn::query => oraclizeconn  ed95b01a... {"sender":"oraclizeex1a","sversion":1,"timestamp":10,"queryI...
 >> {"v":[1,1],"t":10,"o":"oraclizeex1a","d":"WolframAlpha","q":"random number between 1 and 6","p":0,"i":"81c347bf65790948c3edcac63e07139f62928d9674e661a8633e8f4464ebfd72"}
 ?  696   2018-08-10T11:48:00.500    oraclizeex1a::callback => oraclizeex1a  00b77475... {"queryId":"2ae5f6edb1b3656c25beb61d0a7ca148c339898e67ac3a6d...
->> Result:2Oraclize query was sent, standing by for the answer..      
+>> Result:2Oraclize query was sent, standing by for the answer..
 ?  697   2018-08-10T11:48:00.500       oraclizeconn::query => oraclizeconn  00b77475... {"sender":"oraclizeex1a","sversion":1,"timestamp":10,"queryI...
 >> {"v":[1,1],"t":10,"o":"oraclizeex1a","d":"WolframAlpha","q":"random number between 1 and 6","p":0,"i":"ac77896e9560f36d96823ff14efce24e0a443110a8d518f1424f955e6e35a6ee"}
 ?  698   2018-08-10T11:48:06.500    oraclizeex1a::callback => oraclizeex1a  bfdbf675... {"queryId":"ac77896e9560f36d96823ff14efce24e0a443110a8d518f1...
->> Result:6 
+>> Result:6
 ```
 It is possible to monitor the interaction between a given EOS contract and Oraclize by using `cleos get actions`. This will show a high-level view of the actions between the calling contract and the Oraclize `connector` contract.
 In case you wanted to see more details, it is enough to use the `--console` option (or `-j`): this will include any `console` output you may have generated from your `query` and `callback` action.
@@ -337,8 +341,8 @@ using namespace eosio;
 class urlrequests : public eosio::contract
 {
   private:
-    void request(const std::string _query, const std::string _method, const std::string _url, const std::string _kwargs) 
-    { 
+    void request(const std::string _query, const std::string _method, const std::string _url, const std::string _kwargs)
+    {
         std::vector<std::vector<unsigned char>> myquery = {
             string_to_vector(_query),
             string_to_vector(_method),
@@ -347,7 +351,7 @@ class urlrequests : public eosio::contract
         };
         oraclize_query("computation", myquery);
     }
- 
+
   public:
     using contract::contract;
 
@@ -373,7 +377,7 @@ class urlrequests : public eosio::contract
                 "{'auth': ('myuser','secretpass'), 'headers': {'content-type': 'json'}}"
                );
     }
- 
+
     [[eosio::action]]
     void reqpost()
     {
@@ -381,9 +385,9 @@ class urlrequests : public eosio::contract
                 "POST",
                 "https://api.postcodes.io/postcodes",
                 "{\"json\": {\"postcodes\" : [\"OX49 5NU\"]}}"
-               );   
+               );
     }
- 
+
     [[eosio::action]]
     void reqput()
     {
@@ -393,7 +397,7 @@ class urlrequests : public eosio::contract
                 "{'json' : {'testing':'it works'}}"
                );
     }
- 
+
     [[eosio::action]]
     void reqcookies()
     {
@@ -403,12 +407,12 @@ class urlrequests : public eosio::contract
                 "{'cookies' : {'thiscookie':'should be saved and visible :)'}}"
                );
     }
-    
+
     [[eosio::action]]
     void callback(capi_checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof)
     {
         require_auth(oraclize_cbAddress());
- 
+
         const std::string result_str = vector_to_string(result);
         print("Response: ", result_str);
     }
@@ -419,10 +423,10 @@ EOSIO_DISPATCH(urlrequests, (reqheadscust)(reqbasauth)(reqpost)(reqput)(reqcooki
 
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instance as environmental parameters.
 
-Currently the API supports up to 5 inline arguments, including the IPFS Hash: 
+Currently the API supports up to 5 inline arguments, including the IPFS Hash:
 
-` 
-std::vector<std::vector<unsigned char>> myquery = { 
+`
+std::vector<std::vector<unsigned char>> myquery = {
       string_to_vector("QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR"),
       string_to_vector("_firstOperand"),
       string_to_vector("_secondOperand"),
@@ -453,7 +457,7 @@ some specific functions related to the Oraclize Random Data Source have been add
 
 It is **highly recommended** for the developer to define the _network context_ in which the smart contract will operate:
 
-* For the EOS testnet Jungle: `#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"` 
+* For the EOS testnet Jungle: `#define ORACLIZE_NETWORK_NAME "eosio_testnet_jungle"`
 * For the EOS mainnet `#define ORACLIZE_NETWORK_NAME "eosio_mainnet"`
 
 ```c++
@@ -477,7 +481,7 @@ class randomsample : public eosio::contract
         uint32_t delay = 10;
         oraclize_newRandomDSQuery(delay, N);
     }
-    
+
     [[eosio::action]]
     void callback(capi_checksum256 queryId, std::vector<unsigned char> result, std::vector<unsigned char> proof) {
         require_auth(oraclize_cbAddress());
@@ -502,8 +506,8 @@ More documented, complete and complex examples are available on the dedicated Gi
 
 ## Pricing
 
-The Oraclize integration with EOS is currently available on the EOSIO Mainnet and on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**; 
+The Oraclize integration with EOS is currently available on the EOSIO Mainnet and on the **[EOSIO Public "Jungle" Testnet](http://jungle.cryptolions.io/)**;
 
-Oraclize is currently charging **no fee**. 
+Oraclize is currently charging **no fee**.
 
-Our standard [pricing table](#pricing) may eventually apply (equivalent USD value in `EOS` tokens charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the testnet, to simulate the functionality (it will cost worthless EOS test tokens). Contracts that have been deployed during the no fee period, will be considered legacy, and we will continue to provide our service as it was to them, however, their featureset will stay within the legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to be transferrable to these). 
+Our standard [pricing table](#pricing) may eventually apply (equivalent USD value in `EOS` tokens charged), later on the EOSIO Mainnet. If this occurs, the same pricing logic would take place on the testnet, to simulate the functionality (it will cost worthless EOS test tokens). Contracts that have been deployed during the no fee period, will be considered legacy, and we will continue to provide our service as it was to them, however, their featureset will stay within the legacy spectrum as well (i.e. new features dependent on the pricing model are obviously not going to be transferrable to these).
