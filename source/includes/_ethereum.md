@@ -370,7 +370,7 @@ Supported proofs can be verified. The following tools can be used: <a href="#dev
 
 ## Best Practices
 
-### Precalculating the Query Price
+### Pre-calculating the Query Price
 
 ```javascript
 pragma solidity ^0.4.0;
@@ -381,23 +381,29 @@ contract KrakenPriceTicker is usingOraclize {
     string public ETHXBT;
     uint constant CUSTOM_GASLIMIT = 150000;
 
-    event LogConstructorInitiated(string nextStep);
-    event newOraclizeQuery(string description);
     event newKrakenPriceTicker(string price);
+    event newOraclizeQuery(string description);
 
-
-    function KrakenPriceTicker() {
+    function KrakenPriceTicker()
+        public
+    {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
+        update(); // Update price on contract creation...
     }
 
-    function __callback(bytes32 myid, string result, bytes proof) {
-        if (msg.sender != oraclize_cbAddress()) revert();
+    function __callback(
+        bytes32 myid,
+        string result,
+        bytes proof
+    ) {
+        require(msg.sender == oraclize_cbAddress());
         ETHXBT = result;
         newKrakenPriceTicker(ETHXBT);
     }
 
-    function update() payable {
+    function update()
+        payable
+    {
         if (oraclize_getPrice("URL", CUSTOM_GASLIMIT) > this.balance) {
             newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
@@ -409,8 +415,25 @@ contract KrakenPriceTicker is usingOraclize {
 
 ```
 
-You have to consider that your account will be debited for most of your Oraclize calls. If your contract is not covered with enough ETH, the query will fail. Depending on your contract logic you may want to check the price for your next query before it gets send. You can do this by calling `oraclize_getPrice` and check if it is higher than your current contract balance. If that's the case the `oraclize_query` will fail and you may want to handle it gracefully. You can also add a gaslimit parameter to the `oraclize_getPrice` function: `oraclize_getPrice(string datasource, uint gaslimit)`. Make sure that the custom gaslimit for `oraclize_getPrice` matches with the one you will use for `oraclize_query`.
+Payment for Provable queries are debited directly from the contract that calls the `oraclize_query(...)'` function at the moment that function call is made. So - depending on your contract's logic - you may want to know ahead of time the price of your next query before making it. Provable provides a helper method to do just that: `oraclize_getPrice(string _datasource);`.
 
+Using this helper function, it is possible gracefully handle the scenario where your contract's balance has dropped below the cost of the query price. Otherwise, if a contract's ETH balance is insufficient to cover the query at the time the query is attempted, it will fail via: `revert('Error settling query payment');`. The `update();` function in the sample contract on the right demonstrates how to implement the `oraclize_getPrice()` helper function in order to check if a contracts balance is sufficient to cover the query cost.
+
+The `oraclize_getPrice` function is overloaded and so can also accept a gas limit parameter: `oraclize_getPrice(string _datasource, uint256 _gasLimit);`. This allowing you to get accurate prices for queries that use a gas limit different from the `200,000` default.
+
+<aside class="notice">
+When using a custom gas limit, to correctly calculate your contract's _next_ query price, ensure that you use the same custom gas limit parameter for the call to `getPrice(string _datasource, uint256 _gasLimit);` as you intend to use in your actual query!
+</aside>
+
+`oraclize_getPrice` can also accept an `address` parameter, allowing you to discover prices for queries for _any_ contract, rather than just only the contract that is actually calling: `oraclize_getPrice(string _datasource, address _contractAddress);`.
+
+Finally, `oraclize_getPrice` can accept all three of the aforementioned parameters in order to discover very specific query prices for any datasource, using any custom gas limit and for any desired contract: `oraclize_getPrice(string _datasource, uint256 _gasLimit, address _contractAddress);`
+
+All overloaded versions of the `oraclize_getPrice` helper function have the `view` visibility specifier and so are free for your contract to call.
+
+<aside class="notice">
+Note that the first query to the Provable service is _free_, and so the first call to `oraclize_getPrice` from a contract with a gas limit and/or gas price that is _less than or equal_ to the default values will result in the function _correctly_ returning `0`.
+</aside>
 
 ### Mapping Query Ids
 
