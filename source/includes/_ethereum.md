@@ -258,6 +258,42 @@ When calling `oraclize_setCustomGasPrice` the parameter type is uint and represe
 </aside>
 
 
+### Query Rebroadcasts
+
+When making Provable queries, users are able to specify custom gas limits and gas prices for them as outlined __[in this section here.](http://docs.oraclize.it/#ethereum-quick-start-custom-gas-limit-and-gas-price)__ However, due to the asynchronous nature of Provable queries and the volatility of gas-prices on the Ethereum Mainnet, a user may occasionally find themselves in a situation where the gas price they have requested for their callback transaction is no longer high enough to ensure the transaction gets mined quickly. This is especially true when using delayed queries, where the likelihood of the congestion level of the Ethereum network when the query was made being the same as when the delayed callback is due diminishes.
+
+In such cases, users have the ability to request a _rebroadcast_ of their transaction, via which the user may specify new, higher parameters for both the gas limit and the gas price:
+
+```javascript
+uint256 newGasLimit = <new-gas-limit>;
+uint256 newGasPrice = <new-gas-price>;
+
+oraclize_requestCallbackRebroadcast(
+  <query-id>,
+  newGasLimit,
+  newGasPrice
+  oraclize_getRebroadcastCost(newGasLimit, newGasPrice)
+);
+```
+
+This way, the effects of the changing network conditions can be mitigated, ensuring callbacks are always received in a timely manner.
+
+Another useful feature of rebroadcasting is in giving a user a finer-control over the gas limit of their callback. Should a query be sent with an amount of gas too low for the `__callback()` to fully execute, the query would normally `revert()` and be wasted. Now a user has the ability to request a rebroadcast on that query and thus the opportunity to make changes to the gas limit in order to remedy the situation.
+
+In order to enable rebroadcasts, a contract writer must explicitly define the following in the storage of their contract: `bool public constant allowQueryRebroadcasts = true;`. Any attempts to rebroadcast a query destined for a contract which does not have the preceding line present will be unfulfilled.
+
+Just like a normal query, any over-payment is refunded, but always to the _final calling contract_. Which latter gives rise to two important caveats:
+
+- The first is that the refund will _always_ go to the final calling contract, and so if the call for a rebroadcast is proxied via another contract, the refund will always be made to the that implements the API, and not necessarily to the contract which initiated and paid for the call.
+
+- The second caveat is that the final calling contract will also require a payable `fallback()` function in order to receive refunds in such cases. Absent this function, the refund attempt will cause the query to `revert();`.
+
+Due to the preceding caveats, it is strongly recommended that queries be paid for using their exact cost, which can be calculated via: `oraclize_getRebroadcastCost(<new-gas-limit>, <new-gas-price>);`
+
+<aside class="notice">
+It is up to the contract writer to ensure that the gas limit and gas price of the requested rebroadcast are _greater than or equal_ to the parameters used in the original query. Attempts made using a lower gas limit or gas price will be ignored by the service and requested rebroadcast will not occur.
+</aside>
+
 ### Authenticity Proofs
 
 ```javascript
