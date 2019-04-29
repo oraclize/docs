@@ -798,16 +798,7 @@ The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet).
 
 The ProofShield enables smart contracts to verify on-chain the authenticity proofs provided by Oraclize, this ensures that the authenticity of the data received is verified before going ahead and using the data.
 
-
-To enable the ProofShield it is enough to set it via the `oraclize_setProof` function like you see in the following code:
-
-
-```javascript
-
-    oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
-
-````
-
+To enable the ProofShield it is enough to set it via the `oraclize_setProof` function like you see in the following code: `oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);`
 
 Once the ProofShield is enabled, the received proof will not be the raw Authenticity Proof, but the ProofShield proof instead: some functions are provided so that the ProofShield proof can be verified on-chain. In order to verify it, you need to call from within the `__callback` method the function `oraclize_proofShield_proofVerify__returnCode(queryId, result, proof)` and ensure that it returns 0.
 
