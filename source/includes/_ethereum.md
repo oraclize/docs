@@ -8,7 +8,7 @@ The interaction between Oraclize and an Ethereum smart contract is asynchronous.
 * Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by a user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
 * Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the `__callback` function which should be placed in the smart contract by its developer: for this reason, this transaction is referred in the documentation as the Oraclize callback transaction.
 
-As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  
+As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.
 
 ## Quick Start
 
@@ -41,7 +41,7 @@ contract ExampleContract is usingOraclize {
            oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
        }
    }
-} 
+}
 ```
 
 The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
@@ -87,7 +87,7 @@ A request for data is called **query**. The `oraclize_query` is a function, inhe
  * or a `WolframAlpha` formula
  * or an `IPFS` multihash
 
-The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.  
+The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.
 
 
 ### Schedule a Query in the Future
@@ -344,7 +344,7 @@ When a smart contract requests for an authenticity proof, it **must** define a d
 
 The `oraclize_setProof` function expects the following format: `oraclize_setProof(proofType_ | proofStorage_ )`
 
-Both proofType and proofStorage are byte constants defined in usingOraclize:  
+Both proofType and proofStorage are byte constants defined in usingOraclize:
 
 Available parameters for proofTypes are:
 
@@ -481,12 +481,12 @@ It might occur that a callback function of a sent query gets called more than on
 
 ### Encrypted Queries
 Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
-The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  
+The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.
 
 Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
 Only Oraclize will then be able to decrypt the request using its paired private key.
 
-To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,  
+To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,
 The CLI command to encrypt an arbitrary string of text is then:
 
 `python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 "YOUR QUERY"`
@@ -584,29 +584,29 @@ contract Calculation is usingOraclize {
     event calculationResult(uint _result);
 
     // General Calculation: ((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR
-    
+
     function Calculation() {
-        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS); 
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
         require (msg.sender == oraclize_cbAddress());
         calculationResult(parseInt(result));
     }
-    
+
     function testCalculation() payable {
         sendCalculationQuery(NUMBER_1, NUMBER_2, MULTIPLIER, DIVISOR); // = 105
     }
-    
+
     function sendCalculationQuery(string _NUMBER1, string _NUMBER2, string _MULTIPLIER, string _DIVISOR) payable {
         if (oraclize.getPrice("computation") > this.balance) {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", 
-            _NUMBER1, 
-            _NUMBER2, 
-            _MULTIPLIER, 
+            oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR",
+            _NUMBER1,
+            _NUMBER2,
+            _MULTIPLIER,
             _DIVISOR]);
         }
     }
@@ -614,7 +614,7 @@ contract Calculation is usingOraclize {
 ```
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
-Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+Currenty the API supports up to 5 inline arguments, including the IPFS Hash:
 `oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", _firstOperand, _secondOperand, _thirdOperand, _fourthOperand]);`
 
 ```shell
@@ -647,10 +647,10 @@ pragma solidity ^0.4.18;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract Calculation is usingOraclize {
- 
+
   event calculationResult(uint _result);
   event LogNewOraclizeQuery(string description);
- 
+
   function Calculation() payable {
     oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
 
@@ -664,7 +664,7 @@ contract Calculation is usingOraclize {
     require (msg.sender == oraclize_cbAddress());
     calculationResult(parseInt(result));
   }
- 
+
   function testCalculation(
     string _hash,
     string _number1,
@@ -673,7 +673,7 @@ contract Calculation is usingOraclize {
     string _divisor,
     string _number3,
     string _number4) public payable {
-       
+
     string[] memory numbers = new string[](7);
     numbers[0] = _hash;
     numbers[1] = _number1;
@@ -682,10 +682,10 @@ contract Calculation is usingOraclize {
     numbers[4] = _divisor;
     numbers[5] = _number3;
     numbers[6] = _number4;
-       
+
     sendCalculationQuery(numbers);
   }
- 
+
   function sendCalculationQuery(string[] array) internal {
     if (oraclize.getPrice("computation") > this.balance) {
         LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
