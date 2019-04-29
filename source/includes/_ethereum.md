@@ -851,5 +851,33 @@ contract proofShieldExample is usingOraclize {
 }
 ```
 
+### Byte Datasources
+
+As a more advanced feature, Provable are providing all datasource `strings` as type `bytes1` as well as `strings`. The strings remain more readable (`URL`, `Random` and so on…) in Provable queries, but as with any string-related manipulation in Solidity, using them costs more gas-wise.  As such, by offering the same set of datasources as a `bytes1` equivalent, advanced users may choose to declare their datasource in this manner instead and thus benefit from cheaper query gas-costs.
+
+<aside class="notice">
+All of Provable's API functions where a `string _datasource` parameter is used can have the parameter substituted for its `bytes1` equivalent without altering the behaviour of the function in any way. See the section on the right for the `string -> bytes1` datasource conversion dictionary.
+</aside>
+
+``` javascript
+
+// Datasource strings and their `bytes1` equivalents:
+
+|---------------------------|
+|       `string` | `bytes1` |
+|---------------------------|
+|          'URL' |   0xFF   |
+|         'IPFS' |   0xFB   |
+|        'swarm' |   0xF8   |
+|       'nested' |   0xFA   |
+|       'Random' |   0xFE   |
+|   'Blockchain' |   0xF9   |
+|  'computation' |   0xFD   |
+| 'WolframAlpha' |   0xFC   |
+|---------------------------|
+
+
+```
+
 ### More Examples
 More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
