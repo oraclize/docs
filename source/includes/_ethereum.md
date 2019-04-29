@@ -566,6 +566,93 @@ To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme
 * An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.
 * The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be '000000000000' (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.
 
+### Cached Queries
+
+It is common for oracle-leveraging smart-contracts to be relatively simple in their external datasource needs. Frequently, a contract will have a static query that always calls the same endpoint with the same parameters. In such cases, Provable have implemented a method whereby queries can be _cached_ in order to make large gas savings when making the query. The gas-savings can be upwards of 50% of the original gas price of the query.
+
+To enable query caching, a contract must first make a standard Provable query using whichever datasource & parameters are required, and then save the `bytes32` query ID that Provable returns: `bytes32 cachedQueryID = oraclize_query(<datasource>, <args>);`. Next, a contract should enable caching of that specific query, using its ID, by calling: `oraclize_requestQueryCaching(cachedQueryId);`.
+
+Thereafter, a contract may make a _new_ query using the cached query’s parameters via: `oraclize_queryCached(<query-price>);`. This will return a _new_ queryID in order for the query to be tracked within your contract’s context. The new query made will have exactly the parameters of the query which was originally cached by the contract.
+
+See the example to the right for a contract that sets up and then uses cached queries in a recursive manner in order to benefit from the large gas savings when using a single, static query.
+
+<aside class="notice">
+Notice that the only parameter required by `oraclize_queryCached` is the _cost_ of that query. You can use the `oraclize_getPrice` helper function __[explained here](http://docs.oraclize.it/#ethereum-best-practices-pre-calculating-the-query-price)__ in order to get the correct price of the query: `oraclize_queryCached(oraclize_getPrice(<datasource>));`. The `bytes32` ID of the query has already been cached and so is not required.
+</aside>
+
+```javascript
+
+pragma solidity >= 0.5.0 < 0.6.0;
+
+contract RecursiveCachedQueryExample is usingOraclize {
+
+    bytes32 cachedQueryID;
+    string public priceETHXBT;
+
+    event LogNewKrakenPriceTicker(string price);
+    event LogNewOraclizeQuery(string description);
+
+    constructor()
+        payable
+        public
+    {
+        updateAndRequestQueryCaching(); // Note: Set the recursive queries going on contract creation...
+    }
+    /**
+     *
+     * @dev Notice here that we make a normal Provable query and save the
+     *      returned query ID, which is then used to request caching of the
+     *      specific query using that ID just saved.
+     *
+     */
+    function updateAndRequestQueryCaching()
+        public
+        payable
+    {
+        emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer...");
+        cachedQueryID = oraclize_query(
+            "URL",
+            "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"
+        );
+        oraclize_requestQueryCaching(cachedQueryID);
+    }
+    /**
+     *
+     * @dev Now here we are making the *same* Provable query as above but by
+     *      simply calling `oraclize_queryCached(...)`. Notice too how we
+     *      provide to it the cost of the query which is a required parameter.
+     *
+     */
+    function updateCached()
+        public
+        payable
+    {
+        emit LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer...");
+        oraclize_queryCached(oraclize_getPrice("URL"));
+    }
+    /**
+     *
+     * @dev When the Provable service returns our result and calls this
+     *      callback,  we call our *cached* version of the update function,
+     *      thus continuing the asynchronous recursion.
+     *
+     */
+    function __callback(
+        bytes32 myid,
+        string memory result,
+        bytes memory proof
+    )
+        public
+    {
+        require(msg.sender == oraclize_cbAddress());
+        updateCached();
+        priceETHXBT = result;
+        emit LogNewKrakenPriceTicker(priceETHXBT);
+    }
+}
+
+```
+
 ### Computation Data Source
 
 #### Passing Arguments to the Package
