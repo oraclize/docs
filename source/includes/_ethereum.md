@@ -58,8 +58,8 @@ To ease development, Oraclize doesn't charge a contract for its first request of
 Only the first query is free. Ensure that the contract has a sufficient ETH balance to pay the following queries. The contract gets automatically charged on the `oraclize_query` call but fails if the balance is insufficient.
 </aside>
 
-
 ### Simple Query
+
 ```javascript
 // This code example will ask Oraclize to send as soon as possible
 // a transaction with the primary result (as a string) of the given
@@ -427,13 +427,44 @@ When using a custom gas limit, to correctly calculate your contract's _next_ que
 
 `oraclize_getPrice` can also accept an `address` parameter, allowing you to discover prices for queries for _any_ contract, rather than just only the contract that is actually calling: `oraclize_getPrice(string _datasource, address _contractAddress);`.
 
-Finally, `oraclize_getPrice` can accept all three of the aforementioned parameters in order to discover very specific query prices for any datasource, using any custom gas limit and for any desired contract: `oraclize_getPrice(string _datasource, uint256 _gasLimit, address _contractAddress);`
+Finally, `oraclize_getPrice` can accept a combination of parameters allowing the discovery of very specific query prices for any datasource combined with any proof-type, using any custom gas limit, any custom gas price and for any desired contract: `oraclize_getPrice(string _datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);`
 
 All overloaded versions of the `oraclize_getPrice` helper function have the `view` visibility specifier and so are free for your contract to call.
 
 <aside class="notice">
 Note that the first query to the Provable service is _free_, and so the first call to `oraclize_getPrice` from a contract with a gas limit and/or gas price that is _less than or equal_ to the default values will result in the function _correctly_ returning `0`.
 </aside>
+
+```javascript
+
+/**
+ *
+ * @notice All oraclize_getPrice(...) function overloads:
+ *
+ */
+
+// For datasource prices...
+oraclize_getPrice(string datasource);
+oraclize_getPrice(bytes1 datasource);
+
+// For prices involing custom gas limits...
+oraclize_getPrice(string datasource, uint256 _gasLimit);
+oraclize_getPrice(bytes1 datasource, uint256 _gasLimit);
+
+// For query prices for addresses other than the calling contract...
+oraclize_getPrice(string datasource, address _address);
+oraclize_getPrice(bytes1 datasource, address _address);
+
+// For prices involving custom gas limits and custom gas prices...
+oraclize_getPrice(string datasource, uint256 _gasLimit, uint256 _gasPrice);
+oraclize_getPrice(bytes1 datasource, uint256 _gasLimit, uint256 _gasPrice);
+
+// For prices involving different datasource & prooftype combinations...
+oraclize_getPrice(string datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);
+oraclize_getPrice(bytes1 datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);
+
+
+```
 
 ### Mapping Query Ids
 
@@ -871,9 +902,136 @@ The random datasource is currently available on the Ethereum mainnet and on all 
 The `oraclize_newRandomDSQuery` can be used for different kind of interactions, but the security can be incresed further by additing additional commitment data to the request. For example, for two party interactions, the `oraclize_newRandomDSQuery` can be modified as showon the side to include the sender address and the value send along as commitment data. This more strongly commitment the request for random bytes to current party, which are assumed to have a stake in the contract, making it impossible for miners to replay transactions on potential forks or reorg of the current chain.
 
 #### Multi-Party Interactions
+
 In the case of multi-party interactions, such as voting schemes or lotteries, the commitment data can should include all participants addresses, to ensure that the transaction cannot be replayed by a miner on a fork or a reorged chain where a participant didn't put a stake.
 
+### ERC20 Token Payments
 
+```javascript
+
+/**
+ *
+ * @dev Provable helper functions for managing ERC20 Payments
+ *
+ */
+
+// Set payment method to token existing at <token-address>
+oraclize_setCustomTokenPayment(address <token-address>);
+
+// Approve an allowance of the token for the Provable service:
+oraclize_approveTokenAllowance(
+  address <token-address>,
+  uint256 <token-amount>
+);
+
+// Or combine the above into a single call to this function:
+oraclize_setAndApproveTokenAllowance(
+ 	address<token-address>,
+	uint256<token-amount>
+);
+
+// Get the price of a query in tokens:
+oraclize_getPriceERC20(uint256 <gas-limit>);
+
+// Revert back to paying with ETH and revoke the approved token amount:
+oraclize_unsetAndRevokeCustomPayment();
+
+```
+
+Provable supports ERC20 token payments. In order to make queries using a token as payment rather than ETH, you must somewhere in your contract call: `oraclize_setCustomTokenPayment(address <token-address>);`, where `<token-address>` is any of those existing on the whitelist<!-- FIME Link here! --> of supported tokens.
+
+Once called, subsequent queries made by a contract will be paid for in the specified tokens. Query prices are exactly the same as when paying in ETH, but will be converted to their token equivalent automatically.
+
+<aside class="notice">
+Note that any calls to `oraclize_setCustomTokenPayment()` or `oraclize_getPriceERC20(...)'` that use a token-address not on the list of supported tokens will `revert();`.
+</aside>
+
+The same as when paying for queries with ETH, when paying with a token you will need to ensure your contract has a sufficient balance of that token to cover the query cost, and that a balance has been `approved` to be used by the Provable connector contract which it is calling. (See the ERC20 token __[specification here](https://theethereum.wiki/w/index.php/ERC20_Token_Standard#Approve_And_TransferFrom_Token_Balance)__ for more information on token approval.)
+
+To make this simpler, the Provable API provides various helper functions which you can see on the right hand side.
+
+<aside class="notice">
+Notice in the helper functions the one that composes both `oraclize_setCustomTokenPayment` and `oraclize_approveTokenAllowance`. This composition (`oraclize_setAndApproveTokenAllowance(...);`) is ideal for using in your contract's constructor function to setup the token payments in a single function call upon deployment!
+</aside>
+
+Just as when __[paying for queries using ETH](http://docs.oraclize.it/#ethereum-best-practices-pre-calculating-the-query-price)__, when paying using a token it is also possible to pre-calculate a query-price via: `oraclize_getPriceERC20(<datasource>);`. This returns the next query price expressed in units of the token that the your contract has set as its `customTokenPayment`.
+
+Additional parameters may be passed to get prices for more specific query types. See the information to the right for a full list of `oraclize_getPriceERC20` function overloads. All overloaded versions of the `oraclize_getPrice` helper function have the `view` visibility specifier and so are free for your contract to call.
+
+<aside class="notice">
+Note that the first query to the Provable service is _free_, and so the first call to `oraclize_getPriceERC20` from any contract with a gas limit and/or gas price that is _less than or equal_ to the default values will result in the function _correctly_ returning `0`.
+</aside>
+
+In the case of a contract specifying a token payment, but sending enough ETH to cover the cost of the query, ETH will be used as payment rather than the token.
+
+Should a contract wish to switch back to using ETH to pay for queries, rather than a token, it can do so by calling: `oraclize_unsetAndRevokeCustomPayment();`. This will unset the custom token payment option, and reset the allowance to the Provable contract to zero.
+
+```javascript
+
+/**
+ *
+ * @dev The complete set of oraclize_getPriceERC20() overloads follow,
+ *      allowing for price discovery of any query type.
+ *
+ */
+
+// For datasource prices...
+oraclize_getPriceERC20(string _datasource);
+oraclize_getPriceERC20(bytes1 _datasource);
+
+// For prices involving custom gas limits...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit);
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit);
+
+// For query prices for addresses other than the calling contract...
+oraclize_getPriceERC20(string _datasource, address _contractAddress);
+oraclize_getPriceERC20(bytes1 _datasource, address _contractAddress);
+
+// For query prices involving different contracts w/ custom gas limits...
+oraclize_getPriceERC20(string _datasource, address _contractAddress, uint256 _gasLimit);
+oraclize_getPriceERC20(bytes1 _datasource, address _contractAddress, uint256 _gasLimit);
+
+// For prices involving custom gas limits and custom gas prices...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit, uint256 _gasPrice);
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit, uint256 _gasPrice);
+
+// For prices involving different _datasource & prooftype combinations...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);
+
+/**
+ *
+ * @dev Or have the same set of oraclize_getPriceERC20 overloads but which
+ *      can be used for getting prices in *any* token, rather than only that
+ *      which your contract has elected to use.
+ *
+ */
+
+// For datasource prices in given token's units...
+oraclize_getPriceERC20(address _tokenAddress, string _datasource)
+oraclize_getPriceERC20(address _tokenAddress, bytes1 _datasource)
+
+// For prices in the given token's units & involving custom gas limits...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit, address _tokenAddress)
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit, address _tokenAddress)
+
+// For query prices in the given token's units & for addresses other than the calling contract...
+oraclize_getPriceERC20(string _datasource, address _contractAddress, address _tokenAddress)
+oraclize_getPriceERC20(bytes1 _datasource, address _contractAddress, address _tokenAddress)
+
+// For prices in the given token's units & involving different contracts w/ custom gas limits...
+oraclize_getPriceERC20(string _datasource, address _contractAddress, uint256 _gasLimit, address _tokenAddress)
+oraclize_getPriceERC20(bytes1 _datasource, address _contractAddress, uint256 _gasLimit, address _tokenAddress)
+
+// For prices in a given token's units & involving different datasource & prooftype combinations...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit, uint256 _gasPrice, address _tokenAddress)
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit, uint256 _gasPrice, address _tokenAddress)
+
+// For prices in a given token's units & involving different datasource & prooftype combinations...
+oraclize_getPriceERC20(string _datasource, uint256 _gasLimit, uint256 _gasPrice, byte _proofType, address _tokenAddress)
+oraclize_getPriceERC20(bytes1 _datasource, uint256 _gasLimit, uint256 _gasPrice, byte _proofType, address _tokenAddress)
+
+```
 
 ### ProofShield
 
