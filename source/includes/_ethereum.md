@@ -415,11 +415,11 @@ contract KrakenPriceTicker is usingOraclize {
 
 ```
 
-Payment for Provable queries are debited directly from the contract that calls the `oraclize_query(...)'` function at the moment that function call is made. So - depending on your contract's logic - you may want to know ahead of time the price of your next query before making it. Provable provides a helper method to do just that: `oraclize_getPrice(string _datasource);`.
+Payment for Provable queries are debited directly from the contract that calls the `oraclize_query(...)'` function at the moment that function call is made. In order for that to succeed, either the contract itself needs to hold a balance of ETH, or the contract needs to implement logic to burden the contract-caller to supply the ETH. Either way, you may want to know ahead of time the price of the next query before making it. Provable provides a helper method to do just that: `oraclize_getPrice(string _datasource);`.
 
-Using this helper function, it is possible gracefully handle the scenario where your contract's balance has dropped below the cost of the query price. Otherwise, if a contract's ETH balance is insufficient to cover the query at the time the query is attempted, it will fail via: `revert('Error settling query payment');`. The `update();` function in the sample contract on the right demonstrates how to implement the `oraclize_getPrice()` helper function in order to check if a contracts balance is sufficient to cover the query cost.
+If your contract is paying for queries from its own balance, it is possible gracefully handle the scenario where that balance has dropped below the cost of the query price using this helper function. Otherwise, if the balance is insufficient to cover the query at the time the query is attempted, it will fail via: `revert('Error settling query payment');`. The `update();` function in the sample contract on the right demonstrates how to implement the `oraclize_getPrice()` helper in order to perform this balance check before making a Provable query.
 
-The `oraclize_getPrice` function is overloaded and so can also accept a gas limit parameter: `oraclize_getPrice(string _datasource, uint256 _gasLimit);`. This allowing you to get accurate prices for queries that use a gas limit different from the `200,000` default.
+The `oraclize_getPrice` helper function is overloaded and so can also accept a gas limit parameter: `oraclize_getPrice(string _datasource, uint256 _gasLimit);`. This allowing you to get accurate prices for queries that use a gas limit different from the `200,000` default.
 
 <aside class="notice">
 When using a custom gas limit, to correctly calculate your contract's _next_ query price, ensure that you use the same custom gas limit parameter for the call to `getPrice(string _datasource, uint256 _gasLimit);` as you intend to use in your actual query!
