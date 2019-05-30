@@ -137,13 +137,12 @@ contract ExampleContract is usingOraclize {
     }
 
 ```
-Smart contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method.
-This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
+Smart contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method. This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
-This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.
+This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds whilst the contract has enough funds to pay for the Oraclize fee.
 
 <aside class="notice">
-Use recursive queries cautiously. In general it is recommended to send queries purposefully.
+Use recursive queries cautiously! They will continue until a contract is drained of ETH if left unchecked!
 </aside>
 
 ### The Query ID
@@ -512,7 +511,7 @@ It might occur that a callback function of a sent query gets called more than on
 
 ### Encrypted Queries
 Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
-The encrypted queries feature may be of interest to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.
+The encrypted queries feature may be of interest to developers who want to deploy their blockchain applications on public networks. For example, if an application leverages data from an authenticated API, it may be dangerous to disclose the API key to anybody who is monitoring the public chain.
 
 Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
 Only Oraclize will then be able to decrypt the request using its paired private key.
