@@ -1102,14 +1102,14 @@ All of Provable's API functions where a `string _datasource` parameter is used c
 |---------------------------|
 |       `string` | `bytes1` |
 |---------------------------|
-|          'URL' |   0xFF   |
-|         'IPFS' |   0xFB   |
 |        'swarm' |   0xF8   |
-|       'nested' |   0xFA   |
-|       'Random' |   0xFE   |
 |   'Blockchain' |   0xF9   |
-|  'computation' |   0xFD   |
+|       'nested' |   0xFA   |
+|         'IPFS' |   0xFB   |
 | 'WolframAlpha' |   0xFC   |
+|  'computation' |   0xFD   |
+|       'Random' |   0xFE   |
+|          'URL' |   0xFF   |
 |---------------------------|
 
 
