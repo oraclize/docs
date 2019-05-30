@@ -284,7 +284,7 @@ In order to enable rebroadcasts, a contract writer must explicitly define the fo
 
 Just like a normal query, any over-payment is refunded, but always to the _final calling contract_. Which latter gives rise to two important caveats:
 
-- The first is that the refund will _always_ go to the final calling contract, and so if the call for a rebroadcast is proxied via another contract, the refund will always be made to the that implements the API, and not necessarily to the contract which initiated and paid for the call.
+- The first is that the refund will _always_ go to the final calling contract, and so if the call for a rebroadcast is proxied via another contract, the refund will always be made to the contract that implements the API, and not necessarily to the contract which initiated and paid for the call.
 
 - The second caveat is that the final calling contract will also require a payable `fallback()` function in order to receive refunds in such cases. If the payable fallback is omitted, any refund attempt will cause the query to `revert();`.
 
@@ -512,7 +512,7 @@ It might occur that a callback function of a sent query gets called more than on
 
 ### Encrypted Queries
 Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
-The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.
+The encrypted queries feature may be of interest to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.
 
 Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
 Only Oraclize will then be able to decrypt the request using its paired private key.
