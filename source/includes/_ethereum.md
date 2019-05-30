@@ -286,7 +286,7 @@ Just like a normal query, any over-payment is refunded, but always to the _final
 
 - The first is that the refund will _always_ go to the final calling contract, and so if the call for a rebroadcast is proxied via another contract, the refund will always be made to the that implements the API, and not necessarily to the contract which initiated and paid for the call.
 
-- The second caveat is that the final calling contract will also require a payable `fallback()` function in order to receive refunds in such cases. Absent this function, the refund attempt will cause the query to `revert();`.
+- The second caveat is that the final calling contract will also require a payable `fallback()` function in order to receive refunds in such cases. If the payable fallback is omitted, any refund attempt will cause the query to `revert();`.
 
 Due to the preceding caveats, it is strongly recommended that queries be paid for using their exact cost, which can be calculated via: `oraclize_getRebroadcastCost(<new-gas-limit>, <new-gas-price>);`
 
