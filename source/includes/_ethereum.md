@@ -696,7 +696,7 @@ In the contract usingOraclize, which smart contracts should use to interface wit
 For advance usage of Random Data Source, it is recommended to read the following section.
 
 <aside class="notice">
-The random datasource is currently available on the Ethereum mainnet and on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+The random datasource is currently available on the Ethereum mainnet and on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/remix-ide-vm.
 </aside>
 
 #### Two Party Interactions
@@ -753,7 +753,7 @@ To enable the ProofShield it is enough to set it via the `oraclize_setProof` fun
 Once the ProofShield is enabled, the received proof will not be the raw Authenticity Proof, but the ProofShield proof instead: some functions are provided so that the ProofShield proof can be verified on-chain. In order to verify it, you need to call from within the `__callback` method the function `oraclize_proofShield_proofVerify__returnCode(queryId, result, proof)` and ensure that it returns 0.
 
 <aside class="notice">
-The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/browser-solidity-vmmode.
+The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/remix-ide-vm.
 </aside>
 
 A code example follows, note that the complete version of it is available [here](https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol):
