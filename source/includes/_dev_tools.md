@@ -15,9 +15,12 @@ It is very important to independently verify that those proofs are valid, as thi
 
 In order to use the encryption-enabling features of Oraclize, developers can use the <a href="https://app.oraclize.it/home/test_query" target="_blank">TestQuery</a> page or the <a href="https://github.com/oraclize/encrypted-queries" target="_blank">Python Encryption Tool</a>. To avoid replay attacks, the encrypted query is linked to the first smart contract which uses it to perform a request to Oraclize. New deployment of the same smart contract code will required to newly encrypt the query.
 
-## Oraclize Ethereum IDE
-Oraclize is hosting a patched version of the <a href="http://dapps.oraclize.it/browser-solidity/" target="_blank">Remix IDE</a>. The patch adds a plugin enabling testing of Ethereum Oraclize-based contracts directly from the browser: the contract can be deployed in memory and the request is resolved automatically via the Oraclize HTTP API.
+## Remix IDE Provable Plugin
+The Remix IDE is bundled with a variety of plugins, including one for using Provable as an oracle service. This plugin is intended for use with the JavaScript VM, which upon loading deploys all the needed infrastructure and listeners for your session. Thereafter you may deploy any contracts utilizing Provable via import of the oraclizeAPI and track any query requests done through the plugin icon on the side panel of the IDE.
 
+<aside class="notice">
+The plugin only works with the JavaScript VM environment on Remix, in the case of using a web3 provider or injected environment, the network in question will either need to be supported by Provable directly, which is true for for the public testnets or mainnet, or in the case of a private network, will require manual setup via the `ethereum-bridge`.
+</aside>
 
 ## Unit Testing
 An important step in smart contract development, before moving to an official testnet or production use, is unit testing. The Ethereum community has developed multiple frameworks for unit testing, such as Truffle and Embark, which can test contracts on a private instance of Ethereum. A common combination is to run Truffle tests in an ethereumjs-testrpc environments, which is a simulated Ethereum blockchain instance running in memory.
