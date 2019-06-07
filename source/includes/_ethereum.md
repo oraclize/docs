@@ -277,6 +277,10 @@ oraclize_requestCallbackRebroadcast(
 
 This way, the effects of the changing network conditions can be mitigated, ensuring callbacks are always received in a timely manner.
 
+<aside class="notice">
+Currently, query rebroadcasts can __only__ be paid for with ETH, which - like in any other Provable query - is taken out of the contract at the time the call is made. In future, any of the eligible ERC20 tokens that are on the Provable whitelist may also be used for query rebroadcast payments.
+</aside>
+
 Another useful feature of rebroadcasting is in giving a user a finer-control over the gas limit of their callback. Should a query be sent with an amount of gas too low for the `__callback()` to fully execute, the query would normally `revert()` and be wasted. Now a user has the ability to request a rebroadcast on that query and thus the opportunity to make changes to the gas limit in order to remedy the situation.
 
 In order to enable rebroadcasts, a contract writer must explicitly define the following in the storage of their contract: `bool public constant allowQueryRebroadcasts = true;`. Any attempts to rebroadcast a query destined for a contract which does not have the preceding line present will be unfulfilled.
@@ -287,7 +291,7 @@ Just like a normal query, any over-payment is refunded, but always to the _final
 
 - The second caveat is that the final calling contract will also require a payable `fallback()` function in order to receive refunds in such cases. If the payable fallback is omitted, any refund attempt will cause the query to `revert();`.
 
-Due to the preceding caveats, it is strongly recommended that queries be paid for using their exact cost, which can be calculated via: `oraclize_getRebroadcastCost(<new-gas-limit>, <new-gas-price>);`
+Due to the above, it is strongly recommended that queries be paid for using their exact cost, which can be calculated via: `oraclize_getRebroadcastCost(<new-gas-limit>, <new-gas-price>);`
 
 <aside class="notice">
 It is up to the contract writer to ensure that the gas limit and gas price of the requested rebroadcast are _greater than or equal_ to the parameters used in the original query. Attempts made using a lower gas limit or gas price will be ignored by the service and requested rebroadcast will not occur.
@@ -604,10 +608,14 @@ To enable query caching, a contract must first make a standard Provable query us
 
 Thereafter, a contract may make a _new_ query using the cached query’s parameters via: `oraclize_queryCached(<query-price>);`. This will return a _new_ queryID in order for the query to be tracked within your contract’s context. The new query made will have exactly the parameters of the query which was originally cached by the contract.
 
-See the example to the right for a contract that sets up and then uses cached queries in a recursive manner in order to benefit from the large gas savings when using a single, static query.
-
 <aside class="notice">
 Notice that the only parameter required by `oraclize_queryCached` is the _cost_ of that query. You can use the `oraclize_getPrice` helper function __[explained here](http://docs.oraclize.it/#ethereum-best-practices-pre-calculating-the-query-price)__ in order to get the correct price of the query: `oraclize_queryCached(oraclize_getPrice(<datasource>));`. The `bytes32` ID of the query has already been cached and so is not required.
+</aside>
+
+See the example contract to the right for a contract that sets up and then uses cached queries in a recursive manner in order to benefit from the large gas savings when using a single, static query.
+
+<aside class="notice">
+Currently, cached-queries can __only__ be paid for with ETH. In future, any of the eligible ERC20 tokens that are on the Provable token whitelist may also be used for cached-query payments.
 </aside>
 
 ```javascript
