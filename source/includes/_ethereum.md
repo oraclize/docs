@@ -943,9 +943,9 @@ oraclize_unsetAndRevokeCustomPayment();
 
 ```
 
-Provable supports ERC20 token payments. In order to make queries using a token as payment rather than ETH, you must somewhere in your contract call: `oraclize_setCustomTokenPayment(address <token-address>);`, where `<token-address>` is any of those existing on the whitelist<!-- FIXME: Update link here when we have list! --> of supported tokens. (The token whitelist will be announced soon)
+Provable supports ERC20 token payments. In order to make queries using a token as payment rather than ETH, you must first call `oraclize_setCustomTokenPayment(address <token-address>);` somewhere in your contract. The parameter `<token-address>` is any of those existing on the whitelist of supported tokens. (The token whitelist will be announced soon!)<!-- FIXME: Update link here when we have list! -->
 
-Once called, subsequent queries made by a contract will be paid for in the specified tokens. Query prices are exactly the same as when paying in ETH, but will be converted to their token equivalent automatically.
+Once the above is all set, the process of making queries is exactly the same as when using ETH, except you make your queries by calling: `oraclize_token_query(<params>)` instead. Query prices are exactly the same as when paying in ETH, but will be converted to their token equivalent automatically.
 
 <aside class="notice">
 Note that any calls to `oraclize_setCustomTokenPayment()` or `oraclize_getPriceERC20(...)'` that use a token-address not on the list of supported tokens will `revert();`.
