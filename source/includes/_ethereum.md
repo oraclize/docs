@@ -432,8 +432,6 @@ When using a custom gas limit, to correctly calculate your contract's _next_ que
 
 Finally, `oraclize_getPrice` can accept a combination of parameters allowing the discovery of very specific query prices for any datasource combined with any proof-type, using any custom gas limit, any custom gas price and for any desired contract: `oraclize_getPrice(string _datasource, uint256 _gasLimit, uint256 _gasPrice, bytes1 _proofType);`
 
-All overloaded versions of the `oraclize_getPrice` helper function have the `view` visibility specifier and so are free for your contract to call.
-
 <aside class="notice">
 Note that the first query to the Provable service is _free_, and so the first call to `oraclize_getPrice` from a contract with a gas limit and/or gas price that is _less than or equal_ to the default values will result in the function _correctly_ returning `0`.
 </aside>
@@ -963,7 +961,7 @@ Notice in the helper functions the one that composes both `oraclize_setCustomTok
 
 Just as when __[paying for queries using ETH](http://docs.oraclize.it/#ethereum-best-practices-pre-calculating-the-query-price)__, when paying using a token it is also possible to pre-calculate a query-price via: `oraclize_getPriceERC20(<datasource>);`. This returns the next query price expressed in units of the token that the your contract has set as its `customTokenPayment`.
 
-Additional parameters may be passed to get prices for more specific query types. See the information to the right for a full list of `oraclize_getPriceERC20` function overloads. All overloaded versions of the `oraclize_getPrice` helper function have the `view` visibility specifier and so are free for your contract to call.
+Additional parameters may be passed to get prices for more specific query types. See the information to the right for a full list of `oraclize_getPriceERC20` function overloads.
 
 <aside class="notice">
 Note that the first query to the Provable service is _free_, and so the first call to `oraclize_getPriceERC20` from any contract with a gas limit and/or gas price that is _less than or equal_ to the default values will result in the function _correctly_ returning `0`.
