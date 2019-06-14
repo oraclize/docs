@@ -1,6 +1,6 @@
 # <a style="display:inline-block; min-width:20px">C&#8226;</a> Corda
 
-Here we will cover the Provable's Corda integration. Before reading this section, you must be familiar with the Corda platform key concepts like flows, subflows, contracts, transactions, commands, oracles etc. So if things get blurred the [corda documentation](https://docs.corda.net/) is your best friend.
+Here we will cover the Provable Corda integration. Before reading this section, you must be familiar with the Corda platform key concepts like flows, subflows, contracts, transactions, commands, oracles etc. So if things get blurred the [corda documentation](https://docs.corda.net/) is your best friend.
 
 ## Quick Start
 
@@ -33,10 +33,10 @@ As shown on the code on the right, the flow fetches the last USD/GBP rate from t
 Once the answer is successfully returned, the proof can be easily verified by using the `ProofVerificationTool` defined in `OraclizeUtils`.
 
 <aside class="notice">
-To safely check the authenticity of the data received it is customary to verify the proof included in an Provable's answer. Once the verifyProof
-method succeed (returning 'true'), the user can be sure that nor Provable neither other Parties has tampered the results. This can be checked from each party involved in the transaction which has loaded our CorDapp.
+To safely check the authenticity of the data received it is customary to verify the proof included in a Provable answer. Once the verifyProof
+method succeeds (returning 'true'), the user can be sure that neither Provable nor other Parties have tampered with the results. This can be checked from each party involved in the transaction which has loaded our CorDapp.
 
-Note that the ProofVerificationTool is a module included in the Provable's CorDapp and performs the verification locally within the node.
+Note that the ProofVerificationTool is a module included in Provable's CorDapp and performs the verification locally within the node.
 </aside>
 
 ```java
@@ -45,7 +45,7 @@ val oracle = serviceHub.identityService
 val answerCommand = Command(answer, oracle.owningKey)
 ```
 
-If you want to put the results in a transaction, it is necessary to wrap the answer in a `Command` along with the Provable's node public key. Note that the Provable's node can be obtained by using the `serviceHub.identityService`, identifying the node with `OraclizeUtils.getNodeName()`.
+If you want to put the results in a transaction, it is necessary to wrap the answer in a `Command` along with Provable's node public key. Note that Provable's node can be obtained by using the `serviceHub.identityService`, identifying the node with `OraclizeUtils.getNodeName()`.
 
 ### Building the transaction
 
@@ -92,9 +92,9 @@ Then the signature can be requested by using `OraclizeSignFlow` which accepts th
 
 ## Details
 
-### The Provable's Answer
+### The Provable Answer
 
-The `Answer` model defined by Provable permits the access to the following information:
+The `Answer` model defined by Provable permits access to the following information:
 
   * `queryId`: the query ID of the current answer
   * `rawValue`: the actual result (could be a ByteArray or a String)
@@ -116,7 +116,7 @@ override fun verify(tx: LedgerTransaction) {
     requireThat {
         ...
 
-        // Check tha Oraclise's answer
+        // Check the Provable answer
         val rate = answerCommand.value.rawValue as String
         "The rate USD/GBP must be over $USD_GBP_RATE_THRESH" using (rate.toDouble() > USD_GBP_RATE_THRESH)
 
@@ -164,7 +164,7 @@ dependencies {
 }
 ```
 
-If you want to use the Provable's CorDapp in your project just put one of the  dependencies in your `build.gradle` file:
+If you want to use Provable's CorDapp in your project just put one of the  dependencies in your `build.gradle` file:
 
   * `compile "com.github.oraclize:corda-api:linux_x86_64-SNAPSHOT"`
   * `compile "com.github.oraclize:corda-api:win32_x86_64-SNAPSHOT"`
