@@ -22,4 +22,4 @@ This solution elegantly solves the Oracle Problem:
 
 Provable engine can be easily integrated with both private and public instances of different blockchain protocols.
 
-While building the service, the Provable team has realized that the concept of authenticity proofs has much broader applicability than initially envisioned. For example, the Oraclize Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation
+While building the service, the Provable team has realized that the concept of authenticity proofs has much broader applicability than initially envisioned. For example, the Provable Random Data-source can be used even by traditional gambling applications to ensure users of continuous fairness of operation
