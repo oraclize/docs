@@ -56,7 +56,7 @@ If only one parameters is specified in the query, the service will default to pe
 More advanced HTTP capabilities, such as Basic Authentication or OAuth, can be build by leveraging the `computation` data source type.
 
 <aside class="notice">
-As Oraclize is a remote service, it requires the `URL` datasource to also be remotely accessible. In case a developer may wish to use an API that is accessible only on their local network, they may use the `localtunnel` utility available via `npm` to expose their local port via a publicly accessible url (which is what is to be used as the query parameter, in place of localhost:8080 or 127.0.0.1). More information on this utility is available at: <a href="https://localtunnel.github.io/www/" target="_blank">https://localtunnel.github.io/www/</a>
+As Provable is a remote service, it requires the `URL` datasource to also be remotely accessible. In case a developer may wish to use an API that is accessible only on their local network, they may use the `localtunnel` utility available via `npm` to expose their local port via a publicly accessible url (which is what is to be used as the query parameter, in place of localhost:8080 or 127.0.0.1). More information on this utility is available at: <a href="https://localtunnel.github.io/www/" target="_blank">https://localtunnel.github.io/www/</a>
 </aside>
 
 ## WolframAlpha
@@ -64,10 +64,10 @@ As Oraclize is a remote service, it requires the `URL` datasource to also be rem
 The `WolframAlpha` data source type enables direct access to the WolframAlpha Knowledge Engine API. This datasource expects as sole parameter the string which should be passed to WolframAlpha. It will returns the result as a string.
 
 <aside class="notice">
-Developers should test the validity of the query via Oraclize's Test Page to make sure your syntax makes sense to Wolfram's engine.
+Developers should test the validity of the query via Provable's Test Page to make sure your syntax makes sense to Wolfram's engine.
 </aside>
 <aside class="notice">
-This data source doesn't support authenticity proofs as returning the whole API response is against WolframAlpha Terms of Service. For this reason, Oraclize recommends to use this data source type only for testing.
+This data source doesn't support authenticity proofs as returning the whole API response is against WolframAlpha Terms of Service. For this reason, Provable recommends to use this data source type only for testing.
 </aside>
 
 
@@ -77,7 +77,7 @@ The `IPFS` data source type can be used to retrieve the content of a file on the
 
 This datasource expects as sole parameter the IPFS multihash in the query. For example, the file `QmT78zSuBmuS4z925WZfrqQ1qHaJ56DQaTfyMUF7F8ff5o` would return `"hello world\n".
 
-If Oraclize fails to fetch the IPFS content within <i>20</i> seconds, the request will fail.
+If Provable fails to fetch the IPFS content within <i>20</i> seconds, the request will fail.
 
 ## computation
 
@@ -85,7 +85,7 @@ If Oraclize fails to fetch the IPFS content within <i>20</i> seconds, the reques
 # Content of the Dockerfile
 
 FROM ubuntu:14.04
-MAINTAINER Oraclize "info@oraclize.it"
+MAINTAINER Provable "info@oraclize.it"
 RUN apt-get update && apt-get install -y python-numpy
 CMD python -c "import numpy; print int(numpy.linalg.det(numpy.array([[1,2,3],[7,2,3],[7,6,3]])))"
 ```
@@ -105,19 +105,19 @@ user@locahost:~$ zip -r archive.zip *
 user@locahost:~$ curl -F "data=@./archive.zip" https://ipfs.infura.io:5001/api/v0/add
 {"Name":"archive.zip","Hash":"QmPz9JxrP8A8pZmtgHZtPwJuTKiaHqU92UzeUDzKDvEz9Q","Size":"548"}
 
-# Persistance of the file is not garanteed. To make sure it stays online you 
+# Persistance of the file is not garanteed. To make sure it stays online you
 # should run your IPFS node / IPFS daemon and keep the archive pinned (pin archive.zip) on your machine.
 ```
 The `computation` datasource enables the auditable execution of an application or a script by leveraging a sandboxed Amazon Web Service virtual machine.
 
-The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Oraclize only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes. (Current Docker version used for computation ds is 1.12.1)
+The application has to print, on standard output, the result of the computation as the last line before it quits. The result can be up to 2500 characters long. The execution context has to be described by a <a href="https://docs.docker.com/engine/reference/builder/" target="_blank">Dockerfile</a>, where building and running it should start the main application straight away. Currently Provable only provides one type of auditable instance: a t2.micro instance.  The Dockerfile initialization and application execution should terminate as soon as possible, as the execution time is capped at 5 minutes. (Current Docker version used for computation ds is 1.12.1)
 
-The developer can send to Oraclize the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
+The developer can send to Provable the application binary or the script, its dependency and the Dockerfile by creating an archive and uploading it to IPFS.
 The query expects as first argument the IPFS multihash of that archive, while the following arguments will be passed to the execution environment as environmental variables, making them accessible by the application.
 
 
 <aside class="notice">
-Oraclize might use the email specified in the MAINTAINER field of the Dockerfile, as contact information in case any issue arises.
+Provable might use the email specified in the MAINTAINER field of the Dockerfile, as contact information in case any issue arises.
 </aside>
 
 <aside class="notice">
@@ -126,7 +126,7 @@ The Dockerfile must be in the root of the archive.zip, not in a subfolder.
 
 ## random
 
-The design described there prevents Oraclize from tampering with the random results coming from the Trusted Execution Environment (TEE) and protects the user from a number of attack vectors.
+The design described there prevents Provable from tampering with the random results coming from the Trusted Execution Environment (TEE) and protects the user from a number of attack vectors.
 
 The authenticity proof, attached with the result, can be easily verified not just off-chain but even by any Solidity contract receiving them. <a href="https://github.com/oraclize/ethereum-examples/tree/master/solidity/random-datasource" target="_blank">The example presented here</a>, showing how to integrate the verification process, discards any random result whose authenticity proofs don't pass the verification process.
 

@@ -1,14 +1,14 @@
 # <a style="display:inline-block; min-width:20px">&#9830;</a> Ethereum
 
-The following section is dedicated to the Ethereum and Oraclize integration.
+The following section is dedicated to the Ethereum and Provable integration.
 To better profit from this section of the documentation, previous knowledge of Solidity and Ethereum is required.
 
-The interaction between Oraclize and an Ethereum smart contract is asynchronous. Any request for data is composed of two steps:
+The interaction between Provable and an Ethereum smart contract is asynchronous. Any request for data is composed of two steps:
 
-* Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by a user. The function contains a special instruction which manifest to Oraclize, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
-* Secondly, according to the parameters of such request, Oraclize will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the `__callback` function which should be placed in the smart contract by its developer: for this reason, this transaction is referred in the documentation as the Oraclize callback transaction.
+* Firstly, in the most common case, a transaction executing a function of a smart contract is broadcasted by a user. The function contains a special instruction which manifest to Provable, who is constantly monitoring the Ethereum blockchain for such instruction, a request for data.
+* Secondly, according to the parameters of such request, Provable will fetch or compute a result, build, sign and broadcast the transaction carrying the result. In the default configuration, such transaction will execute the `__callback` function which should be placed in the smart contract by its developer: for this reason, this transaction is referred in the documentation as the Provable callback transaction.
 
-As said in previous sections, one of the fundamental characteristics of Oraclize is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Oraclize always recommends the use of authenticity proofs for production deployments.  
+As said in previous sections, one of the fundamental characteristics of Provable is the capability of returning data to a smart contract together with one or more proofs of authenticity of the data. The generation of an authenticity proof is optional and it is a contract-wide setting which must be configured by the smart contract developer before the request for data is initiated. Provable always recommends the use of authenticity proofs for production deployments.
 
 ## Quick Start
 
@@ -41,18 +41,18 @@ contract ExampleContract is usingOraclize {
            oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
        }
    }
-} 
+}
 ```
 
-The most simple way to introduce the Ethereum - Oraclize integration, it is by showing a working example, such as the smart contract on the right.
-This contract uses Oraclize to fetch the last ETH/USD from Coinbase Pro APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Oraclize:
+The most simple way to introduce the Ethereum - Provable integration, it is by showing a working example, such as the smart contract on the right.
+This contract uses Provable to fetch the last ETH/USD from Coinbase Pro APIs. The update process is initiated every time the function updatePrice() is called. The example shows two important components of using Provable:
 
 * The contract should be a child of the contract usingOraclize
-* The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Oraclize Github repository.
+* The contract usingOraclize is defined in the oraclizeAPI file, which can be fetched from the dedicated Provable Github repository.
 
 The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the oraclizeAPI.sol file since direct import from Github may not be supported.
 
-To ease development, Oraclize doesn't charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Oraclize fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn't have enough funds in his balance, the request will fail and Oraclize won't return any data.
+To ease development, Provable doesn't charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Provable fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn't have enough funds in his balance, the request will fail and Provable won't return any data.
 
 <aside class="notice">
 Only the first query is free. Ensure that the contract has a sufficient ETH balance to pay the following queries. The contract gets automatically charged on the `oraclize_query` call but fails if the balance is insufficient.
@@ -61,7 +61,7 @@ Only the first query is free. Ensure that the contract has a sufficient ETH bala
 
 ### Simple Query
 ```javascript
-// This code example will ask Oraclize to send as soon as possible
+// This code example will ask Provable to send as soon as possible
 // a transaction with the primary result (as a string) of the given
 // formula ("random number between 0 and 100") fetched from the
 // data-source "WolframAlpha".
@@ -87,7 +87,7 @@ A request for data is called **query**. The `oraclize_query` is a function, inhe
  * or a `WolframAlpha` formula
  * or an `IPFS` multihash
 
-The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Oraclize.  
+The number and type of supported arguments depends from the data-source in use. Beside, few more code example will be shown and commented. The datasource, as well as the authenticity proof chosen, determine the fee which the contract has to pay to Provable.
 
 
 ### Schedule a Query in the Future
@@ -102,7 +102,7 @@ oraclize_query(scheduled_arrivaltime+3*3600,
   "WolframAlpha", strConcat("flight ", flight_number, " landed"));
 ```
 The execution of a query can be scheduled in a future date. The function `oraclize_query` accepts as a parameter the delay in seconds from the current time or the timestamp in the future as first argument.
-Please note that in order for the future timestamp to be accepted by Oraclize it must be within **60 days** of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than **60 days**.
+Please note that in order for the future timestamp to be accepted by Provable it must be within **60 days** of the current UTC time in the case of the absolute timestamp choice, or in the case of a relative time elapse, the elapsed seconds must equate to no more than **60 days**.
 
 ### Recursive Queries
 ```javascript
@@ -137,10 +137,10 @@ contract ExampleContract is usingOraclize {
     }
 
 ```
-Smart contracts using Oraclize can be effectively autonomous by implementing a new call to Oraclize into their  ` __callback` method.
+Smart contracts using Provable can be effectively autonomous by implementing a new call to Provable into their  ` __callback` method.
 This can be useful for implementing periodic updates of some on-chain reference data, as with price feeds, or to periodically check for some off-chain conditions.
 
-This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds, until the contract has enough funds to pay for the Oraclize fee.
+This modified version of the previous example will update the ETH/USD exchange rate every 60 seconds, until the contract has enough funds to pay for the Provable fee.
 
 <aside class="notice">
 Use recursive queries cautiously. In general it is recommended to send queries purposefully.
@@ -186,11 +186,11 @@ contract ExampleContract is usingOraclize {
 ```
 
 Every time the function `oraclize_query` is called, it returns a unique ID, hereby referred to as `queryId`, which depends from the number of previous requests and the address of smart contract.
-The queryId identifies a specific query done to Oraclize and it is returned to the contract as a parameter of the callback transaction.
+The queryId identifies a specific query done to Provable and it is returned to the contract as a parameter of the callback transaction.
 
-Oraclize recommends smart contract developers to verify if the queryId sends by the callback transaction was generated by a valid call to the `oracize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the smart contract logic. Moreover, it protects the smart contract during blockchain reorganizations, as explained in the dedicated paragraph of this section.
+Provable recommends smart contract developers to verify if the queryId sent by the callback transaction was generated by a valid call to the `oraclize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the smart contract logic. Moreover, it protects the smart contract during blockchain reorganizations, as explained in the dedicated paragraph of this section.
 
-The `queryId` can be used as well to implement different behaviors into the `__callback` function, in particular when there is more than one pending call from Oraclize.
+The `queryId` can be used as well to implement different behaviors into the `__callback` function, in particular when there is more than one pending call from Provable.
 
 ### Custom Gas Limit and Gas Price
 ```javascript
@@ -234,11 +234,11 @@ contract ExampleContract is usingOraclize {
 }
 ```
 
-The transaction originating from Oraclize to the  `__callback` function pays a fee to the miner which include the transaction in a block, just like any other transaction. The miner fee is paid in Ether and it is calculated by taking the amount of gas which covers the execution costs of the transaction multiplied by the selected gas/ether price. Oraclize will set those parameters accordingly to the parameters specified in the smart contract, for contract-wide settings, and in the `oraclize_query` function, for query-specific settings. The miner fee for the callback transaction is taken from the contract balance when the query transaction is executed.
+The transaction originating from Provable to the  `__callback` function pays a fee to the miner which include the transaction in a block, just like any other transaction. The miner fee is paid in Ether and it is calculated by taking the amount of gas which covers the execution costs of the transaction multiplied by the selected gas/ether price. Provable will set those parameters accordingly to the parameters specified in the smart contract, for contract-wide settings, and in the `oraclize_query` function, for query-specific settings. The miner fee for the callback transaction is taken from the contract balance when the query transaction is executed.
 
-If no settings are specified, Oraclize will use the default values of 200,000 gas and 20 GWei. This last value is on the higher-end of the pricing spectrum right now, but it helps having faster confirmation times during network-wide congestions.
+If no settings are specified, Provable will use the default values of 200,000 gas and 20 GWei. This last value is on the higher-end of the pricing spectrum right now, but it helps having faster confirmation times during network-wide congestions.
 
-A different value for the Oraclize callback gas can be passed as the argument `_gasLimit` to the `oraclize_query` function as shown in the following examples.
+A different value for the Provable callback gas can be passed as the argument `_gasLimit` to the `oraclize_query` function as shown in the following examples.
 
 ```javascript
 // If the callback transaction requires little gas, the value can be lowered:
@@ -251,7 +251,7 @@ oraclize_query("URL", "https://api.pro.coinbase.com/products/ETH-USD/ticker", 50
 
 The gas price of the callback transaction can be set by calling the `oraclize_setCustomGasPrice` function, either in the constructor, which is executed once at deployment of the smart contract, or in a separate function. The following is the ExampleContract modified to specify a custom gas price of 4 Gwei and a custom gas limit for the callback transaction.
 
-Smart contract developers should estimate correctly and minimize the cost of their `__callback` method, as any unspent gas will be returned to Oraclize and no refund is available.
+Smart contract developers should estimate correctly and minimize the cost of their `__callback` method, as any unspent gas will be returned to Provable and no refund is available.
 
 <aside class="notice">
 When calling `oraclize_setCustomGasPrice` the parameter type is uint and represents the amount of wei. However, there is no need to put `wei` keyword in the parameter.
@@ -302,13 +302,13 @@ contract ExampleContract is usingOraclize {
     }
 }
 ```
-Authenticity proofs are at the core of Oraclize's oracle model. Smart contracts can request authenticity proofs together with their data by calling the `oraclize_setProof` function available in the usingOraclize. The authenticity proof can be either deliver directly to the smart contract or it can be saved, upload and stored on <a href="http://ipfs.io/" target="_blank">IPFS</a>.
+Authenticity proofs are at the core of Provable's oracle model. Smart contracts can request authenticity proofs together with their data by calling the `oraclize_setProof` function available in the usingOraclize contract. The authenticity proof can be either delivered directly to the smart contract or it can be saved, uploaded and stored on some alternate storage medium like <a href="http://ipfs.io/" target="_blank">IPFS</a>.
 
 When a smart contract requests for an authenticity proof, it **must** define a different callback function with the following arguments: `function __callback(bytes32 queryId, string result, bytes proof)`
 
 The `oraclize_setProof` function expects the following format: `oraclize_setProof(proofType_ | proofStorage_ )`
 
-Both proofType and proofStorage are byte constants defined in usingOraclize:  
+Both proofType and proofStorage are byte constants defined in usingOraclize:
 
 Available parameters for proofTypes are:
 
@@ -322,7 +322,7 @@ While for proofStorage:
 
 * `proofStorage_IPFS`
 
-For example, `oraclize_setProof(proofType_TLSNotary)` will return the full TLSNotary Proof bytes as the proof argument in the callback transaction. If instead `oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)` is used, then Oraclize will return only the base58-decoded IPFS multihash as the proof argument. To obtain the IPFS multihash, the bytes must be encoded to base58.
+For example, `oraclize_setProof(proofType_TLSNotary)` will return the full TLSNotary Proof bytes as the proof argument in the callback transaction. If instead `oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS)` is used, then Provable will return only the base58-decoded IPFS multihash as the proof argument. To obtain the IPFS multihash, the bytes must be encoded to base58.
 The method `oraclize_setProof` can be executed in the constructor, becoming a contract-wide lasting setting, or it can be set directly before a specific query is to be made. Authenticity proofs can be disabled by calling `oraclize_setProof(proofType_NONE)`. Smart contract developer should be aware that the helper method `oraclize_setProof` is an internal function of usingOraclize, and therefore it must be included specifically in their smart contract at compile time, before deployment.
 The following builds on our previous example:
 
@@ -373,7 +373,7 @@ contract KrakenPriceTicker is usingOraclize {
 
 ```
 
-You have to consider that your account will be debited for most of your Oraclize calls. If your contract is not covered with enough ETH, the query will fail. Depending on your contract logic you may want to check the price for your next query before it gets send. You can do this by calling `oraclize_getPrice` and check if it is higher than your current contract balance. If that's the case the `oraclize_query` will fail and you may want to handle it gracefully. You can also add a gaslimit parameter to the `oraclize_getPrice` function: `oraclize_getPrice(string datasource, uint gaslimit)`. Make sure that the custom gaslimit for `oraclize_getPrice` matches with the one you will use for `oraclize_query`.
+You have to consider that your account will be debited for most of your Provable calls. If your contract is not covered with enough ETH, the query will fail. Depending on your contract logic you may want to check the price for your next query before it gets send. You can do this by calling `oraclize_getPrice` and check if it is higher than your current contract balance. If that's the case the `oraclize_query` will fail and you may want to handle it gracefully. You can also add a gaslimit parameter to the `oraclize_getPrice` function: `oraclize_getPrice(string datasource, uint gaslimit)`. Make sure that the custom gaslimit for `oraclize_getPrice` matches with the one you will use for `oraclize_query`.
 
 
 ### Mapping Query Ids
@@ -421,18 +421,18 @@ It might occur that a callback function of a sent query gets called more than on
 ## Advanced Topics
 
 ### Encrypted Queries
-Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Oraclize queries by encrypting a part (or all) of a query with the Oraclize public key.
-The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.  
+Certain contexts, such as smart contracts on public blockchains, might require a level of privacy to protect data from public scrutiny. Developers can make encrypted Provable queries by encrypting a part (or all) of a query with the Provable public key.
+The encrypted queries feature may be of interested to developers who want to deploy their blockchain applications of public networks. For example, if an application leverages data from an authenticated API, it would be dangerous to disclose the API key to anyway who is monitoring the public chain.
 
-Oraclize therefore offers the possibility of encrypting the parameters contained in a query to Oraclize's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
-Only Oraclize will then be able to decrypt the request using its paired private key.
+Provable therefore offers the possibility of encrypting the parameters contained in a query to Provable's public key: `044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9`
+Only Provable will then be able to decrypt the request using its paired private key.
 
-To encrypt the query, Oraclize provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,  
+To encrypt the query, Provable provides a CLI tool, which can be found <a href="https://github.com/oraclize/encrypted-queries" target="_blank">here</a>. Alternatively,
 The CLI command to encrypt an arbitrary string of text is then:
 
 `python encrypted_queries_tools.py -e -p 044992e9473b7d90ca54d2886c7addd14a61109af202f1c95e218b0c99eb060c7134c4ae46345d0383ac996185762f04997d6fd6c393c86e4325c469741e64eca9 "YOUR QUERY"`
 
-This will encrypt the query with the default Oraclize public key. The encrypted string can then be used as an argument for an Oraclize query.
+This will encrypt the query with the default Provable public key. The encrypted string can then be used as an argument for an Provable query.
 
 ```javascript
 // In this example, the entire first argument of an oraclize_query has been encrypted.
@@ -493,7 +493,7 @@ oraclize_query("BEIGVzv6fJcFiYQNZF8ArHnvNMAsAWBz8Zwl0YCsy4K/RJTN8ERHfBWtSfYHt+
 You can also do this with a request to another datasource like WolframAlpha, the Bitcoin blockchain, or IPFS. Our encryption system also permits users to encrypt any of the supported datasource options.
 
 <aside class="notice">
-In order to prevent other users from using your exact encrypted query ("replay attacks"), the first contract querying Oraclize with a given encrypted query becomes its rightful "owner". Any other contract using that exact same string will receive an empty result.
+In order to prevent other users from using your exact encrypted query ("replay attacks"), the first contract querying Provable with a given encrypted query becomes its rightful "owner". Any other contract using that exact same string will receive an empty result.
 
 As a consequence, remember to always generate a new encrypted string when re-deploying contracts using encrypted queries.
 </aside>
@@ -504,8 +504,8 @@ The security guarantee mentioned above is only valid on the mainnet, not on the 
 
 To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:
 
-* An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as curve and ANSI X9.63 with SHA256 as Key Derivation Function. This algorithm is used to derive a shared secret from the Oraclize public key and ad-hoc, randomly generated developer private key.
-* The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be '000000000000' (96 bits of length). The IV can be set to the zero byte-array because each shared secret is thrown-away and use only once. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.
+* An Elliptic Curve Diffie-Hellman Key Exchange (ECDH), which uses secp256k1 as the curve and ANSI X9.63 with SHA256 as the Key Derivation Function. This algorithm is used to derive a shared secret from the Provable public key and ad-hoc, randomly generated developer private key.
+* The shared secret is used by an AES-256 in Galois Counter Mode (GCM), an authenticated symmetric cipher, to encrypt the query string. The authentication tag is 16-bytes of length and the IV is chosen to be '000000000000' (96 bits of length). The IV can be set to the zero byte-array because each shared secret is meant to be a single-use throw-away. Every time the encryption function is called a new developer private key is re-generated. The final ciphertext is the concatenation of the encoded point (i.e the public key of the developer), the authentication tag and the encrypted text.
 
 ### Computation Data Source
 
@@ -525,29 +525,29 @@ contract Calculation is usingOraclize {
     event calculationResult(uint _result);
 
     // General Calculation: ((NUMBER_1 + NUMBER_2) * MULTIPLIER) / DIVISOR
-    
+
     function Calculation() {
-        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS); 
+        oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
         require (msg.sender == oraclize_cbAddress());
         calculationResult(parseInt(result));
     }
-    
+
     function testCalculation() payable {
         sendCalculationQuery(NUMBER_1, NUMBER_2, MULTIPLIER, DIVISOR); // = 105
     }
-    
+
     function sendCalculationQuery(string _NUMBER1, string _NUMBER2, string _MULTIPLIER, string _DIVISOR) payable {
         if (oraclize.getPrice("computation") > this.balance) {
             LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
         } else {
             LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
-            oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", 
-            _NUMBER1, 
-            _NUMBER2, 
-            _MULTIPLIER, 
+            oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR",
+            _NUMBER1,
+            _NUMBER2,
+            _MULTIPLIER,
             _DIVISOR]);
         }
     }
@@ -555,7 +555,7 @@ contract Calculation is usingOraclize {
 ```
 Arguments can be passed to the package by adding parameters to the query array. They will be accessible from within the Docker instances as environmental parameters.
 
-Currenty the API supports up to 5 inline arguments, including the IPFS Hash: 
+Currenty the API supports up to 5 inline arguments, including the IPFS Hash:
 `oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR", _firstOperand, _secondOperand, _thirdOperand, _fourthOperand]);`
 
 ```shell
@@ -588,10 +588,10 @@ pragma solidity ^0.4.18;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
 
 contract Calculation is usingOraclize {
- 
+
   event calculationResult(uint _result);
   event LogNewOraclizeQuery(string description);
- 
+
   function Calculation() payable {
     oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
 
@@ -605,7 +605,7 @@ contract Calculation is usingOraclize {
     require (msg.sender == oraclize_cbAddress());
     calculationResult(parseInt(result));
   }
- 
+
   function testCalculation(
     string _hash,
     string _number1,
@@ -614,7 +614,7 @@ contract Calculation is usingOraclize {
     string _divisor,
     string _number3,
     string _number4) public payable {
-       
+
     string[] memory numbers = new string[](7);
     numbers[0] = _hash;
     numbers[1] = _number1;
@@ -623,10 +623,10 @@ contract Calculation is usingOraclize {
     numbers[4] = _divisor;
     numbers[5] = _number3;
     numbers[6] = _number4;
-       
+
     sendCalculationQuery(numbers);
   }
- 
+
   function sendCalculationQuery(string[] array) internal {
     if (oraclize.getPrice("computation") > this.balance) {
         LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
@@ -652,6 +652,7 @@ The query would then look like this: `oraclize_query("computation", myArgs)`
 
 
 #### Passing Encrypted Arguments
+
 ```javascript
 pragma solidity ^0.4.11;
 import "github.com/oraclize/ethereum-api/oraclizeAPI.sol";
@@ -684,9 +685,9 @@ Encrypted arguments can be passed using the nested and the decrypt meta data sou
 
 ### Random Data Source
 
-In the contract usingOraclize, which smart contracts should use to interface with Oraclize, some specific functions related to the Oraclize Random Data Source have been added. In particular:
+In the contract usingOraclize, which smart contracts should use to interface with Provable, some specific functions related to the Provable Random Data Source have been added. In particular:
 
-* `oraclize_newRandomDSQuery`: helper to perform an Oraclize random DS query correctly
+* `oraclize_newRandomDSQuery`: helper to perform an Provable random DS query correctly
 	* `oraclize_randomDS_setCommitment`: set in the smart contract storage the commitment for the current request
 	* `oraclize_randomDS_getSessionPubKeyHash`: recovers the hash of a session pub key presents in the connector
 * `oraclize_randomDS_proofVerify_main`: performs the verification of the proof returned with the callback transaction
@@ -731,13 +732,13 @@ In the case of multi-party interactions, such as voting schemes or lotteries, th
 
 ### ProofShield
 
-The Oraclize *ProofShield* is a concept first introduct at Devcon4, you can watch our presentation about "Scalable Onchain Verification for Authenticated Data Feeds and Offchain Computations" [here](https://www.youtube.com/watch?v=7uQdEBVu8Sk).
+The Provable *ProofShield* is a concept first introduct at Devcon4, you can watch our presentation about "Scalable Onchain Verification for Authenticated Data Feeds and Offchain Computations" [here](https://www.youtube.com/watch?v=7uQdEBVu8Sk).
 
 <aside class="notice">
 The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet). A production-ready version will follow in the future.
 </aside>
 
-The ProofShield enables smart contracts to verify on-chain the authenticity proofs provided by Oraclize, this ensures that the authenticity of the data received is verified before going ahead and using the data.
+The ProofShield enables smart contracts to verify on-chain the authenticity proofs provided by Provable, this ensures that the authenticity of the data received is verified before going ahead and using the data.
 
 
 To enable the ProofShield it is enough to set it via the `oraclize_setProof` function like you see in the following code:
