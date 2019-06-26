@@ -3,4 +3,4 @@
   <br>
 </p>
 
-<p align="center">This repository contains the Slate-based Oraclize documentation. You can check it out here: <a href="https://docs.oraclize.it">docs.oraclize.it</a>.</p>
+<p align="center">This repository contains the Slate-based Oraclize documentation. You can check it out here: <a href="https://docs.provable.xyz">docs.provable.xyz</a>.</p>
