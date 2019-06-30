@@ -5,7 +5,7 @@
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href="images/favicon.png" rel="icon" type="image/png" />
-    <title>Oraclize Documentation</title>
+    <title>Provable Documentation</title>
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127522344-1"></script>
@@ -161,8 +161,8 @@
       <div id="toc">
       </div>
         <ul class="toc-footer">
-            <li><a href='https://github.com/oraclize/docs/wiki' target='_blank'>Suggest an edit</a></li>
-            <li><a href='https://gitter.im/oraclize/' target='_blank'>Join the Oraclize Dev Community</a></li>
+            <li><a href='https://github.com/provable-things/docs/wiki' target='_blank'>Suggest an edit</a></li>
+            <li><a href='https://gitter.im/oraclize/' target='_blank'>Join the Provable Dev Community</a></li>
             <li><span id='lastupdate'></span></li>
         </ul>
     </div>
@@ -450,7 +450,7 @@ To better profit from this section of the documentation, previous knowledge of S
    <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
    <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-       <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+       <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
    <span class="p">}</span>
 
    <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -461,9 +461,9 @@ To better profit from this section of the documentation, previous knowledge of S
 
    <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
        <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-           <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+           <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-           <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+           <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
            <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
        <span class="p">}</span>
    <span class="p">}</span>
@@ -537,7 +537,7 @@ Please note that in order for the future timestamp to be accepted by Provable it
     <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -549,9 +549,9 @@ Please note that in order for the future timestamp to be accepted by Provable it
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -577,7 +577,7 @@ Use recursive queries cautiously. In general it is recommended to send queries p
     <span class="nx">event</span> <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">description</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -591,9 +591,9 @@ Use recursive queries cautiously. In general it is recommended to send queries p
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
@@ -622,7 +622,7 @@ The queryId identifies a specific query done to Provable and it is returned to t
     <span class="c1">// transaction</span>
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span><span class="p">);</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -636,9 +636,9 @@ The queryId identifies a specific query done to Provable and it is returned to t
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
                 <span class="nx">oraclize_query</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">,</span> <span class="mi">500000</span><span class="p">);</span>
             <span class="nx">validIds</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
@@ -682,7 +682,7 @@ When calling `oraclize_setCustomGasPrice` the parameter type is uint and represe
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setCustomGasPrice</span><span class="p">(</span><span class="mi">4000000000</span><span class="p">);</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
@@ -696,7 +696,7 @@ When calling `oraclize_setCustomGasPrice` the parameter type is uint and represe
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
             <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span>
@@ -750,7 +750,7 @@ The following builds on our previous example:</p>
 
     <span class="kd">function</span> <span class="nx">KrakenPriceTicker</span><span class="p">()</span> <span class="p">{</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_TLSNotary</span> <span class="o">|</span> <span class="nx">proofStorage_IPFS</span><span class="p">);</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'update()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'update()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
@@ -761,9 +761,9 @@ The following builds on our previous example:</p>
 
     <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="nx">CUSTOM_GASLIMIT</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">newOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0"</span><span class="p">,</span> <span class="nx">CUSTOM_GASLIMIT</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -784,7 +784,7 @@ The following builds on our previous example:</p>
     <span class="nx">mapping</span> <span class="p">(</span><span class="nx">bytes32</span> <span class="o">=&gt;</span> <span class="nx">bool</span><span class="p">)</span> <span class="kr">public</span> <span class="nx">pendingQueries</span><span class="p">;</span>
 
     <span class="kd">function</span> <span class="nx">ExampleContract</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'updatePrice()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -797,9 +797,9 @@ The following builds on our previous example:</p>
 
     <span class="kd">function</span> <span class="nx">updatePrice</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize_getPrice</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">bytes32</span> <span class="nx">queryId</span> <span class="o">=</span> <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"URL"</span><span class="p">,</span> <span class="s2">"json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price"</span><span class="p">);</span>
             <span class="nx">pendingQueries</span><span class="p">[</span><span class="nx">queryId</span><span class="p">]</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
         <span class="p">}</span>
@@ -876,7 +876,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 </aside>
 
 <aside class="notice">
-The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@oraclize.it.
+The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@provable.xyz
 </aside>
 
 <p>To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:</p>
@@ -915,9 +915,9 @@ The security guarantee mentioned above is only valid on the mainnet, not on the 
 
     <span class="kd">function</span> <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">string</span> <span class="nx">_NUMBER1</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_NUMBER2</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_MULTIPLIER</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">_DIVISOR</span><span class="p">)</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
         <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+            <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
             <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,[</span><span class="s2">"QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR"</span><span class="p">,</span>
             <span class="nx">_NUMBER1</span><span class="p">,</span>
             <span class="nx">_NUMBER2</span><span class="p">,</span>
@@ -934,7 +934,7 @@ The security guarantee mentioned above is only valid on the mainnet, not on the 
 <pre class="highlight shell tab-shell"><code><span class="c"># Content of the Dockerfile</span>
 
 FROM frolvlad/alpine-python3
-MAINTAINER Oraclize <span class="s2">"info@oraclize.it"</span>
+MAINTAINER Provable <span class="s2">"info@provable.xyz"</span>
 
 COPY calculation.py /
 
@@ -993,9 +993,9 @@ CMD python ./calculation.py
 
   <span class="kd">function</span> <span class="nx">sendCalculationQuery</span><span class="p">(</span><span class="nx">string</span><span class="p">[]</span> <span class="nx">array</span><span class="p">)</span> <span class="nx">internal</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="nx">oraclize</span><span class="p">.</span><span class="nx">getPrice</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">)</span> <span class="o">&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">balance</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was NOT sent, please add some ETH to cover for the query fee"</span><span class="p">);</span>
     <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"computation"</span><span class="p">,</span> <span class="nx">array</span><span class="p">);</span>
     <span class="p">}</span>
   <span class="p">}</span>
@@ -1022,7 +1022,7 @@ CMD python ./calculation.py
     <span class="nx">event</span> <span class="nx">LogNewResult</span><span class="p">(</span><span class="nx">string</span> <span class="nx">result</span><span class="p">);</span>
 
     <span class="kd">function</span> <span class="nx">ComputationTest</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'update()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'update()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">myid</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">)</span> <span class="p">{</span>
@@ -1032,7 +1032,7 @@ CMD python ./calculation.py
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">update</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
-        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Oraclize query was sent, standing by for the answer.."</span><span class="p">);</span>
+        <span class="nx">LogNewOraclizeQuery</span><span class="p">(</span><span class="s2">"Provable query was sent, standing by for the answer.."</span><span class="p">);</span>
         <span class="nx">oraclize_query</span><span class="p">(</span><span class="s2">"nested"</span><span class="p">,</span> <span class="s2">"[computation] ['QmaqMYPnmSHEgoWRMP3WSrUYsPWKjT85C81PgJa2SXBs8u', \
 'Example of decrypted string', '${[decrypt] BOYnQstP700X10I+WWNUVVNZEmal+rZ0GD1CgcW5P5wUSFKr2QoIwHLvkHfQR5e4Bfakq0CIviJnjkfKFD+ZJzzxcaFUQITDZJxsRLtKuxvAuh6IccUJ+jDF/znTH+8x8EE1Tt9SY7RvqtVao2vxm4CxIWq1vk4=}', 'Hello there!']"</span><span class="p">);</span>
     <span class="p">}</span>
@@ -1106,7 +1106,7 @@ The ProofShield is still EXPERIMENTAL, please DO NOT use it in production (yet).
 The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/remix-ide-vm.
 </aside>
 
-<p>A code example follows, note that the complete version of it is available <a href="https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol">here</a>:</p>
+<p>A code example follows, note that the complete version of it is available <a href="https://github.com/provable-things/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol">here</a>:</p>
 <pre class="highlight javascript tab-javascript"><code><span class="nx">contract</span> <span class="nx">proofShieldExample</span> <span class="nx">is</span> <span class="nx">usingOraclize</span> <span class="p">{</span>
 
     <span class="nx">event</span> <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="nx">string</span> <span class="nx">nextStep</span><span class="p">);</span>
@@ -1114,7 +1114,7 @@ The ProofShield is currently available on all Ethereum public testnets only (Rin
 
     <span class="kd">function</span> <span class="nx">proofShieldExample</span><span class="p">()</span> <span class="nx">payable</span> <span class="p">{</span>
         <span class="nx">oraclize_setProof</span><span class="p">(</span><span class="nx">proofType_Android_v2</span> <span class="o">|</span> <span class="nx">proofShield_Ledger</span><span class="p">);</span>
-        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'sendQuery()' to send the Oraclize Query."</span><span class="p">);</span>
+        <span class="nx">LogConstructorInitiated</span><span class="p">(</span><span class="s2">"Constructor was initiated. Call 'sendQuery()' to send the Provable Query."</span><span class="p">);</span>
     <span class="p">}</span>
 
     <span class="kd">function</span> <span class="nx">__callback</span><span class="p">(</span><span class="nx">bytes32</span> <span class="nx">queryId</span><span class="p">,</span> <span class="nx">string</span> <span class="nx">result</span><span class="p">,</span> <span class="nx">bytes</span> <span class="nx">proof</span><span class="p">)</span> <span class="p">{</span>
@@ -1139,7 +1139,7 @@ The ProofShield is currently available on all Ethereum public testnets only (Rin
 
 <span class="p">}</span>
 </code></pre><h3 id='more-examples'>More Examples</h3>
-<p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a></p>
+<p>More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/provable-things/ethereum-examples" target="_blank">https://github.com/provable-things/ethereum-examples</a></p>
 
           <h1 id='9096-rootstock'><a style="display:inline-block; min-width:20px">&#9096;</a> Rootstock</h1>
 <p>Rootstock is the first production sidechain of the Bitcoin network. It aims to extends Bitcoin capabilities without compromising its decentralization and censorship resistance properties. On the Rootstock networks, participants are able to interact with smart contracts using a token called Smart Bitcoin. The peg between Bitcoin and Smart Bitcoins is maintained by a federation of distinguished players and backed by merged mining.</p>
@@ -2099,9 +2099,9 @@ Provable has published and maintains the Ethereum oraclizeAPI under the &#39;ora
 <aside class="notice">
 Please note that the correct package name is named `oraclize-api` and not `oraclize`.
 </aside>
-<h2 id='future'>Future</h2><h3 id='oraclize-lib'>Oraclize-lib</h3>
+<h3 id='oraclize-lib'>Oraclize-lib</h3>
 <p><a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an experimental nodejs library that be used to build non-blockchain applications leveraging Provable. It can be considered a simple abstraction layer to the Provable HTTP API.</p>
-<h3 id='stargate'>Stargate</h3>
+<h2 id='future'>Future</h2><h3 id='stargate'>Stargate</h3>
 <p>The Provable team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Provable.
 Additional information will be available later this year. Parties interested in trying this experimental feature, can get <a href="mailto:info@oraclize.it">in touch with us</a>.</p>
 
