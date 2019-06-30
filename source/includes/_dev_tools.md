@@ -36,12 +36,11 @@ Provable has published and maintains the Ethereum oraclizeAPI under the 'oracliz
 Please note that the correct package name is named `oraclize-api` and not `oraclize`.
 </aside>
 
-## Future
-
 ### Oraclize-lib
 
 <a href="https://github.com/oraclize/oraclize-lib" target="_blank">Oraclize-lib</a> is an experimental nodejs library that be used to build non-blockchain applications leveraging Provable. It can be considered a simple abstraction layer to the Provable HTTP API.
 
+## Future
 
 ### Stargate
 The Provable team is working on a tool which will enable direct integration with any private deployment of Ethereum-based chain, including private testnet, without installing additional software. This tool has been named Stargate and it is under active development. The tool will consist of an ssh-bridge between the developer blockchain instance and Provable.
