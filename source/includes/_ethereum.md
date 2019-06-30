@@ -24,7 +24,7 @@ contract ExampleContract is usingOraclize {
    event LogNewOraclizeQuery(string description);
 
    function ExampleContract() payable {
-       LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+       LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
    }
 
    function __callback(bytes32 myid, string result) {
@@ -35,9 +35,9 @@ contract ExampleContract is usingOraclize {
 
    function updatePrice() payable {
        if (oraclize_getPrice("URL") > this.balance) {
-           LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+           LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
        } else {
-           LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
            oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
        }
    }
@@ -117,7 +117,7 @@ contract ExampleContract is usingOraclize {
 	event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
-        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result) {
@@ -129,9 +129,9 @@ contract ExampleContract is usingOraclize {
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
         	oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
         }
     }
@@ -160,7 +160,7 @@ contract ExampleContract is usingOraclize {
     event LogNewOraclizeQuery(string description);
 
     function ExampleContract() payable {
-        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result) {
@@ -174,9 +174,9 @@ contract ExampleContract is usingOraclize {
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
 			bytes32 queryId =
 				oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
 			validIds[queryId] = true;
@@ -209,7 +209,7 @@ contract ExampleContract is usingOraclize {
 	// transaction
     function ExampleContract() payable {
         oraclize_setCustomGasPrice(4000000000);
-		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result) {
@@ -223,9 +223,9 @@ contract ExampleContract is usingOraclize {
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-           	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+           	LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
 			bytes32 queryId =
 				oraclize_query(60, "URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price", 500000);
 			validIds[queryId] = true;
@@ -278,7 +278,7 @@ contract ExampleContract is usingOraclize {
 	function ExampleContract() payable {
         oraclize_setCustomGasPrice(4000000000);
 		oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+		LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
@@ -292,7 +292,7 @@ contract ExampleContract is usingOraclize {
 
  	function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
            	LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
 			bytes32 queryId =
@@ -352,7 +352,7 @@ contract KrakenPriceTicker is usingOraclize {
 
     function KrakenPriceTicker() {
         oraclize_setProof(proofType_TLSNotary | proofStorage_IPFS);
-        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result, bytes proof) {
@@ -363,9 +363,9 @@ contract KrakenPriceTicker is usingOraclize {
 
     function update() payable {
         if (oraclize_getPrice("URL", CUSTOM_GASLIMIT) > this.balance) {
-            newOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            newOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            newOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            newOraclizeQuery("Provable query was sent, standing by for the answer..");
             oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=ETHXBT).result.XETHXXBT.c.0", CUSTOM_GASLIMIT);
         }
     }
@@ -392,7 +392,7 @@ contract ExampleContract is usingOraclize {
     mapping (bytes32 => bool) public pendingQueries;
 
     function ExampleContract() payable {
-        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'updatePrice()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result) {
@@ -405,9 +405,9 @@ contract ExampleContract is usingOraclize {
 
     function updatePrice() payable {
         if (oraclize_getPrice("URL") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
             bytes32 queryId = oraclize_query("URL", "json(https://api.pro.coinbase.com/products/ETH-USD/ticker).price");
             pendingQueries[queryId] = true;
         }
@@ -499,7 +499,7 @@ As a consequence, remember to always generate a new encrypted string when re-dep
 </aside>
 
 <aside class="notice">
-The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@oraclize.it.
+The security guarantee mentioned above is only valid on the mainnet, not on the testnet. For more information get in touch with info@provable.xyz
 </aside>
 
 To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme was chosen. The steps performed for the encryption are the following ones:
@@ -541,9 +541,9 @@ contract Calculation is usingOraclize {
 
     function sendCalculationQuery(string _NUMBER1, string _NUMBER2, string _MULTIPLIER, string _DIVISOR) payable {
         if (oraclize.getPrice("computation") > this.balance) {
-            LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+            LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
         } else {
-            LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+            LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
             oraclize_query("computation",["QmZRjkL4U72XFXTY8MVcchpZciHAwnTem51AApSj6Z2byR",
             _NUMBER1,
             _NUMBER2,
@@ -562,7 +562,7 @@ Currenty the API supports up to 5 inline arguments, including the IPFS Hash:
 # Content of the Dockerfile
 
 FROM frolvlad/alpine-python3
-MAINTAINER Oraclize "info@oraclize.it"
+MAINTAINER Provable "info@provable.xyz"
 
 COPY calculation.py /
 
@@ -629,9 +629,9 @@ contract Calculation is usingOraclize {
 
   function sendCalculationQuery(string[] array) internal {
     if (oraclize.getPrice("computation") > this.balance) {
-        LogNewOraclizeQuery("Oraclize query was NOT sent, please add some ETH to cover for the query fee");
+        LogNewOraclizeQuery("Provable query was NOT sent, please add some ETH to cover for the query fee");
     } else {
-        LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
         oraclize_query("computation", array);
     }
   }
@@ -664,7 +664,7 @@ contract ComputationTest is usingOraclize {
     event LogNewResult(string result);
 
     function ComputationTest() payable {
-        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'update()' to send the Provable Query.");
     }
 
     function __callback(bytes32 myid, string result) {
@@ -674,7 +674,7 @@ contract ComputationTest is usingOraclize {
     }
 
     function update() payable {
-        LogNewOraclizeQuery("Oraclize query was sent, standing by for the answer..");
+        LogNewOraclizeQuery("Provable query was sent, standing by for the answer..");
         oraclize_query("nested", "[computation] ['QmaqMYPnmSHEgoWRMP3WSrUYsPWKjT85C81PgJa2SXBs8u', \
 'Example of decrypted string', '${[decrypt] BOYnQstP700X10I+WWNUVVNZEmal+rZ0GD1CgcW5P5wUSFKr2QoIwHLvkHfQR5e4Bfakq0CIviJnjkfKFD+ZJzzxcaFUQITDZJxsRLtKuxvAuh6IccUJ+jDF/znTH+8x8EE1Tt9SY7RvqtVao2vxm4CxIWq1vk4=}', 'Hello there!']");
     }
@@ -757,7 +757,7 @@ Once the ProofShield is enabled, the received proof will not be the raw Authenti
 The ProofShield is currently available on all Ethereum public testnets only (Rinkeby, Kovan, Ropsten-revival) - it is not integrated yet with private blockchains/testrpc/remix-ide-vm.
 </aside>
 
-A code example follows, note that the complete version of it is available [here](https://github.com/oraclize/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol):
+A code example follows, note that the complete version of it is available [here](https://github.com/provable-things/ethereum-examples/blob/master/solidity/proofshield/proofShieldExample.sol):
 
 ```javascript
 contract proofShieldExample is usingOraclize {
@@ -767,7 +767,7 @@ contract proofShieldExample is usingOraclize {
 
     function proofShieldExample() payable {
         oraclize_setProof(proofType_Android_v2 | proofShield_Ledger);
-        LogConstructorInitiated("Constructor was initiated. Call 'sendQuery()' to send the Oraclize Query.");
+        LogConstructorInitiated("Constructor was initiated. Call 'sendQuery()' to send the Provable Query.");
     }
 
     function __callback(bytes32 queryId, string result, bytes proof) {
@@ -794,4 +794,4 @@ contract proofShieldExample is usingOraclize {
 ```
 
 ### More Examples
-More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/oraclize/ethereum-examples" target="_blank">https://github.com/oraclize/ethereum-examples</a>
+More complete, complex examples are available on the dedicated Github repository: <a href="https://github.com/provable-things/ethereum-examples" target="_blank">https://github.com/provable-things/ethereum-examples</a>
