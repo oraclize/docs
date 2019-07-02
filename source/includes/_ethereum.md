@@ -12,9 +12,13 @@ As said in previous sections, one of the fundamental characteristics of Provable
 
 ## Quick Start
 
+<aside class="notice">
+Code examples written here are targetted at Solidity 0.4, and import provableAPI_0.4.25.sol which is a release targetted at Solidity 0.4.25 but compatible down to 0.4.22. It is recommended for any new projects to import whatever the latest API is via `github.com/provable-things/ethereum-api/provableAPI.sol` which ought to target the latest stable Solidity compiler.
+</aside>
+
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -50,7 +54,7 @@ This contract uses Provable to fetch the last ETH/USD from Coinbase Pro APIs. Th
 * The contract should be a child of the contract usingProvable
 * The contract usingProvable is defined in the provableAPI file, which can be fetched from the dedicated Provable Github repository.
 
-The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the provableAPI.sol file since direct import from Github may not be supported.
+The code in the example is working out of the box if Remix is used to compile and deploy it on any of the Ethereum networks: main-net and the Ropsten, Kovan and Rinkeby testnets. If, instead, another tool is used, it will be necessary to replace the import statement with a local import of the provableAPI_0.4.25.sol file since direct import from Github may not be supported.
 
 To ease development, Provable doesn't charge a contract for its first request of data done using the default gas parameters. Successive requests will require the contract to pay the Provable fee and the ether necessary to pay for the callback transaction. Both are automatically taken from the contract balance. If the contract doesn't have enough funds in his balance, the request will fail and Provable won't return any data.
 
@@ -106,8 +110,8 @@ Please note that in order for the future timestamp to be accepted by Provable it
 
 ### Recursive Queries
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -148,8 +152,8 @@ Use recursive queries cautiously. In general it is recommended to send queries p
 
 ### The Query ID
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -194,8 +198,8 @@ The `queryId` can be used as well to implement different behaviors into the `__c
 
 ### Custom Gas Limit and Gas Price
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -261,8 +265,8 @@ When calling `provable_setCustomGasPrice` the parameter type is uint and represe
 ### Authenticity Proofs
 
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -337,8 +341,8 @@ Supported proofs can be verified. The following tools can be used: <a href="#dev
 ### Precalculating the Query Price
 
 ```javascript
-pragma solidity ^0.4.0;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract KrakenPriceTicker is usingProvable {
 
@@ -379,8 +383,8 @@ You have to consider that your account will be debited for most of your Provable
 ### Mapping Query Ids
 
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ExampleContract is usingProvable {
 
@@ -511,8 +515,8 @@ To protect the plaintext queries, an Elliptic Curve Integrated Encryption Scheme
 
 #### Passing Arguments to the Package
 ```javascript
-pragma solidity ^0.4.18;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract Calculation is usingProvable {
 
@@ -584,8 +588,8 @@ print(result)
 #### Passing more than 5 Arguments
 
 ```javascript
-pragma solidity ^0.4.18;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract Calculation is usingProvable {
 
@@ -654,8 +658,8 @@ The query would then look like this: `provable_query("computation", myArgs)`
 #### Passing Encrypted Arguments
 
 ```javascript
-pragma solidity ^0.4.11;
-import "github.com/provable-things/ethereum-api/provableAPI.sol";
+pragma solidity ^0.4.22;
+import "github.com/provable-things/ethereum-api/provableAPI_0.4.25.sol";
 
 contract ComputationTest is usingProvable {
 
