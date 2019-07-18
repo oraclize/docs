@@ -5,7 +5,7 @@ The following section is dedicated to the Provable integration with EOS. Before 
 The EOS platform supports both C and C++ as programming languages for contracts, however the current Provable integration currently supports **C++ only**.
 
 <aside class="notice">
-Provable is currently integrated with the EOSIO Mainnet and public "Jungle" Testnet. Soon it will also be available on public "Kylin" Testnet.
+Provable is currently integrated with the EOSIO Mainnet, the public "Jungle" Testnet and the public "Kylin" Testnet.
 </aside>
 
 <aside class="notice">
@@ -26,16 +26,16 @@ As said in previous sections, one of the fundamental characteristics of Provable
 
 ```bash
 # Let's get the "eos_api.hpp" header file
-$ git clone https://github.com/oraclize/eos-api.git oraclize
+$ git clone https://github.com/provable-things/eos-api.git provable
 ```
 
 ### Including the Provable API
 
-Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Provable. The header file can be downloaded from the [eos-api github repository](https://github.com/oraclize/eos-api).
+Before starting, it is necessary to include the `eos_api.hpp` header file. This file contains all the helper functions which we will be using to use Provable. The header file can be downloaded from the [eos-api github repository](https://github.com/provable-things/eos-api).
 It is highly recommended to always use the latest version.
 
 ```c++
-#include "oraclize/eos_api.hpp"
+#include "provable/eos_api.hpp"
 
 class eosusdprice : public eosio::contract
 {
@@ -54,7 +54,7 @@ class eosusdprice : public eosio::contract
 
       [[eosio::action]]
       void callback(
-          const std::string queryId,
+          const eosio::checksum256 queryId,
           const std::vector<uint8_t> result,
           const std::vector<uint8_t> proof
       )
@@ -121,7 +121,7 @@ The execution of a query can be scheduled for a future date. The function `oracl
 Please note that in order for the future timestamp to be accepted by Provable it must be within **60 days** of the current UTC time in the case of the absolute timestamp choice, or in the case of relative time, the elapsed seconds must equate to no more than **60 days**.
 
 ```c++
-#include "oraclize/eos_api.hpp"
+#include "provable/eos_api.hpp"
 
 class dieselprice : public eosio::contract
 {
@@ -156,7 +156,7 @@ EOSIO_DISPATCH(dieselprice, (execquery)(callback))
 ### Recursive Queries
 
 ```c++
-#include "oraclize/eos_api.hpp"
+#include "provable/eos_api.hpp"
 
 class wolframrand : public eosio::contract
 {
@@ -174,9 +174,9 @@ class wolframrand : public eosio::contract
 
     [[eosio::action]]
     void callback(
-        eosio::checksum256 queryId,
-        std::vector<uint8_t> result,
-        std::vector<uint8_t> proof
+        const eosio::checksum256 queryId,
+        const std::vector<uint8_t> result,
+        const std::vector<uint8_t> proof
     )
     {
         require_auth(provable_cbAddress());
@@ -199,12 +199,12 @@ This modified version of the previous example will get a random number from the 
 Use recursive queries cautiously. In general it is recommended to send queries purposefully.
 </aside>
 
-### The Query ID
+### Checking the Query ID
 
 ```c++
 #define CONTRACT_NAME "checkqueryid"
 
-#include "oraclize/eos_api.hpp"
+#include "provable/eos_api.hpp"
 
 class checkqueryid : public eosio::contract
 {
@@ -218,25 +218,24 @@ class checkqueryid : public eosio::contract
     {
         eosio::checksum256 myQueryId = oraclize_query("URL", "json(https://api.kraken.com/0/public/Ticker?pair=EOSUSD).result.EOSUSD.l.0");
         oraclize_queryId_localEmplace(myQueryId);
-        print(" Provable query was sent & queryId saved in a tbl record, standing by for the answer...");
+        print(" Provable query was sent & queryId saved in the queryId table as a record, standing by for the answer...");
     }
 
     [[eosio::action]]
     void callback(
-        std::string queryId,
-        std::vector<unsigned char> result,
-        std::vector<unsigned char> proof
+        const eosio::checksum256 queryId,
+        const std::vector<unsigned char> result,
+        const std::vector<unsigned char> proof
     )
     {
         require_auth(provable_cbAddress());
         if (!oraclize_queryId_match(queryId))
         {
             // The query Id match has failed, manage this use case...
-            print(" UNEXPECTED Query ID!");
+            print(" Unexpected query ID!");
         }
         else
         {
-            print(" Query ID: ", queryId);
             const std::string result_str = vector_to_string(result);
             print(" Result: ", result_str);
         }
@@ -245,11 +244,22 @@ class checkqueryid : public eosio::contract
 
 EOSIO_DISPATCH(checkqueryid, (checkquery)(callback))
 ```
-
 Every time the function `oraclize_query` is called, it returns a unique ID, hereby referred to as `queryId`, which is guaranteed to be unique in the given network execution context.
 The `queryId` identifies a specific query done to Provable and it is returned to the contract as a parameter of the callback action.
 
-Provable recommends EOS contract developers to verify if the queryId sent by the callback action was generated by a valid call to the `oracize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the EOS contract logic.
+Provable recommends EOS contract developers to verify if the queryId sent by the callback action was generated by a valid call to the `oraclize_query` function, as shown in the example accompanying this paragraph. This ensures that each query response is processed only once and helps avoid misuse of the EOS contract logic.
+
+#### Query ID Verification Process
+
+It is a best practice to verify the query ID with the methods provided inside our `eos_api.hpp`:
+
+1. First of all, the macro `CONTRACT_NAME` has to be defined, where its value will be the name of the contract to deploy.
+
+2. The function `oraclize_queryId_localEmplace(myQueryId)` has to be called, passing as the argument the query ID returned by the `oraclize_query()`. This function will save the query ID in the `queryId` table as a record. The table will be defined just by importing the API and definine the above macro.
+
+2. The function `oraclize_queryId_match(queryId)` will perform the match between the `queryId` received by the callback and the query ID available in the `queryId` table.
+
+To clarify, the `checkqueryid` example reproduces all these steps.
 
 The `queryId` can be used as well to implement different behaviors into the `callback` function, in particular when there is more than one pending call from Provable.
 
