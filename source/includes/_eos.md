@@ -255,7 +255,7 @@ It is a best practice to verify the query ID with the methods provided inside ou
 
 1. First of all, the macro `CONTRACT_NAME` has to be defined, where its value will be the name of the contract to deploy.
 
-2. The function `oraclize_queryId_localEmplace(myQueryId)` has to be called, passing as the argument the query ID returned by the `oraclize_query()`. This function will save the query ID in the `queryId` table as a record. The table will be defined just by importing the API and definine the above macro.
+2. The function `oraclize_queryId_localEmplace(myQueryId)` has to be called, passing as the argument the query ID returned by `oraclize_query()`. This function will save the query ID in the `queryId` table as a record. The table will be defined just by importing the API and defining the above macro.
 
 2. The function `oraclize_queryId_match(queryId)` will perform the match between the `queryId` received by the callback and the query ID available in the `queryId` table.
 
