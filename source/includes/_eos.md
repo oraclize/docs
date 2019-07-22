@@ -330,7 +330,7 @@ Available parameters for proofTypes are:
 * `proofType_TLSNotary`: available only on the *EOS Mainnet*
 * `proofType_Android`
 * `proofType_Native`
-* `proofType_Ledger`
+* `proofType_Ledger`: available only with the *random datasource*
 
 While for proofStorage:
 
