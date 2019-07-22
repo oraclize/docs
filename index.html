@@ -1423,7 +1423,7 @@ The above mentioned limits are experimental and could change before the launch o
 
       <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span>
       <span class="kt">void</span> <span class="n">callback</span><span class="p">(</span>
-          <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">queryId</span><span class="p">,</span>
+          <span class="k">const</span> <span class="n">eosio</span><span class="o">::</span><span class="n">checksum256</span> <span class="n">queryId</span><span class="p">,</span>
           <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">,</span>
           <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint8_t</span><span class="o">&gt;</span> <span class="n">proof</span>
       <span class="p">)</span>
@@ -1576,7 +1576,7 @@ In case you wanted to see more details, it is enough to use the <code>--console<
 
     <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span>
     <span class="kt">void</span> <span class="n">callback</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">queryId</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">eosio</span><span class="o">::</span><span class="n">checksum256</span> <span class="n">queryId</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">&gt;</span> <span class="n">proof</span>
     <span class="p">)</span>
@@ -1656,7 +1656,7 @@ some specific functions related to the Provable Random Data Source have been add
 
     <span class="p">[[</span><span class="n">eosio</span><span class="o">::</span><span class="n">action</span><span class="p">]]</span>
     <span class="kt">void</span> <span class="n">callback</span><span class="p">(</span>
-        <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">queryId</span><span class="p">,</span>
+        <span class="k">const</span> <span class="n">eosio</span><span class="o">::</span><span class="n">checksum256</span> <span class="n">queryId</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">&gt;</span> <span class="n">result</span><span class="p">,</span>
         <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">unsigned</span> <span class="kt">char</span><span class="o">&gt;</span> <span class="n">proof</span>
     <span class="p">)</span>
